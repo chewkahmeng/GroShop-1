@@ -1,0 +1,28 @@
+<nav class="navbar sticky-top navbar-expand-md navbar-dark bg-dark d-flex" style="padding-left: 3%;">
+    <a class="navbar-brand mb-0 h1"  href="#">GroShop</a>
+    <!-- <div class="justify-content-end d-flex"> -->
+    <ul class="navbar-nav ms-auto" style="padding-right: 2%;">
+        {% if user.is_authenticated %} // TO CHANGE
+            <li class="nav-item">
+                <a class="nav-link" href="#">Recipes</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">My Orders</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Profile</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/logout">Log Out</a>
+            </li>
+        {% else %}
+            <li class="nav-item">
+                <a class="nav-link" href="/login">Log In</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/register">Register</a>
+            </li>
+        {% endif %}
+        </ul>
+    <!-- </div> -->
+</nav>
