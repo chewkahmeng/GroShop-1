@@ -1,4 +1,5 @@
 const User = require("../models/user.model.js");
+const Employee = require("../models/employee.model.js");
 const bcrypt = require("bcrypt");
 
 // Register new user
