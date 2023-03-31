@@ -34,7 +34,7 @@ exports.registerUser = async (req, res) => {
         console.log(result)
         if (result !== null) {
             console.log("------> User already exists")
-            res.redirect('/', '302')
+            res.redirect('302','/')
         } else {
             var newUser = new User({
                 username: username,
@@ -45,7 +45,7 @@ exports.registerUser = async (req, res) => {
                 if (err) throw (err)
                 console.log ("--------> Created new User")
                 success = true;
-                res.redirect('/home', '302')
+                res.redirect('302', '/home')
             })
         }
     });
