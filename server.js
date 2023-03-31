@@ -24,6 +24,21 @@ app.use(express.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 
+/**
+ * -------------- DB SYNC (SEQUELIZE) ----------------
+ */
+const db = require("./app/models");
+
+// sunc() - just sync db (data only)
+// sync({ force: true }) - force Sequelize to create a table, dropping it first if it already existed
+// sync({ alter: true }) - alters the columns and data types of an existing table to match the model
+db.sequelize.sync({ alter: true })
+  .then(() => {
+    console.log("Synced db.");
+  })
+  .catch((err) => {
+    console.log("Failed to sync db: " + err.message);
+  });
 
 
 /**
@@ -32,6 +47,7 @@ app.use(express.urlencoded({ extended: true }));
 const viewsDirPath = path.join(__dirname, "views");
 app.set("view engine", "ejs");
 app.set("views", viewsDirPath);
+// include the following when create public static folder
 // app.use(express.static(path.join(__dirname, "public")));
 
 /**
