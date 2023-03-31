@@ -21,7 +21,9 @@
     - Delete User
 
 Things left to do for User: 
-    - Proper User authentication (maybe using PassportJS, JWT or any other tools)
-    - welcome/login/home/profile pages
-    - way to differentiate between customer and admin in login.
+1. Proper User authentication (maybe using PassportJS, JWT or any other tools)
+2. welcome/login/home/profile pages
+3. way to differentiate between customer and admin in login.
+
+
 
