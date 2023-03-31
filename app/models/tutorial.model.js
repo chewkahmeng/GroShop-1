@@ -5,25 +5,26 @@
 // https://sequelize.org/docs/v6/core-concepts/model-basics/
 
 module.exports = (sequelize, Sequelize) => {
-    const Tutorial = sequelize.define("tutorial", {
-      title: {
-        type: Sequelize.STRING
-      },
-      description: {
-        type: Sequelize.STRING
-      },
-      published: {
-        type: Sequelize.BOOLEAN
-      },
-      rating: {
-        type: Sequelize.STRING
-      }
+  const DataTypes = Sequelize.DataTypes;
+  const Tutorial = sequelize.define("tutorial", {
+    title: {
+      type: DataTypes.STRING
+    },
+    description: {
+      type: DataTypes.STRING
+    },
+    published: {
+      type: DataTypes.BOOLEAN
+    },
+    rating: {
+      type: DataTypes.STRING
     }
-    // include the following if want to specify the DB table name
-    , {
-        tableName: 'tbl_tutorials'
-      }
-);
+  }
+  // include the following if want to specify the DB table name
+  , {
+      tableName: 'tbl_tutorials'
+    }
+  );
     
-    return Tutorial;
-  };
+  return Tutorial;
+};

@@ -29,7 +29,7 @@ app.use(express.urlencoded({ extended: true }));
  */
 const db = require("./app/models");
 
-// sunc() - just sync db (data only)
+// sync() - just sync db (data only)
 // sync({ force: true }) - force Sequelize to create a table, dropping it first if it already existed
 // sync({ alter: true }) - alters the columns and data types of an existing table to match the model
 db.sequelize.sync({ alter: true })
@@ -56,9 +56,6 @@ app.set("views", viewsDirPath);
 const tutorial = require("./app/routes/tutorial.routes.js");
 app.use("/tutorial", tutorial);
 
-const test = require("./app/routes/test.routes.js");
-app.use("/test", test);
-
 const auth = require("./app/routes/auth.routes.js");
 app.use("/auth", auth);
 
@@ -75,8 +72,6 @@ app.get("/home", (req, res) => {
     "title": "GroShop"
   });
 });
-
-
 
 /**
  * -------------- SERVER ----------------
