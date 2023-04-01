@@ -21,7 +21,7 @@ exports.registerUser = async (req, res) => {
     if (passwordConfirmation !== password) {
       console.log("------> Password don't match!")
       res.status(400).send({
-        message: "Password don't match!"
+        message: "Register: Password don't match!"
       })
     }
 
@@ -31,11 +31,15 @@ exports.registerUser = async (req, res) => {
 
     if (userInDBWithSameUsername) { 
       console.log("------> User with this username already exists");
-      res.redirect('/');
+      res.render('welcome', {
+        "error": "Register: User with this username already exists"
+      });
     } 
     else if (userInDBWithSameEmail) { 
       console.log("------> User with this email already exists");
-      res.redirect('/');
+      res.render('welcome', {
+        "error": "Register: User with this email already exists"
+      });
     } else {
       // Save user in the database
       const userToRegister = {
@@ -72,13 +76,19 @@ exports.loginUser = async (req, res) => {
 
       if (await bcrypt.compare(password, hashedPassword)) {
         console.log(`------> ${userInDB.username} is logged in!`)
+        res.redirect('/home');
       } else {
         console.log("--------> Password incorrect")
+        res.render('welcome', {
+          "error": "Login: Password incorrect"
+        });
       }
-      res.redirect('/home');
+      
     } else {
       console.log("--------> User does not exist")
-      res.sendStatus(404)
+      res.render('welcome','400', {
+        "error": "Login: Email incorrect"
+      });
     }
 }
 

@@ -8,13 +8,14 @@ const Employee = db.employees;
 const Op = db.Sequelize.Op;
 //middleware to read req.body.<params>
 
-// router.post("/register", authController.registerUser);
+router.post("/register", authController.registerUser);
 router.post("/login", authController.loginUser);
 router.put("/:id/update", authController.updateUser);
 router.put("/:id/update/password", authController.changeUserPassword);
 router.delete("/:id/delete", authController.deleteUser);
 router.get("/:id", authController.retrieveUserDetails);
 
+/*
 // by grace: if want to proceed with below method, replace this method in the auth.controller.
 router.post('/register', async (req, res) => {
     console.log(req.body);
@@ -103,5 +104,5 @@ router.post('/register', async (req, res) => {
         } 
     }
 });
-
+*/
 module.exports = router;

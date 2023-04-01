@@ -48,7 +48,7 @@ const viewsDirPath = path.join(__dirname, "views");
 app.set("view engine", "ejs");
 app.set("views", viewsDirPath);
 // include the following when create public static folder
-// app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "public")));
 
 /**
  * -------------- ROUTES ----------------
@@ -62,14 +62,14 @@ app.use("/auth", auth);
 app.get("/", (req, res) => {
   console.log("req.user is " + req.user);
   res.render("welcome", {
-    "title": "GroShop"
+    "login_error": req.login_error,
+    "register_error": req.register_error
   });
 });
 
 app.get("/home", (req, res) => {
   console.log("req.user is " + req.user);
   res.render("index", {
-    "title": "GroShop"
   });
 });
 
