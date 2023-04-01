@@ -22,8 +22,11 @@
 
 Things left to do for User: 
 1. Proper User authentication (maybe using PassportJS, JWT or any other tools)
+    - Maybe can have  
 2. welcome/login/home/profile pages
-3. way to differentiate between customer and admin in login.
+3. way to differentiate between customer and employee in login.
+    - how a Customer and Employee uses the website
+    - if wanna reuse EJS pages, we should have a method that allows us to identify the account type of current user based on the current http session.
 
 
 

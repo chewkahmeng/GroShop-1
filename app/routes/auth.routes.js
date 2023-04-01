@@ -34,12 +34,16 @@ router.post('/register', async (req, res) => {
             })
         }
         const hashedPassword = await bcrypt.hash(password, 10);
-        const userInDB = await User.findOne({
-            where: {email: `${email}`}
-        })
-        if (userInDB) { 
-            console.log("------> User already exists");
-            res.redirect('/');
+        const userInDBWithSameUsername = await User.findOne({where: {username: `${username}`}})
+        const userInDBWithSameEmail = await User.findOne({where: {email: `${email}`}})
+    
+        if (userInDBWithSameUsername) { 
+          console.log("------> User with this username already exists");
+          res.redirect('/');
+        } 
+        else if (userInDBWithSameEmail) { 
+          console.log("------> User with this email already exists");
+          res.redirect('/');
         } else {
             // Save user in the database
             const userToRegister = {
@@ -69,13 +73,16 @@ router.post('/register', async (req, res) => {
             })
         }
         const hashedPassword = await bcrypt.hash(password, 10);
-        const employeeInDB = await Employee.findOne({
-            where: {email: `${email}`}
-        })
-        if (employeeInDB) { 
-            console.log("------> Employee already exists");
+        const employeeInDBWithSameUsername = await Employee.findOne({where: {username: `${username}`}})
+        const employeeInDBWithSameEmail = await Employee.findOne({where: {email: `${email}`}})
+        if (employeeInDBWithSameUsername) { 
+            console.log("------> Employee with this username already exists");
             res.redirect('/');
-        } else {
+          } 
+          else if (employeeInDBWithSameEmail) { 
+            console.log("------> Employee with this email already exists");
+            res.redirect('/');
+          } else {
             // Save Employee in the database
             const employeeInDB = {
                 username: username,

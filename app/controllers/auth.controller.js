@@ -26,12 +26,15 @@ exports.registerUser = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const userInDB = await User.findOne({
-      where: {email: `${email}`}
-    })
+    const userInDBWithSameUsername = await User.findOne({where: {username: `${username}`}})
+    const userInDBWithSameEmail = await User.findOne({where: {email: `${email}`}})
 
-    if (userInDB) { 
-      console.log("------> User already exists");
+    if (userInDBWithSameUsername) { 
+      console.log("------> User with this username already exists");
+      res.redirect('/');
+    } 
+    else if (userInDBWithSameEmail) { 
+      console.log("------> User with this email already exists");
       res.redirect('/');
     } else {
       // Save user in the database
