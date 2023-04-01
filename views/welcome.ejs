@@ -27,6 +27,13 @@
                 <div class="tab-content mb-3 mt-3">
                     <div id="login-contents" class="tab-pane active" >
                         <form action="/auth/login" method="post">
+                            <div>
+                                <label for="account-type">Select account type to register as:</label>
+                                <select id="account-type" name="account-type">
+                                  <option value="user">User</option>
+                                  <option value="employee">Employee</option>
+                                </select>
+                            </div>
                             <div class="form-group mb-3">
                                 <label for="email" class="form-label">Email</label>
                                 <input type="email" class="form-control" name="email">
@@ -41,6 +48,13 @@
                     </div>
                     <div id="register-contents" class="tab-pane fade">
                         <form action="/auth/register" method="post">
+                            <div>
+                                <label for="account-type">Select account type to register as:</label>
+                                <select id="account-type" name="account-type">
+                                  <option value="user">User</option>
+                                  <option value="employee">Employee</option>
+                                </select>
+                            </div>
                             <div class="form-group mb-3">
                                 <label for="username" class="form-label">Username</label>
                                 <input type="text" class="form-control" name="username">

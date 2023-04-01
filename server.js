@@ -62,8 +62,7 @@ app.use("/auth", auth);
 app.get("/", (req, res) => {
   console.log("req.user is " + req.user);
   res.render("welcome", {
-    "login_error": req.login_error,
-    "register_error": req.register_error
+    "error": req.error,
   });
 });
 

@@ -5,17 +5,16 @@ const bcrypt = require("bcrypt");
 const db = require("../models");
 const User = db.users;
 const Employee = db.employees;
-const Op = db.Sequelize.Op;
 //middleware to read req.body.<params>
 
-router.post("/register", authController.registerUser);
+// router.post("/register", authController.registerUser);
 router.post("/login", authController.loginUser);
 router.put("/:id/update", authController.updateUser);
 router.put("/:id/update/password", authController.changeUserPassword);
 router.delete("/:id/delete", authController.deleteUser);
 router.get("/:id", authController.retrieveUserDetails);
 
-/*
+
 // by grace: if want to proceed with below method, replace this method in the auth.controller.
 router.post('/register', async (req, res) => {
     console.log(req.body);
@@ -39,12 +38,15 @@ router.post('/register', async (req, res) => {
         const userInDBWithSameEmail = await User.findOne({where: {email: `${email}`}})
     
         if (userInDBWithSameUsername) { 
-          console.log("------> User with this username already exists");
-          res.redirect('/');
-        } 
-        else if (userInDBWithSameEmail) { 
-          console.log("------> User with this email already exists");
-          res.redirect('/');
+            console.log("------> User with this username already exists");
+            res.render('welcome', {
+              "error": "Register: User with this username already exists"
+            });
+          } else if (userInDBWithSameEmail) { 
+            console.log("------> User with this email already exists");
+            res.render('welcome', {
+              "error": "Register: User with this email already exists"
+            });
         } else {
             // Save user in the database
             const userToRegister = {
@@ -78,11 +80,14 @@ router.post('/register', async (req, res) => {
         const employeeInDBWithSameEmail = await Employee.findOne({where: {email: `${email}`}})
         if (employeeInDBWithSameUsername) { 
             console.log("------> Employee with this username already exists");
-            res.redirect('/');
-          } 
-          else if (employeeInDBWithSameEmail) { 
+            res.render('welcome', {
+              "error": "Register: Employee with this username already exists"
+            });
+          } else if (employeeInDBWithSameEmail) { 
             console.log("------> Employee with this email already exists");
-            res.redirect('/');
+            res.render('welcome', {
+              "error": "Register: Employee with this email already exists"
+            });
           } else {
             // Save Employee in the database
             const employeeInDB = {
@@ -104,5 +109,5 @@ router.post('/register', async (req, res) => {
         } 
     }
 });
-*/
+
 module.exports = router;

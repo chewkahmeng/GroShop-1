@@ -1,7 +1,6 @@
 const bcrypt = require("bcrypt");
 const db = require("../models");
 const User = db.users;
-const Op = db.Sequelize.Op;
 
 // Register new user
 exports.registerUser = async (req, res) => {
@@ -34,8 +33,7 @@ exports.registerUser = async (req, res) => {
       res.render('welcome', {
         "error": "Register: User with this username already exists"
       });
-    } 
-    else if (userInDBWithSameEmail) { 
+    } else if (userInDBWithSameEmail) { 
       console.log("------> User with this email already exists");
       res.render('welcome', {
         "error": "Register: User with this email already exists"

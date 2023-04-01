@@ -4,7 +4,7 @@ const Sequelize = require("sequelize");
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   host: dbConfig.HOST,
   dialect: dbConfig.dialect,
-  operatorsAliases: false,
+  operatorsAliases: 0,
 
   pool: {
     max: dbConfig.pool.max,
@@ -21,6 +21,6 @@ db.sequelize = sequelize;
 
 db.tutorials = require("./tutorial.model.js")(sequelize, Sequelize);
 db.users = require("./user.model.js")(sequelize, Sequelize);
-db.employees = require("./user.model.js")(sequelize, Sequelize);
+db.employees = require("./employee.model.js")(sequelize, Sequelize);
 
 module.exports = db;
