@@ -1,44 +1,87 @@
 <%- include('header.ejs') %>
-
-<div class="d-flex align-items-center justify-content-center">
-    <div class="card w-50 mx-auto my-auto">
+<body>
+<div id = "welcome-view" class="d-flex align-items-center justify-content-center">
+    <div id="welcome-card" class="card w-50 mx-auto my-auto">
         <br>
         <div class="row justify-content-md-center mb-3">
             <h1 class="card-title text-center" style="color:rgb(0, 16, 87); font-weight:bold">
                 Welcome to GroShop!
             </h1>
         </div>
-
         <div class="row justify-content-md-center">
-            <form action="/auth/register" method="post">
-                <div>
-                    <label for="account-type">Select account type to register as:</label>
-                    <select id="account-type" name="account-type">
-                      <option value="user">User</option>
-                      <option value="employee">Employee</option>
-                    </select>
+            <% if (error) { %>
+                <div class="note note-danger col-md-8"><%= error %></div>
+            <% } %>
+            <div><br></div>
+            <div class="col-md-8 col-md-offset-2">
+                <ul class="nav nav-tabs nav-justified" role="tablist">
+                    <li class="nav-item text-center" id="nav-item-login">
+                        <a class="nav-link active" href="#login-contents" id="login-tab" data-bs-toggle="tab" style="font-size: medium;">Login</a>
+                    </li>
+                    <li class="nav-item text-center" id="nav-item-register">
+                        <a class="nav-link"  href="#register-contents" id="register-tab" data-bs-toggle="tab" style="font-size: medium;">Register</a>
+                    </li>
+                </ul>
+                <!-- <br> -->
+
+                <div class="tab-content mb-3 mt-3">
+                    <div id="login-contents" class="tab-pane active" >
+                        <form action="/auth/login" method="post">
+                            <div>
+                                <label for="account-type">Select account type to register as:</label>
+                                <select id="account-type" name="account-type">
+                                  <option value="user">User</option>
+                                  <option value="employee">Employee</option>
+                                </select>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email">
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" name="password">
+                            </div>
+                            <br>
+                            <input class="btn btn-primary" type="submit" value="Login">
+                        </form>
+                    </div>
+                    <div id="register-contents" class="tab-pane fade">
+                        <form action="/auth/register" method="post">
+                            <div>
+                                <label for="account-type">Select account type to register as:</label>
+                                <select id="account-type" name="account-type">
+                                  <option value="user">User</option>
+                                  <option value="employee">Employee</option>
+                                </select>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control" name="username">
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="email" class="form-label">Email address</label>
+                                <input type="email" class="form-control" name="email" aria-describedby="emailHelp">
+                                <!-- <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div> -->
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" name="password">
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="passwordConfirmation" class="form-label">Confirm Password</label>
+                                <input class="form-control" type="password" name="passwordConfirmation">
+                            </div>
+                            <!-- <br> -->
+                            <input class="btn btn-primary" type="submit" value="Register">
+                        </form>
+                    </div>
                 </div>
-                <div class="form-group mb-3">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="text" class="form-control" name="username">
-                </div>
-                <div class="form-group mb-3">
-                    <label for="email" class="form-label">Email address</label>
-                    <input type="email" class="form-control" name="email">
-                </div>
-                <div class="form-group mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" name="password">
-                </div>
-                <div class="form-group mb-3">
-                    <label for="passwordConfirmation" class="form-label">Confirm Password</label>
-                    <input class="form-control" type="password" name="passwordConfirmation">
-                </div>
-                <button type="submit" class="btn btn-primary">Register</button>
-            </form>
+            </div>
+            <!-- <br> -->
         </div>
     </div>
 </div>
-
+</body>
 
 <%- include('footer.ejs') %>

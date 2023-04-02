@@ -1,14 +1,14 @@
-const User = require("../models/user.model.js");
-const Employee = require("../models/employee.model.js");
 const bcrypt = require("bcrypt");
+const db = require("../models");
+const User = db.users;
 
 // Register new user
 exports.registerUser = async (req, res) => {
     // Validate Request
     if (!req.body) {
-        res.status(400).send({
-            message: "Content can not be empty!"
-        });
+      res.status(400).send({
+        message: "Content can not be empty!"
+      });
     }
 
     console.log(req.body);
@@ -17,206 +17,207 @@ exports.registerUser = async (req, res) => {
     const password = req.body.password
     const passwordConfirmation = req.body.passwordConfirmation
 
-    var success = false;
-
     if (passwordConfirmation !== password) {
-        console.log("------> Password don't match!")
-        res.status(400).send({
-            message: "Password don't match!"
-        })
+      console.log("------> Password don't match!")
+      res.status(400).send({
+        message: "Register: Password don't match!"
+      })
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    
-    User.findByEmail(email, (err, result) => {
-        if (err) console.log (err) // maybe change this line for better error handling 
-        console.log("------> Search Results")
-        console.log(result)
-        if (result !== null) {
-            console.log("------> User already exists")
-            res.redirect('302','/')
-        } else {
-            var newUser = new User({
-                username: username,
-                password: hashedPassword,
-                email: email
-            });
-            User.create(newUser, (err, result) => {
-                if (err) throw (err)
-                console.log ("--------> Created new User")
-                success = true;
-                res.redirect('302', '/home')
-            })
-        }
-    });
+    const userInDBWithSameUsername = await User.findOne({where: {username: `${username}`}})
+    const userInDBWithSameEmail = await User.findOne({where: {email: `${email}`}})
 
-
+    if (userInDBWithSameUsername) { 
+      console.log("------> User with this username already exists");
+      res.render('welcome', {
+        "error": "Register: User with this username already exists"
+      });
+    } else if (userInDBWithSameEmail) { 
+      console.log("------> User with this email already exists");
+      res.render('welcome', {
+        "error": "Register: User with this email already exists"
+      });
+    } else {
+      // Save user in the database
+      const userToRegister = {
+        username: username,
+        password: hashedPassword,
+        email: email
+      };
+      User.create(userToRegister)
+        .then(data => {
+          console.log ("--------> Created new User");
+          res.redirect('/home');
+        })
+        .catch(err => {
+          res.status(500).send({
+            message:
+              err.message || "Some error occurred while creating the User."
+          });
+        });
+    }
 };
 
-exports.loginUser = (req, res) => {
+exports.loginUser = async (req, res) => {
     const email = req.body.email
     const password = req.body.password
-
     console.log(req.body)
-    User.findByEmail(email, async (err, result) => {
-        if (err) throw (err) // maybe change this line for better error handling 
-        console.log("------> Search Results")
-        console.log(result)
-        if (result === null) {
-            console.log("--------> User does not exist")
-            res.sendStatus(404)
-        } else {
-            // get hashed password from result
-            console.log(result)
-            const hashedPassword = result.password
 
-            if (await bcrypt.compare(password, hashedPassword)) {
-                console.log("--------> Login Successful")
-                res.send(`${result.username} is logged in!`)
-            } else {
-                console.log("--------> Password incorrect")
-                res.send(`Password incorrect!`)
-            }
-        }
+    const userInDB = await User.findOne({
+      where: {email: `${email}`}
     })
+
+    if (userInDB) { 
+      console.log("------> User exists in DB: " + userInDB);
+      const hashedPassword = userInDB.password;
+
+      if (await bcrypt.compare(password, hashedPassword)) {
+        console.log(`------> ${userInDB.username} is logged in!`)
+        res.redirect('/home');
+      } else {
+        console.log("--------> Password incorrect")
+        res.render('welcome', {
+          "error": "Login: Password incorrect"
+        });
+      }
+      
+    } else {
+      console.log("--------> User does not exist")
+      res.render('welcome','400', {
+        "error": "Login: Email incorrect"
+      });
+    }
 }
 
 exports.updateUser = (req, res) => {
-    // Validate Request
-    if (!req.body) {
-      res.status(400).send({
-        message: "Content can not be empty!"
-      });
+  const id = req.params.id;
+  // Validate Request
+  if (!req.body) {
+    res.status(400).send({
+      message: "Content can not be empty!"
+    });
+  }
+  console.log(req.body);
+
+  // update username and/or email
+  User.update({ username: req.body.username, email: req.body.email}, {
+    where: {id : id}
+  }).then(num => {
+    if (num == 1) {
+      res.send({message: "User was updated successfully."});
+    } else {
+      res.send({message: `Cannot update User with id=${id}. Maybe User is not found`});
     }
-    console.log(req.body);
-  
-    User.updateUsernameEmail(
-      req.params.id,
-      new User(req.body),
-      (err, data) => {
-        if (err) {
-          if (err.kind === "not_found") {
-            res.status(404).send({
-              message: `Not found User with id ${req.params.id}.`
-            });
-          } else {
-            res.status(500).send({
-              message: "Error updating User with id " + req.params.id
-            });
-          }
-        } else res.send(data);
-      }
-    );
+  }).catch(err => {
+    res.status(500).send({
+      message: "Error updating User with id=" + id
+    });
+  });
   };
 
 exports.changeUserPassword = async (req, res) => {
-    // Validate Request
-    if (!req.body) {
-      res.status(400).send({
-        message: "Content can not be empty!"
-      });
-    }
-  
-    console.log(req.body);
-    const oldPassword = req.body.oldPassword;
-    const newPassword = req.body.newPassword;
-    const newPasswordConfirmation = req.body.newPasswordConfirmation;
-    var success = false;
-
-    if (newPasswordConfirmation !== newPassword) {
-        console.log("------> Password don't match!")
-        res.status(400).send({
-            message: "Password don't match!"
-        })
-    }
-
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    var updatedUser = new User({
-        password: hashedPassword,
+  const id = req.params.id;
+  // Validate Request
+  if (!req.body) {
+    res.status(400).send({
+      message: "Content can not be empty!"
     });
+  }
+  console.log(req.body);
+  const oldPassword = req.body.oldPassword;
+  const newPassword = req.body.newPassword;
+  const newPasswordConfirmation = req.body.newPasswordConfirmation;
 
-    User.findById(
-        req.params.id, async (err, result) => {
-            console.log("finding user details for : " + req.params.id) ;
-            if (err) {
-                if (err.kind === "not_found") {
-                    res.status(404).send({
-                        message: `Not found User with id ${req.params.id}.`
-                    });
-                } else {
-                    res.status(500).send({
-                        message: "Error retrieving User with id " + req.params.id
-                    });
-                }
-            } else {
-                const hashedOldPassword = result.password
+  if (newPasswordConfirmation !== newPassword) {
+      console.log("------> Password don't match!")
+      res.status(400).send({
+        message: "Password don't match!"
+      })
+  }
 
-                if (await bcrypt.compare(oldPassword, hashedOldPassword)) {
-                    console.log("--------> Password change Successful")
-                    res.send(`${result.username} changed password successfully`)
-                    var updatedUser = new User({
-                        username: result.username,
-                        password: hashedPassword,
-                    })
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-                    User.changePassword(
-                        req.params.id,
-                        updatedUser,
-                        async (err, data) => {
-                          if (err) {
-                            if (err.kind === "not_found") {
-                              res.status(404).send({
-                                message: `Not found User with id ${req.params.id}.`
-                              });
-                            } else {
-                              res.status(500).send({
-                                message: "Error updating User with id " + req.params.id
-                              });
-                            }
-                          }  else res.send(`Password changed successfully!`);       
-                        }
-                      );
+  const userInDB = await User.findOne({
+    where: {id : id}
+  });
 
-                } else {
-                    console.log("--------> Old Password incorrect")
-                    res.send(`Old Password incorrect!`)
-                }
-
-            }
+  if (userInDB) {
+    if (await bcrypt.compare(oldPassword, userInDB.password)) {
+      // update password
+      User.update({ password: hashedPassword}, {
+        where: {
+          id : id,
         }
-    )
-  };
+      }).then(num => {
+        if (num == 1) {
+          res.send({message: "Password was updated successfully."});
+        } else {
+          res.send({message: `Cannot update password for User with id=${id}. Maybe User is not found`});
+        }
+      }).catch(err => {
+        res.status(500).send({
+          message: `Error updating User with id=${id}: ${err}`
+        });
+      });
+    } else {
+      console.log("--------> Old Password incorrect")
+      // TODO: set redirect
+    }
+  } else {
+    console.log("--------> User dont exist in DB")
+    // TODO: set redirect
+  }
+
+};
 
 exports.deleteUser = (req, res) => {
-    User.deleteById(req.params.id, (err, data) => {
-      if (err) {
-        if (err.kind === "not_found") {
-          res.status(404).send({
-            message: `Not found User with id ${req.params.id}.`
-          });
-        } else {
-          res.status(500).send({
-            message: "Could not delete User with id " + req.params.id
-          });
-        }
-      } else res.send({ message: `User was deleted successfully!` });
+  const id = req.params.id;
+  // Validate Request
+  if (!req.body) {
+    res.status(400).send({
+      message: "Content can not be empty!"
     });
-  };
+  }
+  console.log(req.body);
+
+  User.destroy({
+    where: { id: id }
+  })
+  .then(num => {
+    if (num == 1) {
+      res.send({
+        message: "User was deleted successfully!"
+      });
+    } else {
+      res.send({
+        message: `Cannot delete User with id=${id}. Maybe User was not found!`
+      });
+    }
+  })
+  .catch(err => {
+    res.status(500).send({
+      message: "Could not delete User with id=" + id
+    });
+  });
+}
 
 
 exports.retrieveUserDetails = (req, res) => {
-    User.findById(req.params.id, (err, data) => {
-       console.log("finding user details for : " + req.params.id) ;
-        if (err) {
-            if (err.kind === "not_found") {
-                res.status(404).send({
-                    message: `Not found User with id ${req.params.id}.`
-                });
-            } else {
-                res.status(500).send({
-                    message: "Error retrieving User with id " + req.params.id
-                });
-            }
-        } else res.send(data);
+  const id = req.params.id;
+  User.findByPk(id)
+    .then(data => {
+      if (data) {
+        res.send(data);
+      } else {
+        res.status(404).send({
+          message: `Cannot find User with id=${id}.`
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error retrieving User with id=" + id
+      });
     });
   };

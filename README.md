@@ -4,6 +4,13 @@
 2. Execute scripts in db_scripts folder.
 3. Run `npm start` to start the app.
 
+## Object-relational mapping
+1. With the incorporation of Sequelize, there is no need to create/drop tables everytime a collaborator makes table changes. 
+2. Please see server.js: DB SYNC (SEQUELIZE) section. There are different settings to the DB sync.
+3. Sequelize links: 
+    - Guide: https://sequelize.org/docs/v6/
+    - API references: https://sequelize.org/api/v6/identifiers.html
+
 ## Microservices
 1. User
     - Register User
@@ -12,3 +19,14 @@
     - Update User Details
     - View User Details
     - Delete User
+
+Things left to do for User: 
+1. Proper User authentication (maybe using PassportJS, JWT or any other tools)
+    - Maybe can have  
+2. welcome/login/home/profile pages
+3. way to differentiate between customer and employee in login.
+    - how a Customer and Employee uses the website
+    - if wanna reuse EJS pages, we should have a method that allows us to identify the account type of current user based on the current http session.
+
+
+
