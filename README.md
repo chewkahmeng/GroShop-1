@@ -1,9 +1,8 @@
 # GroShop
 ## Installation and Set-up
 1. Install MySQL to create local database. 
-2. Execute scripts in db_scripts folder.
+2. Create `.env` file in main directory and set up properties like SESSION_SECRET etc.
 3. Run `npm start` to start the app.
-4. Create `.env` file in main directory and set up properties like SESSION_SECRET etc.
 
 ## Object-relational mapping
 1. With the incorporation of Sequelize, there is no need to create/drop tables everytime a collaborator makes table changes. 
