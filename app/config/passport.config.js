@@ -1,47 +1,93 @@
-const passport    = require('passport');
-const passportJWT = require("passport-jwt");
+const LocalStrategy = require('passport-local').Strategy
+const bcrypt = require('bcrypt')
+const db = require("../models");
+const userDB = db.users;
 
-const ExtractJWT = passportJWT.ExtractJwt;
+function initialize(passport) {
+    // =========================================================================
+    // passport session setup ==================================================
+    // =========================================================================
+    // required for persistent login sessions
+    // passport needs ability to serialize and unserialize users out of session
 
-const LocalStrategy = require('passport-local').Strategy;
-const JWTStrategy   = passportJWT.Strategy;
+    // serialize user for session
+    passport.serializeUser((user, done) => done(null, user.id))
 
-passport.use(new LocalStrategy({
+    //deserialize user
+    passport.deserializeUser(async (id, done) => {
+        console.log("deserialize [id]: " + id)
+        try {
+            const userInDB = await userDB.findByPk(id);
+            return userInDB ? done(null, userInDB): done(null, null);
+        } catch (err) {
+            console.log(err)
+            done(err, null)
+        }
+    });
+
+    // =========================================================================
+    // LOCAL SIGNUP ============================================================
+    // =========================================================================
+    // we are using named strategies since we have one for login and one for signup
+    const registerUser = async (req, email, password, done) => {
+        if (password !== req.body.passwordConfirmation) {
+            return done(null, false, { message: 'Passwords do not match!'})
+        }
+        const userByEmail = await userDB.findOne({where: {email: `${email}`}})
+        if (userByEmail != null) {
+            return done(null, false, { message: 'That email is already taken!'})
+        }
+        const userByUserName = await userDB.findOne({where: {username: `${req.body.username}`}})
+        if (userByUserName != null) {
+            return done(null, false, { message: 'That username is already taken!'})
+        }
+        const hashedPassword = await bcrypt.hash(password, 10)
+        const newUser = {
+            username: req.body.username,
+            password: hashedPassword,
+            email: email
+        }
+        console.log(email)
+        userDB.create(newUser)
+        .then(data => {
+            console.log ("--------> Created new User");
+            // console.log('data: ' + data);
+            return done(null, data)
+          })
+          .catch(err => {
+            return done(err)
+          });
+        
+    }
+    passport.use('local-signup', new LocalStrategy({
         usernameField: 'email',
-        passwordField: 'password'
-    },
-    function (email, password, cb) {
+        passwordField: 'password',
+        passReqToCallback: true
+    }, registerUser))
 
-        //Assume there is a DB module pproviding a global User
-        return User.findOne({email, password})
-            .then(user => {
-                if (!user) {
-                    return cb(null, false, {message: 'Incorrect email or password.'});
-                }
+    // =========================================================================
+    // LOGIN ============================================================
+    // =========================================================================
+    const authenticateUser = async (email, password, done) => {
+        const user = await userDB.findOne({
+            where: {email: `${email}`}
+          })
+        if (user == null) {
+            return done(null, false, { message: 'Email/password incorrect.'})
+        }
+        try {
+            if (await bcrypt.compare(password, user.password)) {
+                return done(null, user)
+            } else {
+                return done(null, false, {message: 'Email/password incorrect.'})
+            }
+        } catch (e) {
+            return done(e)
+        }
+    } 
+    passport.use(new LocalStrategy({usernameField: 'email'}, authenticateUser))
+    
 
-                return cb(null, user, {
-                    message: 'Logged In Successfully'
-                });
-            })
-            .catch(err => {
-                return cb(err);
-            });
-    }
-));
+}
 
-passport.use(new JWTStrategy({
-        jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-        secretOrKey   : 'your_jwt_secret'
-    },
-    function (jwtPayload, cb) {
-
-        //find the user in db if needed
-        return User.findOneById(jwtPayload.id)
-            .then(user => {
-                return cb(null, user);
-            })
-            .catch(err => {
-                return cb(err);
-            });
-    }
-));
+module.exports = initialize

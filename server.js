@@ -1,3 +1,6 @@
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
 /**
  * -------------- IMPORTS ----------------
  */
@@ -7,6 +10,11 @@ const bodyParser = require('body-parser'); // Middleware
 var cookieParser = require('cookie-parser');
 const path = require("path");
 const passport = require('passport');
+const flash = require('express-flash');
+const session = require('express-session');
+
+const initializePassport = require('./app/config/passport.config.js');
+initializePassport(passport);
 
 const app = express();
 
@@ -23,6 +31,15 @@ app.use(express.json());
 
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
+
+app.use(flash())
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false
+}))
+app.use(passport.initialize())
+app.use(passport.session())
 
 /**
  * -------------- DB SYNC (SEQUELIZE) ----------------
@@ -53,24 +70,14 @@ app.use(express.static(path.join(__dirname, "public")));
 /**
  * -------------- ROUTES ----------------
  */
+require('./app/routes/passport.routes.js')(app, passport);
+
 const tutorial = require("./app/routes/tutorial.routes.js");
 app.use("/tutorial", tutorial);
 
 const auth = require("./app/routes/auth.routes.js");
 app.use("/auth", auth);
 
-app.get("/", (req, res) => {
-  console.log("req.user is " + req.user);
-  res.render("welcome", {
-    "error": req.error,
-  });
-});
-
-app.get("/home", (req, res) => {
-  console.log("req.user is " + req.user);
-  res.render("index", {
-  });
-});
 
 /**
  * -------------- SERVER ----------------
