@@ -1,8 +1,9 @@
 # GroShop
-## Installation
+## Installation and Set-up
 1. Install MySQL to create local database. 
 2. Execute scripts in db_scripts folder.
 3. Run `npm start` to start the app.
+4. Create `.env` file in main directory and set up properties like SESSION_SECRET etc.
 
 ## Object-relational mapping
 1. With the incorporation of Sequelize, there is no need to create/drop tables everytime a collaborator makes table changes. 
@@ -21,8 +22,7 @@
     - Delete User
 
 Things left to do for User: 
-1. Proper User authentication (maybe using PassportJS, JWT or any other tools)
-    - Maybe can have  
+1. **DONE** Proper User authentication (maybe using PassportJS, JWT or any other tools)
 2. welcome/login/home/profile pages
 3. way to differentiate between customer and employee in login.
     - how a Customer and Employee uses the website
