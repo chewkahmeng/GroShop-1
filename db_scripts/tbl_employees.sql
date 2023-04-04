@@ -1,4 +1,4 @@
-CREATE TABLE `tbl_employee` (
+CREATE TABLE `tbl_employees` (
   `userId` int NOT NULL AUTO_INCREMENT,
   `username` varchar(45) NOT NULL,
   `password` varchar(100) NOT NULL,

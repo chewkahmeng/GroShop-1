@@ -1,69 +1,109 @@
 const bcrypt = require("bcrypt");
 const db = require("../models");
 const User = db.users;
+const Employee = db.employees;
 
-// Register new user
-exports.registerUser = async (req, res) => {
-    // Validate Request
-    if (!req.body) {
-      res.status(400).send({
-        message: "Content can not be empty!"
-      });
-    }
+// Register new user/employee
+exports.register = async (req, res) => {
+  console.log(req.body);
+  const accountType = req.body['account-type'];
+  const username = req.body.username
+  const email = req.body.email
+  const password = req.body.password
+  const passwordConfirmation = req.body.passwordConfirmation
 
-    console.log(req.body);
-    const username = req.body.username
-    const email = req.body.email
-    const password = req.body.password
-    const passwordConfirmation = req.body.passwordConfirmation
-
-    if (passwordConfirmation !== password) {
-      console.log("------> Password don't match!")
-      res.status(400).send({
-        message: "Register: Password don't match!"
-      })
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const userInDBWithSameUsername = await User.findOne({where: {username: `${username}`}})
-    const userInDBWithSameEmail = await User.findOne({where: {email: `${email}`}})
-
-    if (userInDBWithSameUsername) { 
-      console.log("------> User with this username already exists");
-      res.render('welcome', {
-        "error": "Register: User with this username already exists"
-      });
-    } else if (userInDBWithSameEmail) { 
-      console.log("------> User with this email already exists");
-      res.render('welcome', {
-        "error": "Register: User with this email already exists"
-      });
-    } else {
-      // Save user in the database
-      const userToRegister = {
-        username: username,
-        password: hashedPassword,
-        email: email
-      };
-      User.create(userToRegister)
-        .then(data => {
-          console.log ("--------> Created new User");
-          res.redirect('/home');
-        })
-        .catch(err => {
-          res.status(500).send({
-            message:
-              err.message || "Some error occurred while creating the User."
+  if (accountType === 'user') {
+      // Handle user registration
+      var success = false;
+      if (passwordConfirmation !== password) {
+          console.log("------> Password don't match!")
+          res.status(400).send({
+              message: "Password don't match!"
+          })
+      }
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const userInDBWithSameUsername = await User.findOne({where: {username: `${username}`}})
+      const userInDBWithSameEmail = await User.findOne({where: {email: `${email}`}})
+  
+      if (userInDBWithSameUsername) { 
+          console.log("------> User with this username already exists");
+          res.render('welcome', {
+            "error": "Register: User with this username already exists"
           });
-        });
+        } else if (userInDBWithSameEmail) { 
+          console.log("------> User with this email already exists");
+          res.render('welcome', {
+            "error": "Register: User with this email already exists"
+          });
+      } else {
+          // Save user in the database
+          const userToRegister = {
+              username: username,
+              password: hashedPassword,
+              email: email
+          };
+          User.create(userToRegister)
+              .then(data => {
+              console.log ("--------> Created new User");
+              res.redirect('/home');
+              })
+              .catch(err => {
+              res.status(500).send({
+                  message:
+                  err.message || "Some error occurred while creating the User."
+              });
+          });
+      } 
+  } else if (accountType === 'employee') {
+    // Handle employee registration
+    var success = false;
+      if (passwordConfirmation !== password) {
+          console.log("------> Password don't match!")
+          res.status(400).send({
+              message: "Password don't match!"
+          })
+      }
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const employeeInDBWithSameUsername = await Employee.findOne({where: {username: `${username}`}})
+      const employeeInDBWithSameEmail = await Employee.findOne({where: {email: `${email}`}})
+      if (employeeInDBWithSameUsername) { 
+          console.log("------> Employee with this username already exists");
+          res.render('welcome', {
+            "error": "Register: Employee with this username already exists"
+          });
+        } else if (employeeInDBWithSameEmail) { 
+          console.log("------> Employee with this email already exists");
+          res.render('welcome', {
+            "error": "Register: Employee with this email already exists"
+          });
+        } else {
+          // Save Employee in the database
+          const employeeInDB = {
+              username: username,
+              password: hashedPassword,
+              email: email
+          };
+          Employee.create(employeeInDB)
+              .then(data => {
+              console.log ("--------> Created new Employee");
+              res.redirect('/home');
+              })
+              .catch(err => {
+              res.status(500).send({
+                  message:
+                  err.message || "Some error occurred while creating the Employee."
+              });
+          });
+      } 
     }
 };
 
-exports.loginUser = async (req, res) => {
-    const email = req.body.email
-    const password = req.body.password
-    console.log(req.body)
-
+exports.login = async (req, res) => {
+  const accountType = req.body['account-type'];
+  const email = req.body.email
+  const password = req.body.password
+  console.log(req.body)
+  if (accountType === 'user') {
     const userInDB = await User.findOne({
       where: {email: `${email}`}
     })
@@ -88,6 +128,32 @@ exports.loginUser = async (req, res) => {
         "error": "Login: Email incorrect"
       });
     }
+  } else if (accountType === 'employee') {
+    const employeeInDB = await Employee.findOne({
+      where: {email: `${email}`}
+    })
+
+    if (employeeInDB) { 
+      console.log("------> Employee exists in DB: " + employeeInDB);
+      const hashedPassword = employeeInDB.password;
+
+      if (await bcrypt.compare(password, hashedPassword)) {
+        console.log(`------> ${employeeInDB.username} is logged in!`)
+        res.redirect('/home');
+      } else {
+        console.log("--------> Password incorrect")
+        res.render('welcome', {
+          "error": "Login: Password incorrect"
+        });
+      }
+      
+    } else {
+      console.log("--------> Employee does not exist")
+      res.render('welcome','400', {
+        "error": "Login: Email incorrect"
+      });
+    }
+  }
 }
 
 exports.updateUser = (req, res) => {
