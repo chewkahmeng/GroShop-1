@@ -1,13 +1,19 @@
 // https://www.digitalocean.com/community/tutorials/easy-node-authentication-setup-and-local#displaying-user-and-secure-profile-page-views-profile-ejs
 module.exports = function(app, passport) {
     app.get("/", (req, res) => {
-        console.log("req.user is " + req.user);
+        var isAuthenticated;
+        if (typeof req.user === 'undefined') {
+            isAuthenticated = null
+        } else {
+            isAuthenticated = req.user
+        }
         res.render("welcome", {
             user: typeof req.user !== 'undefined'?req.user:null,
         });
     });
 
     app.get("/home", isLoggedIn, (req, res) => {
+        console.log(req.body)
         res.render('index', {
             user: typeof req.user !== 'undefined'?req.user:null
         })
@@ -15,18 +21,20 @@ module.exports = function(app, passport) {
 
     app.get('/profile', isLoggedIn, function(req, res) {
         res.render('profile', {
-            user : req.user // get the user out of session and pass to template
+            user: req.user // get the user out of session and pass to template
         });
     });
 
-    app.get('/login', (req, res) => {res.render("welcome")})
+    app.get('/login', (req, res) => {res.redirect("/")})
     app.post('/login', passport.authenticate('local', {
         successRedirect: '/home',
         failureRedirect: '/login',
         failureFlash: true
     }))
 
-    app.get('/register', (req, res) => {res.render("register")})
+    app.get('/register', (req, res) => {res.render("register", {
+        user: typeof req.user !== 'undefined'?req.user:null
+    })})
     app.post('/register', passport.authenticate('local-signup', {
         successRedirect: '/home',
         failureRedirect: '/register',
