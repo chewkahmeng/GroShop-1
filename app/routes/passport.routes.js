@@ -3,19 +3,18 @@ module.exports = function(app, passport) {
     app.get("/", (req, res) => {
         console.log("req.user is " + req.user);
         res.render("welcome", {
-            isAuthenticated: req.isAuthenticated(),
-            user: req.user,
+            user: typeof req.user !== 'undefined'?req.user:null,
         });
     });
 
     app.get("/home", isLoggedIn, (req, res) => {
         res.render('index', {
-            isAuthenticated: typeof req.isAuthenticated() !== 'undefined'?true:false
+            user: typeof req.user !== 'undefined'?req.user:null
         })
     });
 
     app.get('/profile', isLoggedIn, function(req, res) {
-        res.render('profile.ejs', {
+        res.render('profile', {
             user : req.user // get the user out of session and pass to template
         });
     });
@@ -37,7 +36,7 @@ module.exports = function(app, passport) {
     app.post('/logout', function(req, res, next) {
         req.logout(function(err) {
             if (err) { return next(err); }
-            res.redirect('/login');
+            res.redirect('/');
         });
     });
 }

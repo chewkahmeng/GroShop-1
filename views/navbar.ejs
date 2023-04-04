@@ -1,8 +1,8 @@
 <nav class="navbar sticky-top navbar-expand-md navbar-light bg-light d-flex" style="padding-left: 3%;">
     <div class="container-fluid">
-        <a class="navbar-brand mb-0 h1"  href="#">GroShop</a>
-        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-        <% if (typeof isAuthenticated !== 'undefined' && isAuthenticated) { %> 
+        <a class="navbar-brand h1"  href="#">GroShop</a>
+        <% if (user) { %> 
+        <ul class="navbar-nav me-auto">
             <li class="nav-item">
                 <a class="nav-link" href="#">Recipes</a>
             </li>
@@ -12,12 +12,17 @@
             <li class="nav-item">
                 <a class="nav-link" href="#">Profile</a>
             </li>
-            
-            <form action="/logout" method="POST" class="me-2">
+        </ul>
+        <ul class="navbar-nav navbar-right">
+            <li class="nav-item">
+                <a class="nav-link" href="#">Signed in as: <%= user.username %></a>
+            </li>
+            <form action="/logout" method="POST" class="d-flex me-2">
                 <button class="btn btn-success" type='submit'>Log Out</button>
-            </form>
-            
+            </form>  
+        </ul>
         <% } else { %>
+        <ul class="navbar-nav navbar-right">
             <li class="nav-item">
                 <a class="nav-link" href="/login">Log In</a>
             </li>
