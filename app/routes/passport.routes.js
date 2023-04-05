@@ -1,12 +1,7 @@
+const passportController = require("../controllers/passport.controller.js");
 // https://www.digitalocean.com/community/tutorials/easy-node-authentication-setup-and-local#displaying-user-and-secure-profile-page-views-profile-ejs
 module.exports = function(app, passport) {
     app.get("/", (req, res) => {
-        var isAuthenticated;
-        if (typeof req.user === 'undefined') {
-            isAuthenticated = null
-        } else {
-            isAuthenticated = req.user
-        }
         res.render("welcome", {
             user: typeof req.user !== 'undefined'?req.user:null,
         });
@@ -47,6 +42,29 @@ module.exports = function(app, passport) {
             res.redirect('/');
         });
     });
+
+    // forgot password
+    app.get('/forgot', function(req, res) {
+        res.render('forgot');
+    });
+    app.post('/forgot', async (req, res, next) => {
+        const requestPasswordResetController = await passportController.requestPasswordReset(req)
+        res.redirect('/')
+    })
+    app.post('/reset/:token/:userId', async (req, res, next) => {
+        const resetPasswordController = await passportController.resetPassword(
+            req.body.userId,
+            req.body.token,
+            req.body.password
+        )
+        res.redirect('/home')
+    })
+    app.get('/reset/:token/:userId', (req, res) => {
+        res.render('reset', {
+            token: req.params.token,
+            userId: req.params.userId
+        })
+    })
 }
 
 // route middleware to make sure a user is logged in
