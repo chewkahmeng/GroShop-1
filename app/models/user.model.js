@@ -22,7 +22,7 @@ module.exports = (sequelize, Sequelize) => {
   }
   // include the following if want to specify the DB table name
   , {
-      tableName: 'tbl_users'
+      tableName: 'tbl_user'
     }
   );
   

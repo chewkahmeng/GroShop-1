@@ -39,7 +39,13 @@ function initialize(passport) {
     // =========================================================================
     // we are using named strategies since we have one for login and one for signup
     const register = async (req, email, password, done) => {
+        console.log('registering user')
         const accountType = req.body['account-type'];
+        // const errors = validationResult(req)
+        // if (!errors.isEmpty()) {
+        //     errors.array().forEach(err => req.flash('error', err.msg));
+        //     return res.redirect('/register');
+        // }
         if (accountType === 'user') {
             // password validation
             if (password !== req.body.passwordConfirmation) {

@@ -78,7 +78,10 @@ app.use("/tutorial", tutorial);
 const auth = require("./app/routes/auth.routes.js");
 app.use("/auth", auth);
 
+const address = require("./app/routes/address.routes.js");
+app.use("/home", address);
 
+app.get('/', (req, res) => {res.redirect('/login')})
 /**
  * -------------- SERVER ----------------
  */

@@ -1,0 +1,41 @@
+<%- include('partials/header.ejs') %>
+<body>
+<%- include('partials/navbar.ejs') %>
+<div class="card">
+    <div class="row justify-content-md-center mb-3">
+        <h1 class="card-title text-center" style="color:rgb(0, 16, 87); font-weight:bold">
+            Add Address
+        </h1>
+    </div>
+    <div class="row justify-content-md-center">
+        <div class="col-md-8 col-md-offset-2">
+            <% if (messages.error) { %>
+                <% for (let i in messages.error) { %>
+                <div class="alert alert-danger"><i class="fa-solid fa-circle-exclamation"></i> &nbsp<%= messages.error[i] %></div>
+                <% } %>
+            <% } %>
+            <form action="/home/address/create" method="POST">
+                <div class="form-group mb-3" >
+                    <label for="name" class="form-label">Street / Building Name</label>
+                    <input type="text" class="form-control" name="name" required>
+                </div>
+                <div class="form-group mb-3" >
+                    <label for="floorNo" class="form-label">Floor No (Optional)</label>
+                    <input type="text" class="form-control" name="floorNo">
+                </div>
+                <div class="form-group mb-3" >
+                    <label for="unitNo" class="form-label">Unit No (Optional)</label>
+                    <input type="text" class="form-control" name="unitNo">
+                </div>
+                <div class="form-group mb-3" >
+                    <label for="postalCode" class="form-label">Postal Code</label>
+                    <input type="text" class="form-control" name="postalCode" required>
+                </div>
+                <button class="btn btn-primary" type="submit" value="Save">Save</button>
+                <br><br>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+<%- include('partials/footer.ejs') %>

@@ -1,0 +1,60 @@
+<%- include('partials/header.ejs') %>
+<body>
+<%- include('partials/navbar.ejs') %>
+<div id = "user-profile-view">
+   <div class="container justify-content-center">
+        <h2>Profile Details</h2>
+        <div class="card" id="user-profile-card">
+            <i class="fa-solid fa-pen text-end"></i>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>Username</td>
+                        <td>:</td>
+                        <td><%= user.username%></td>
+                    </tr>
+                    <tr>
+                        <td>Email</td>
+                        <td>:</td>
+                        <td><%= user.email%></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <h2>Shipping Address</h2>
+        <div class="card" id="address-card">
+            <i class="fa-solid fa-pen text-end"></i>
+            <% if (address) { %>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>Street/Building Name</td>
+                        <td>:</td>
+                        <td><%= address.name%></td>
+                    </tr>
+                    <tr>
+                        <td>Floor No</td>
+                        <td>:</td>
+                        <td><%= address.floorNo%></td>
+                    </tr>
+                    <tr>
+                        <td>Unit No</td>
+                        <td>:</td>
+                        <td><%= address.unitNo%></td>
+                    </tr>
+                    <tr>
+                        <td>Postal Code</td>
+                        <td>:</td>
+                        <td><%= address.postalCode%></td>
+                    </tr>
+                </tbody>
+            </table>
+            <% } %>
+            <a href='/home/address/create' class="btn btn-primary"><i class="fa-solid fa-circle-plus"></i>Add Address</a>
+        </div>
+    </div> 
+</div>
+
+
+</body>
+<%- include('partials/footer.ejs') %>
