@@ -5,7 +5,15 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   host: dbConfig.HOST,
   dialect: dbConfig.dialect,
   operatorsAliases: 0,
-
+  dialectOptions: {
+    typeCast: function (field, next) {
+      if (field.type == 'DATETIME' || field.type == 'TIMESTAMP') {
+        return new Date(field.string() + 'Z');
+      }
+      return next();
+    }
+  },
+  timezone: '+08:00',
   pool: {
     max: dbConfig.pool.max,
     min: dbConfig.pool.min,
