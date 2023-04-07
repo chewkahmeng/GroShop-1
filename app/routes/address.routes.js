@@ -38,4 +38,9 @@ router.post("/address/:id/update",
     addressController.updateAddress
 )
 
+router.post("/address/:id/delete",
+    middleware.isLoggedIn,
+    addressController.deleteAddress
+)
+
 module.exports = router;

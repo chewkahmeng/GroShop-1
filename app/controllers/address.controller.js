@@ -54,7 +54,6 @@ exports.updateAddress = (req, res) => {
       if (num == 1) {
         res.redirect('/profile')
       } else {
-        console.log(err)
         req.flash('error', 'No address found in database')
         res.redirect(`/home/address/${req.params.id}/update`)
       }
@@ -89,4 +88,24 @@ exports.getAddress = async (req, res) => {
         req.flash('error', 'Error occurred in saving address details.')
         res.redirect('/profile')
     });
+}
+
+exports.deleteAddress = async (req, res) => {
+    const id = req.params.id;
+    Address.destroy({
+        where: { id: id }
+      })
+    .then(num => {
+        if (num == 1) {
+            res.redirect('/profile')
+        } else {
+            req.flash('error', 'No address found in database')
+            res.redirect(`/home/address/${req.params.id}/update`)
+          }
+        })
+        .catch(err => {
+            console.log(err)
+            req.flash('error', `Error occurred in deleing address details.: ${err}`)
+            res.redirect('/profile')
+        });
 }

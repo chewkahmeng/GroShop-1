@@ -1,11 +1,29 @@
 <%- include('partials/header.ejs') %>
 <body>
 <%- include('partials/navbar.ejs') %>
+<script type="text/javascript">
+    function onDelete(id) {
+        if (confirm("Are you sure you want to delete this address?")) {
+            deleteAddress(id);
+        }
+    }
+    function deleteAddress(id) {
+        var deleteUrl = `/home/address/${id}/delete`
+        fetch(deleteUrl, {
+            method: 'POST'
+        }).then(() => window.location.reload(true))
+    }
+</script>
 <div id = "user-profile-view">
    <div class="container justify-content-center">
+        <% if (messages.error) { %>
+            <% for (let i in messages.error) { %>
+            <div class="alert alert-danger"><i class="fa-solid fa-circle-exclamation"></i> &nbsp<%= messages.error[i] %></div>
+            <% } %>
+        <% } %>
         <h2>Profile Details</h2>
         <div class="card" id="user-profile-card">
-            <i class="fa-solid fa-pen text-end"></i>
+            <a href="/home/profile/<%=user.id%>/update"><i class="fa-solid fa-pen" data-toggle="tooltip" data-placement="top" title="Update Profile"></i></a>
             <table style="width: 100%">
                 <colgroup>
                     <col span="1" style="width: 20%;">
@@ -30,7 +48,11 @@
         <h2>Shipping Address</h2>
         <div class="card" id="user-profile-address-card">
             <% if (address) { %>
-            <a class="text-end" href="/home/address/<%=address.id%>/update"><i class="fa-solid fa-pen"></i></a>
+            <span class="text-end">
+                <a href="/home/address/<%=address.id%>/update"><i class="fa-solid fa-pen" data-toggle="tooltip" data-placement="top" title="Update Address"></i></a>
+                &nbsp;
+                <a href="#" onclick="onDelete(<%=address.id%>)"><i class="fa-solid fa-trash-can" data-toggle="tooltip" data-placement="top" title="Delete Address"></i></a>
+            </span>
             <table style="width: 100%">
                 <colgroup>
                     <col span="1" style="width: 20%;">
@@ -64,9 +86,10 @@
                     </tr>
                 </tbody>
             </table>
-            <% } %>
             <br>
+            <% } else {%>
             <a href='/home/address/create' class="btn btn-primary"><i class="fa-solid fa-circle-plus"></i>&nbsp;Add Address</a>
+            <% } %>
         </div>
     </div> 
 </div>
