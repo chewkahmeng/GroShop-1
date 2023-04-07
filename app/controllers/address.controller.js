@@ -16,7 +16,7 @@ exports.createAddress =  async (req, res) => {
     const address = {
         name: req.body.name,
         floorNo: req.body.floorNo ? req.body.floorNo : null,
-        unitNo: req.body.unitNo ? req.body.floorNo : null,
+        unitNo: req.body.unitNo ? req.body.unitNo : null,
         postalCode: req.body.postalCode,
         userId: req.user.id
       };
