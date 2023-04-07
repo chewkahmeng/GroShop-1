@@ -4,7 +4,14 @@ const { check, validationResult } = require('express-validator')
 const addressController = require("../controllers/address.controller.js");
 const middleware = require("../config/middleware.js")
 
-router.get("/address/create", middleware.isLoggedIn,(req, res) => {res.render('address', {user: req.user})})
+router.get("/address/create", 
+    middleware.isLoggedIn,
+    (req, res) => {
+        res.render('address', {
+            user: req.user,
+            mode: "CREATE"
+        })
+    })
 
 router.post("/address/create", 
     addressController.validateAddress,
@@ -19,6 +26,16 @@ router.post("/address/create",
     addressController.createAddress
 )
 
-router.post("/address", addressController.getAddress)
+router.get("/address/:id", addressController.getAddress)
+
+router.get("/address/:id/update",
+    middleware.isLoggedIn,
+    addressController.getAddressToUpdate
+)
+
+router.post("/address/:id/update",
+    middleware.isLoggedIn,
+    addressController.updateAddress
+)
 
 module.exports = router;
