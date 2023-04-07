@@ -1,16 +1,12 @@
 <%- include('../partials/header.ejs') %>
 <body>
-<%- include('../partials/navbar.ejs') %>
+<%- include('../partials/navbar-user.ejs') %>
 <script type="text/javascript">
     function onDelete(id) {
         if (confirm("Are you sure you want to delete this address?")) {
-            deleteAddress(id);
+            var deleteUrl = `/home/address/${id}/delete`
+            document.getElementById("deleteAddressForm").submit();
         }
-    }
-    function deleteAddress(id) {
-        var deleteUrl = `/home/address/${id}/delete`
-        document.getElementById("deleteAddressForm").submit();
-
     }
 </script>
 <div id = "user-profile-view">

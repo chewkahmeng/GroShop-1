@@ -1,13 +1,15 @@
 <%- include('../partials/header.ejs') %>
 
 <body>
-<%- include('../partials/navbar-user.ejs') %>
+<%- include('../partials/navbar-admin.ejs') %>
 <% if (messages.error) { %>
     <% for (let i in messages.error) { %>
     <div class="alert alert-danger"><i class="fa-solid fa-circle-exclamation"></i> &nbsp<%= messages.error[i] %></div>
     <% } %>
 <% } %>
-<h1>HOME PAGE...</h1>
+
+<h1>ADMIN PAGE...</h1>
+<h2><%= employee.username %></h2>
 </body>
 
 <%- include('../partials/footer.ejs') %>

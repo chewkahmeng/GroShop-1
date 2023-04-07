@@ -11,21 +11,28 @@
     - Guide: https://sequelize.org/docs/v6/
     - API references: https://sequelize.org/api/v6/identifiers.html
 
-## Microservices
+## Modules
 1. User
     - Register User
     - Login User
+    - Logout User
     - Change User Password
     - Update User Details
     - View User Details
     - Delete User
 
-Things left to do for User: 
-1. **DONE** Proper User authentication (maybe using PassportJS, JWT or any other tools)
-2. welcome/login/home/profile pages
-3. way to differentiate between customer and employee in login.
-    - how a Customer and Employee uses the website
-    - if wanna reuse EJS pages, we should have a method that allows us to identify the account type of current user based on the current http session.
+2. Address
+    - Add shipping address
+    - Update shipping address
+    - View shipping address
+    - Delete shipping address
+
+3. Recipe (in-progress)
+    - Add Recipe
+    - Update Recipe
+    - View Recipe
+    - Delete Recipe
+    - 
 
 
 

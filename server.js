@@ -69,6 +69,10 @@ app.use(express.static(path.join(__dirname, "public")));
 
 /**
  * -------------- ROUTES ----------------
+ * API routes 
+ * welcome page: /login, /register, /welcome
+ * user routes: /home/...
+ * admin routes: /admin/...
  */
 require('./app/routes/passport.routes.js')(app, passport);
 

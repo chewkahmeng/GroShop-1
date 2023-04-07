@@ -25,6 +25,9 @@ module.exports = (sequelize, Sequelize) => {
         type: DataTypes.STRING,
         default: 'SINGAPORE'
       }
+      ,userId: {
+        type: DataTypes.STRING
+      }
     }
     // include the following if want to specify the DB table name
     , {

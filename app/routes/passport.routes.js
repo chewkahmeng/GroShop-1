@@ -22,11 +22,21 @@ module.exports = function(app, passport) {
     });
 
     app.get("/home", middleware.isLoggedIn, (req, res) => {
-        console.log(req.body)
-        res.render('user/index', {
-            user: typeof req.user !== 'undefined'?req.user:null
-        })
+        if (req.user.role === 'CUSTOMER') {
+            res.render('user/index', {
+                user: typeof req.user !== 'undefined'?req.user:null
+            })
+        } else if (req.user.role === 'ADMIN') {
+            res.redirect("/admin")
+        }
+
     });
+
+    app.get("/admin", middleware.isLoggedIn, (req, res) => {
+        res.render('admin/index', {
+            employee: typeof req.user !== 'undefined'?req.user:null
+        })
+    })
 
 
 

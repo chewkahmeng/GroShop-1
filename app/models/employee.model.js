@@ -18,6 +18,10 @@ module.exports = (sequelize, Sequelize) => {
     email: {
       type: DataTypes.STRING,
       allowNull: false
+    },
+    role: {
+      type: DataTypes.STRING,
+      default: "ADMIN"
     }
   }
   // include the following if want to specify the DB table name
