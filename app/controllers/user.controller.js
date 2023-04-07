@@ -1,8 +1,24 @@
 const bcrypt = require("bcrypt");
 const db = require("../models");
 const User = db.users;
-const Employee = db.employees;
+const Address = db.address;
+// Include Express Validator Functions
+const { check, validationResult } = require('express-validator');
 
+exports.validatePasswordChange = [
+  check('password').isLength({ min: 8 }).withMessage('New Password Must Be at Least 8 Characters').matches('[0-9]').withMessage('New Password Must Contain a Number').matches('[A-Z]').withMessage('New Password Must Contain an Uppercase Letter')
+  .custom((value,{req, loc, path}) => {
+    if (value !== req.body.confirmPassword) {
+        // trow error if passwords do not match
+        throw new Error("New Password and Confirm New Password don't match");
+    } else {
+        return value;
+    }
+  })
+  .trim().escape()
+]
+
+/*
 // Register new user/employee
 exports.register = async (req, res) => {
   console.log(req.body);
@@ -97,7 +113,8 @@ exports.register = async (req, res) => {
       } 
     }
 };
-
+*/
+/*
 exports.login = async (req, res) => {
   const accountType = req.body['account-type'];
   const email = req.body.email
@@ -155,6 +172,7 @@ exports.login = async (req, res) => {
     }
   }
 }
+*/
 
 exports.updateUser = (req, res) => {
   const id = req.params.id;
@@ -167,18 +185,19 @@ exports.updateUser = (req, res) => {
   console.log(req.body);
 
   // update username and/or email
-  User.update({ username: req.body.username, email: req.body.email}, {
+  User.update({ username: req.body.username}, {
     where: {id : id}
   }).then(num => {
     if (num == 1) {
-      res.send({message: "User was updated successfully."});
+      req.flash('success', 'User details updated successfully.')
+      res.redirect('/home/profile')
     } else {
-      res.send({message: `Cannot update User with id=${id}. Maybe User is not found`});
+      req.flash('error', 'User not found in database.')
+      res.redirect(`/home/profile/${id}/update`)
     }
   }).catch(err => {
-    res.status(500).send({
-      message: "Error updating User with id=" + id
-    });
+    req.flash('error', `Error occurred in saving user details: ${err}`)
+    res.redirect(`/home/profile/${id}/update`)
   });
   };
 
@@ -192,22 +211,17 @@ exports.changeUserPassword = async (req, res) => {
   }
   console.log(req.body);
   const oldPassword = req.body.oldPassword;
-  const newPassword = req.body.newPassword;
-  const newPasswordConfirmation = req.body.newPasswordConfirmation;
+  const newPassword = req.body.password;
+  const newPasswordConfirmation = req.body.confirmPassword;
 
   if (newPasswordConfirmation !== newPassword) {
-      console.log("------> Password don't match!")
-      res.status(400).send({
-        message: "Password don't match!"
-      })
+    req.flash('error', 'No user found in database')
+    return res.redirect(`/home/profile/${id}/changePassword`) 
   }
 
   const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-  const userInDB = await User.findOne({
-    where: {id : id}
-  });
-
+  const userInDB = await User.findOne({where: {id : id}});
   if (userInDB) {
     if (await bcrypt.compare(oldPassword, userInDB.password)) {
       // update password
@@ -217,22 +231,23 @@ exports.changeUserPassword = async (req, res) => {
         }
       }).then(num => {
         if (num == 1) {
-          res.send({message: "Password was updated successfully."});
+          req.flash('success', 'Password changed successfully.')
+          return res.redirect('/home/profile')
         } else {
-          res.send({message: `Cannot update password for User with id=${id}. Maybe User is not found`});
+          req.flash('error', 'No user found in database')
+          return res.redirect(`/home/profile/${id}/changePassword`)        
         }
       }).catch(err => {
-        res.status(500).send({
-          message: `Error updating User with id=${id}: ${err}`
-        });
+        req.flash('error', `Error occurred in saving new password: ${err}`)
+        return res.redirect(`/home/profile/${id}/changePassword`)  
       });
     } else {
-      console.log("--------> Old Password incorrect")
-      // TODO: set redirect
+      req.flash('error', 'Old password is incorrect.')
+      return res.redirect(`/home/profile/${id}/changePassword`) 
     }
   } else {
-    console.log("--------> User dont exist in DB")
-    // TODO: set redirect
+    req.flash('error', 'No user found in database')
+    return res.redirect(`/home/profile/${id}/changePassword`)  
   }
 
 };
@@ -269,21 +284,11 @@ exports.deleteUser = (req, res) => {
 }
 
 
-exports.retrieveUserDetails = (req, res) => {
-  const id = req.params.id;
-  User.findByPk(id)
-    .then(data => {
-      if (data) {
-        res.send(data);
-      } else {
-        res.status(404).send({
-          message: `Cannot find User with id=${id}.`
-        });
-      }
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: "Error retrieving User with id=" + id
-      });
-    });
-  };
+exports.getUserProfile = async (req, res) => {
+  const user = await User.findByPk(req.user.id)
+  const address = await Address.findOne({where: {userId: req.user.id}, order: [ ['createdAt', 'DESC']]})
+  res.render('profile', {
+    user: user, 
+    address: address
+  });
+};

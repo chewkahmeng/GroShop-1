@@ -75,11 +75,11 @@ require('./app/routes/passport.routes.js')(app, passport);
 const tutorial = require("./app/routes/tutorial.routes.js");
 app.use("/tutorial", tutorial);
 
-const auth = require("./app/routes/auth.routes.js");
-app.use("/auth", auth);
+const user = require("./app/routes/user.routes.js");
+app.use("/home/profile", user);
 
 const address = require("./app/routes/address.routes.js");
-app.use("/home", address);
+app.use("/home/address", address);
 
 app.get('/', (req, res) => {res.redirect('/login')})
 /**

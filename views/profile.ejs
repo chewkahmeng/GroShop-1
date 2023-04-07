@@ -9,9 +9,8 @@
     }
     function deleteAddress(id) {
         var deleteUrl = `/home/address/${id}/delete`
-        fetch(deleteUrl, {
-            method: 'POST'
-        }).then(() => window.location.reload(true))
+        document.getElementById("deleteAddressForm").submit();
+
     }
 </script>
 <div id = "user-profile-view">
@@ -21,9 +20,22 @@
             <div class="alert alert-danger"><i class="fa-solid fa-circle-exclamation"></i> &nbsp<%= messages.error[i] %></div>
             <% } %>
         <% } %>
+        <% if (messages.success) { %>
+            <% for (let i in messages.success) { %>
+            <div class="alert alert-success"><i class="fa-solid fa-circle-exclamation"></i> &nbsp<%= messages.success[i] %></div>
+            <% } %>
+        <% } %>
         <h2>Profile Details</h2>
         <div class="card" id="user-profile-card">
-            <a href="/home/profile/<%=user.id%>/update"><i class="fa-solid fa-pen" data-toggle="tooltip" data-placement="top" title="Update Profile"></i></a>
+            <div class="dropdown text-end">
+                <a class="icon-dropdown" href="#" id="dropdownMenuLink-me" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fa-solid fa-gear icon-dropdown" data-mdb-toggle="tooltip" title="Manage User"></i>
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink-me">
+                      <li><a class="dropdown-item" href="/home/profile/<%=user.id%>/update" >Update Profile</a></li>
+                      <li><a class="dropdown-item" href="/home/profile/<%=user.id%>/changePassword" >Change Password</a></li>
+                </ul>
+            </div>
             <table style="width: 100%">
                 <colgroup>
                     <col span="1" style="width: 20%;">
@@ -87,6 +99,7 @@
                 </tbody>
             </table>
             <br>
+            <form hidden id="deleteAddressForm" action="/home/address/<%=address.id%>/delete" method="POST"></form>
             <% } else {%>
             <a href='/home/address/create' class="btn btn-primary"><i class="fa-solid fa-circle-plus"></i>&nbsp;Add Address</a>
             <% } %>

@@ -24,8 +24,8 @@ exports.createAddress =  async (req, res) => {
 
     Address.create(address)
     .then(data => {
-        console.log(data)
-        res.redirect('/profile')
+        req.flash('success', 'Address created successfully.')
+        res.redirect('/home/profile')
     }).catch(err => {
         console.log(err)
         req.flash('error', 'Error occurred in saving address details.')
@@ -39,7 +39,7 @@ exports.updateAddress = (req, res) => {
     const address = {
         name: req.body.name,
         floorNo: req.body.floorNo ? req.body.floorNo : null,
-        unitNo: req.body.unitNo ? req.body.floorNo : null,
+        unitNo: req.body.unitNo ? req.body.unitNo : null,
         postalCode: req.body.postalCode,
     }
 
@@ -52,7 +52,8 @@ exports.updateAddress = (req, res) => {
     })
     .then(num => {
       if (num == 1) {
-        res.redirect('/profile')
+        req.flash('success', 'Address updated successfully.')
+        res.redirect('/home/profile')
       } else {
         req.flash('error', 'No address found in database')
         res.redirect(`/home/address/${req.params.id}/update`)
@@ -83,10 +84,10 @@ exports.getAddress = async (req, res) => {
     
     await Address.findOne({where: {userId: req.user.id}})
     .then(data => {
-        res.redirect('/profile')
+        res.redirect('/home/profile')
     }).catch(err => {
         req.flash('error', 'Error occurred in saving address details.')
-        res.redirect('/profile')
+        res.redirect('/home/profile')
     });
 }
 
@@ -97,7 +98,8 @@ exports.deleteAddress = async (req, res) => {
       })
     .then(num => {
         if (num == 1) {
-            res.redirect('/profile')
+            req.flash('success', 'Address deleted successfully.')
+            res.redirect('/home/profile')
         } else {
             req.flash('error', 'No address found in database')
             res.redirect(`/home/address/${req.params.id}/update`)
@@ -106,6 +108,6 @@ exports.deleteAddress = async (req, res) => {
         .catch(err => {
             console.log(err)
             req.flash('error', `Error occurred in deleing address details.: ${err}`)
-            res.redirect('/profile')
+            res.redirect('/home/profile')
         });
 }

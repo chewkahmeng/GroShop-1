@@ -2,7 +2,7 @@
 const middleware = require("../config/middleware.js")
 const { check, validationResult } = require('express-validator')
 const db = require("../models");
-const Address = db.address;
+
 
 module.exports = function(app, passport) {
     app.get("/welcome", (req, res) => {
@@ -28,13 +28,7 @@ module.exports = function(app, passport) {
         })
     });
 
-    app.get('/profile', middleware.isLoggedIn, async function(req, res) {
-        const address = await Address.findOne({where: {userId: req.user.id}, order: [ ['createdAt', 'DESC']]})
-        res.render('profile', {
-            user: req.user, // get the user out of session and pass to template
-            address: address
-        });
-    });
+
 
     app.get('/login', (req, res) => {res.redirect("/welcome")})
     app.post('/login', passport.authenticate('local', {
