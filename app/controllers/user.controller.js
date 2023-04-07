@@ -287,7 +287,7 @@ exports.deleteUser = (req, res) => {
 exports.getUserProfile = async (req, res) => {
   const user = await User.findByPk(req.user.id)
   const address = await Address.findOne({where: {userId: req.user.id}, order: [ ['createdAt', 'DESC']]})
-  res.render('profile', {
+  res.render('user/profile', {
     user: user, 
     address: address
   });

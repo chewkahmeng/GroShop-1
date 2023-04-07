@@ -70,7 +70,7 @@ exports.getAddressToUpdate = async (req, res) => {
     const addressId = req.params.id
     const address = await Address.findByPk(addressId)
 
-    res.render('address', {
+    res.render('user/address', {
         user: req.user,
         mode: "UPDATE",
         address: address

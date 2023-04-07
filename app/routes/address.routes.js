@@ -7,7 +7,7 @@ const middleware = require("../config/middleware.js")
 router.get("/create", 
     middleware.isLoggedIn,
     (req, res) => {
-        res.render('address', {
+        res.render('user/address', {
             user: req.user,
             mode: "CREATE"
         })

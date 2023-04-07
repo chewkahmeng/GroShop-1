@@ -23,7 +23,7 @@ module.exports = function(app, passport) {
 
     app.get("/home", middleware.isLoggedIn, (req, res) => {
         console.log(req.body)
-        res.render('index', {
+        res.render('user/index', {
             user: typeof req.user !== 'undefined'?req.user:null
         })
     });

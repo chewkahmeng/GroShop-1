@@ -10,7 +10,7 @@ const { check, validationResult } = require('express-validator');
 router.get('/', middleware.isLoggedIn, userController.getUserProfile);
 
 router.get("/:id/update", middleware.isLoggedIn, (req, res) => {
-    res.render('maintainProfile', {
+    res.render('user/maintainProfile', {
         mode: 'UE',
         user: req.user
     })
@@ -18,7 +18,7 @@ router.get("/:id/update", middleware.isLoggedIn, (req, res) => {
 router.post("/:id/update", middleware.isLoggedIn, userController.updateUser);
 
 router.get("/:id/changePassword", middleware.isLoggedIn, (req, res) => {
-    res.render('maintainProfile', {
+    res.render('user/maintainProfile', {
         mode: 'PW',
         user: req.user
     })

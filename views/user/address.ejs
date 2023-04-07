@@ -1,6 +1,6 @@
-<%- include('partials/header.ejs') %>
+<%- include('../partials/header.ejs') %>
 <body>
-<%- include('partials/navbar.ejs') %>
+<%- include('../partials/navbar.ejs') %>
 <br>
 <div class="card">
     <div class="row justify-content-md-center mb-3">
@@ -34,6 +34,7 @@
                         <input type="text" class="form-control" name="postalCode" required>
                     </div>
                     <button class="btn btn-primary" type="submit" value="Save">Save</button>
+                    <a class="btn btn-light" href="/home/profile" value="Cancel">Cancel</a>
                     <br><br>
                 </form>
             <% } else if (mode === "UPDATE" && address) {%>
@@ -55,6 +56,7 @@
                         <input type="text" class="form-control" name="postalCode" value="<%=address.postalCode%>" required>
                     </div>
                     <button class="btn btn-primary" type="submit" value="Save">Save</button>
+                    <a class="btn btn-light" href="/home/profile" value="Cancel">Cancel</a>
                     <br><br>
                 </form>
             <% } %>
@@ -62,4 +64,4 @@
     </div>
 </div>
 </body>
-<%- include('partials/footer.ejs') %>
+<%- include('../partials/footer.ejs') %>
