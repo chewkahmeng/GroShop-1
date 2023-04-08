@@ -1,5 +1,5 @@
 // https://www.digitalocean.com/community/tutorials/easy-node-authentication-setup-and-local#displaying-user-and-secure-profile-page-views-profile-ejs
-const middleware = require("../config/middleware.js")
+const middleware = require("../middleware/middleware.js")
 const { check, validationResult } = require('express-validator')
 const db = require("../models");
 

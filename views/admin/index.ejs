@@ -2,14 +2,21 @@
 
 <body>
 <%- include('../partials/navbar-admin.ejs') %>
-<% if (messages.error) { %>
-    <% for (let i in messages.error) { %>
-    <div class="alert alert-danger"><i class="fa-solid fa-circle-exclamation"></i> &nbsp<%= messages.error[i] %></div>
-    <% } %>
-<% } %>
-
-<h1>ADMIN PAGE...</h1>
-<h2><%= employee.username %></h2>
+<div id="admin-home-page">
+    <div class="container justify-content-center">
+        <% if (messages.error) { %>
+            <% for (let i in messages.error) { %>
+            <div class="alert alert-danger"><i class="fa-solid fa-circle-exclamation"></i> &nbsp<%= messages.error[i] %></div>
+            <% } %>
+        <% } %>
+        <% if (messages.success) { %>
+            <% for (let i in messages.success) { %>
+            <div class="alert alert-success"><i class="fa-solid fa-circle-exclamation"></i> &nbsp<%= messages.error[i] %></div>
+            <% } %>
+        <% } %>
+        <h1>ADMIN PAGE...</h1>
+    </div>
+</div>
 </body>
 
 <%- include('../partials/footer.ejs') %>

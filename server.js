@@ -85,7 +85,14 @@ app.use("/home/profile", user);
 const address = require("./app/routes/address.routes.js");
 app.use("/home/address", address);
 
+const recipe = require("./app/routes/recipe.routes.js");
+app.use("/admin/recipes", recipe);
+
+
+
 app.get('/', (req, res) => {res.redirect('/login')})
+
+
 /**
  * -------------- SERVER ----------------
  */

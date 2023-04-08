@@ -31,5 +31,7 @@ db.tutorials = require("./tutorial.model.js")(sequelize, Sequelize);
 db.users = require("./user.model.js")(sequelize, Sequelize);
 db.employees = require("./employee.model.js")(sequelize, Sequelize);
 db.address = require("./address.model.js")(sequelize, Sequelize);
+db.recipes = require("./recipe/recipe.model.js")(sequelize, Sequelize);
+db.recipeImages = require("./recipe/image.model.js")(sequelize, Sequelize);
 
 module.exports = db;
