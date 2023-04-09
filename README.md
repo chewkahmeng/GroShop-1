@@ -28,11 +28,23 @@
     - Delete shipping address
 
 3. Recipe (in-progress)
-    - Add Recipe
-    - Update Recipe
-    - View Recipe
-    - Delete Recipe
-    - 
+    - Recipe Details
+        - Add Recipe
+        - Update Recipe
+        - View Recipe
+        - Delete Recipe
+        - Add Recipe Photo
+    - Recipe Ingredients
+        - Add Recipe Ingredients
+        - Update Recipe Ingredients
+        - View Recipe Ingredients
+        - Delete Recipe Ingredients
+    - Recipe Steps
+        - Add Recipe Steps
+        - Update Recipe Steps
+        - View Recipe Steps
+        - Delete Recipe Steps
+
 
 
 

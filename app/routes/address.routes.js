@@ -2,7 +2,7 @@ const express = require('express');
 var router = express.Router();
 const { check, validationResult } = require('express-validator')
 const addressController = require("../controllers/address.controller.js");
-const middleware = require("../config/middleware.js")
+const middleware = require("../middleware/middleware.js")
 
 router.get("/create", 
     middleware.isLoggedIn,
@@ -27,7 +27,7 @@ router.post("/create",
     addressController.createAddress
 )
 
-router.get("/:id", addressController.getAddress)
+router.get("/:id", middleware.isLoggedIn,addressController.getAddress)
 
 router.get("/:id/update",
     middleware.isLoggedIn,
