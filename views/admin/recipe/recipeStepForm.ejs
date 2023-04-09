@@ -51,11 +51,12 @@
                 <a id="cancelUpdateButton" class="btn btn-light" href="/admin/recipes/<%=recipeId%>/steps" value="Cancel Update" hidden>Cancel Update</a>
             </form>
             <br>
-            <a class="btn btn-primary" href="/admin/recipes" value="Save">Save</a>
-            <a class="btn btn-light" href="/admin/recipes" value="Cancel">Cancel</a>
-            <hr />
-            <br>
+
             <% if (steps) { %>
+                <a class="btn btn-primary" href="/admin/recipes/<%=recipeId%>" value="Save">Save</a>
+                <a class="btn btn-light" href="/admin/recipes" value="Cancel">Cancel</a>
+                <hr />
+                <br>
                 <div class="row justify-content-md-center mb-3">
                     <h2 class="text-center" style="color:rgb(0, 16, 87); font-weight:bold">
                         Current Recipe Steps

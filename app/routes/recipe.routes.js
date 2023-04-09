@@ -22,6 +22,8 @@ router.get("/create", middleware.isLoggedIn, (req, res) => {
 });
 router.post("/create", middleware.isLoggedIn, recipeController.createRecipe)
 
+router.get("/:id/view", middleware.isLoggedIn, recipeController.getRecipe)
+
 // Create Recipe -> Upload Photo of Dish
 router.get("/:id/uploadPhoto", middleware.isLoggedIn, (req, res) => {
   res.render('./admin/recipe/recipeImageForm', {
