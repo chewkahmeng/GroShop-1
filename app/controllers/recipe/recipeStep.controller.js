@@ -86,14 +86,14 @@ exports.getAllSteps = async (req, res) => {
         where: {recipeId: recipeId},
         order: [['createdAt','ASC']]
     })
-    if (steps) {
+    if (steps.length !== 0) {
         res.render('./admin/recipe/recipeStepForm', {
             employee: req.user,
             recipeId: recipeId,
             steps: steps
         })
     } else {
-        req.flash('error', 'No steps added yet.')
+        req.flash('info', 'Please add steps.')
         res.render('./admin/recipe/recipeStepForm', {
             employee: req.user,
             recipeId: recipeId,

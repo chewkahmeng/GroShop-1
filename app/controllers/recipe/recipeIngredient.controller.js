@@ -90,14 +90,14 @@ exports.deleteIngredient = async (req, res) => {
 exports.getAllIngredients = async (req, res) => {
     const recipeId = req.params.id
     const ingredients = await RecipeIngredient.findAll({where: {recipeId: recipeId}})
-    if (ingredients) {
+    if (ingredients.length !== 0) {
         res.render('./admin/recipe/recipeIngredientForm', {
             employee: req.user,
             recipeId: recipeId,
             ingredients: ingredients
         })
     } else {
-        req.flash('error', 'No ingredients added yet.')
+        req.flash('info', 'Please add ingredients.')
         res.render('./admin/recipe/recipeIngredientForm', {
             employee: req.user,
             recipeId: recipeId,
