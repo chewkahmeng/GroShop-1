@@ -27,7 +27,7 @@ router.post("/create",
     addressController.createAddress
 )
 
-router.get("/:id", addressController.getAddress)
+router.get("/:id", middleware.isLoggedIn,addressController.getAddress)
 
 router.get("/:id/update",
     middleware.isLoggedIn,

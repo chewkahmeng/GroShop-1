@@ -1,7 +1,9 @@
 const db = require("../models")
 const Recipe = db.recipes
 const RecipeImage = db.recipeImages;
+const RecipeIngredient = db.RecipeIngredient;
 
+// Enter Recipe Details
 exports.createRecipe = (req, res) => {
     console.log(req.body)
 
@@ -59,7 +61,7 @@ exports.addPhotoToRecipe = (req, res) => {
     const imageId = req.body.imageId
     if (req.body.imageId == null) {
         req.flash('error', 'Please add a photo before continuing.')
-        res.redirect(`/admin/recipes/${recipe.id}/uploadPhoto`)
+        res.redirect(`/admin/recipes/${recipeId}/uploadPhoto`)
     }
     const recipeId = req.params.id
     
@@ -68,16 +70,10 @@ exports.addPhotoToRecipe = (req, res) => {
         {where: { id: recipeId }}
     ).then(recipe => {
         req.flash('success', 'Photo added to recipe successfully.')
-        res.redirect(`/admin/recipes/${recipeId}/addIngredients`)
+        res.redirect(`/admin/recipes/${recipeId}/ingredients`)
     }).catch(err => {
         console.log(err)
         req.flash('error', 'Error occurred in adding photo to recipe.')
         res.redirect(`/admin/recipes/${recipeId}/uploadPhoto`)
     });
-}
-
-exports.createRecipeIngredients = (req, res) => {
-}
-
-exports.createRecipeSteps = (req, res) => {
 }

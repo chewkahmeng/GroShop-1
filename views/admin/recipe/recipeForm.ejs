@@ -2,7 +2,7 @@
 <body>
 <%- include('../../partials/navbar-admin.ejs') %>
 <br>
-<div class="card">
+<div class="card page-card">
     <div class="row justify-content-md-center mb-3">
         <h1 class="card-title text-center" style="color:rgb(0, 16, 87); font-weight:bold">
             Enter Recipe Details
@@ -31,7 +31,7 @@
                 </div>
                 <div class="form-group mb-3" >
                     <label for="account-type">Cuisine</label>
-                    <select id="cuisine" class="form-select" name="cuisine">
+                    <select id="cuisine" class="form-select" name="cuisine" required>
                         <option value="Local">Local</option>
                         <option value="Chinese">Chinese</option>
                         <option value="Malay">Malay</option>
@@ -47,10 +47,10 @@
                 <label for="prepTime" class="form-label">Prep Time</label>
                 <div class="input-group row">
                     <div class="col-md-3">
-                        <input type="text" class="form-control" name="prepTime">
+                        <input type="text" class="form-control" name="prepTime" required>
                     </div>
                     <div class="col-md-3">
-                        <select id="prepTimeUom" class="form-select form-control" name="prepTimeUom">
+                        <select id="prepTimeUom" class="form-select form-control" name="prepTimeUom" required>
                             <option value="minute">minute(s)</option>
                             <option value="hour">hour(s)</option>
                         </select>
