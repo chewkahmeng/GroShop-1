@@ -1,8 +1,8 @@
 var router = require("express").Router();
 const middleware = require("../middleware/middleware.js")
 const upload = require("../middleware/image.middleware.js");
-const recipeController = require("../controllers/recipe.controller.js");
-const recipeIngredientController = require("../controllers/recipeIngredient.controller.js");
+const recipeController = require("../controllers/recipe/recipe.controller.js");
+const recipeIngredientController = require("../controllers/recipe/recipeIngredient.controller.js");
 const { check, validationResult } = require('express-validator')
 
 // Recipe Home Page

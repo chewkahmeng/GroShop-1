@@ -1,4 +1,4 @@
-const db = require("../models")
+const db = require("../../models")
 const Recipe = db.recipes
 const RecipeImage = db.recipeImages;
 const RecipeIngredient = db.RecipeIngredient;
