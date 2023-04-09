@@ -3,6 +3,8 @@ const middleware = require("../middleware/middleware.js")
 const upload = require("../middleware/image.middleware.js");
 const recipeController = require("../controllers/recipe/recipe.controller.js");
 const recipeIngredientController = require("../controllers/recipe/recipeIngredient.controller.js");
+const recipeStepController = require("../controllers/recipe/recipeStep.controller.js");
+
 const { check, validationResult } = require('express-validator')
 
 // Recipe Home Page
@@ -38,12 +40,9 @@ router.post("/:id/ingredients/:ingredientId/update", middleware.isLoggedIn, reci
 router.post("/:id/ingredients/:ingredientId/delete", middleware.isLoggedIn, recipeIngredientController.deleteIngredient)
 
 // Create Recipe -> Enter Recipe Steps
-router.get("/:id/steps", middleware.isLoggedIn, (req, res) => {
-  res.render('./admin/recipe/recipeStepForm', {
-    employee: req.user,
-    recipeId: req.params.id
-  })
-})
-// router.post("/:id/steps/add", middleware.isLoggedIn, recipeController.createRecipeSteps)
+router.get("/:id/steps", middleware.isLoggedIn, recipeStepController.getAllSteps)
+router.post("/:id/steps/add", middleware.isLoggedIn, recipeStepController.addStep)
+router.post("/:id/steps/:stepId/update", middleware.isLoggedIn, recipeStepController.updateStep)
+router.post("/:id/steps/:stepId/delete", middleware.isLoggedIn, recipeStepController.deleteStep)
 
 module.exports = router
