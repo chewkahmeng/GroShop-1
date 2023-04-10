@@ -4,6 +4,18 @@ const RecipeImage = db.recipeImages;
 const RecipeIngredient = db.recipeIngredients;
 const RecipeStep = db.recipeSteps;
 
+exports.getRecipeHome = async (req, res) => {
+    const recipes = await Recipe.findAll({
+        include: [{ model: RecipeImage}]
+      });
+    // console.log(JSON.stringify(recipes, null, 2));
+
+    res.render('admin/recipe/recipe', {
+        employee: req.user,
+        recipes: recipes
+    })
+}
+
 // Enter Recipe Details
 exports.createRecipe = (req, res) => {
     console.log(req.body)

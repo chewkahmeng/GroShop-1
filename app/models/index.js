@@ -32,6 +32,8 @@ db.employees = require("./employee.model.js")(sequelize, Sequelize);
 db.address = require("./address.model.js")(sequelize, Sequelize);
 db.recipes = require("./recipe/recipe.model.js")(sequelize, Sequelize);
 db.recipeImages = require("./recipe/image.model.js")(sequelize, Sequelize);
+db.recipeImages.hasOne(db.recipes, {foreignKey: "imageId", constraints: false})
+db.recipes.belongsTo(db.recipeImages)
 db.recipeIngredients = require("./recipe/ingredient.model.js")(sequelize, Sequelize);
 db.recipeSteps = require("./recipe/step.model.js")(sequelize, Sequelize);
 

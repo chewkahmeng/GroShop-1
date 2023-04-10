@@ -8,10 +8,9 @@ const recipeStepController = require("../controllers/recipe/recipeStep.controlle
 const { check, validationResult } = require('express-validator')
 
 // Recipe Home Page
-router.get("/", middleware.isLoggedIn, 
-(req, res) => res.render('admin/recipe/recipe', {
-    employee: req.user
-}));
+router.get("/", middleware.isLoggedIn, recipeController.getRecipeHome)
+
+
 
 // Create Recipe -> Enter Recipe Details
 router.get("/create", middleware.isLoggedIn, (req, res) => {
