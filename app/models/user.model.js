@@ -21,7 +21,7 @@ module.exports = (sequelize, Sequelize) => {
     },
     role: {
       type: DataTypes.STRING,
-      default: "CUSTOMER"
+      defaultValue: "CUSTOMER"
     }
   }
   // include the following if want to specify the DB table name

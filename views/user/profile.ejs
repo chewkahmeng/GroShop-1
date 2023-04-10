@@ -11,16 +11,7 @@
 </script>
 <div id = "user-profile-view">
    <div class="container justify-content-center">
-        <% if (messages.error) { %>
-            <% for (let i in messages.error) { %>
-            <div class="alert alert-danger"><i class="fa-solid fa-circle-exclamation"></i> &nbsp<%= messages.error[i] %></div>
-            <% } %>
-        <% } %>
-        <% if (messages.success) { %>
-            <% for (let i in messages.success) { %>
-            <div class="alert alert-success"><i class="fa-solid fa-circle-exclamation"></i> &nbsp<%= messages.success[i] %></div>
-            <% } %>
-        <% } %>
+    <%- include('../partials/alerts.ejs') %>
         <h2>Profile Details</h2>
         <div class="card" id="user-profile-card">
             <div class="dropdown text-end">

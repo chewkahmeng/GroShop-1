@@ -23,7 +23,7 @@ module.exports = (sequelize, Sequelize) => {
       },
       country: {
         type: DataTypes.STRING,
-        default: 'SINGAPORE'
+        defaultValue: 'SINGAPORE'
       }
       ,userId: {
         type: DataTypes.STRING

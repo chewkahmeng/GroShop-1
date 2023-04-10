@@ -12,11 +12,7 @@
         <div class="row justify-content-md-center">
             <div class="col-md-8 col-md-offset-2">
                 <div id="register-contents">
-                    <% if (messages.error) { %>
-                        <% for (let i in messages.error) { %>
-                        <div class="alert alert-danger"><i class="fa-solid fa-circle-exclamation"></i> &nbsp<%= messages.error[i] %></div>
-                        <% } %>
-                    <% } %>
+                    <%- include('partials/alerts.ejs') %>
                     <form action="/register" method="post">
                         <div>
                             <label for="account-type">Select account type to register as:</label>
