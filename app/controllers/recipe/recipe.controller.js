@@ -39,6 +39,22 @@ exports.createRecipe = (req, res) => {
     });
 }
 
+exports.getUploadedPhoto = async (req, res) => {
+    const recipeId = req.params.id
+    const recipe = await Recipe.findByPk(recipeId)
+    var image;
+    if (recipe) {
+        image = await RecipeImage.findByPk(recipe.imageId)
+    } else {
+        req.flash('info', 'Please add photo.')
+    }
+    res.render('./admin/recipe/recipeImageForm', {
+      employee: req.user,
+      recipeId: req.params.id,
+      image: image ? image : null
+    })
+}
+
 exports.uploadPhoto = async (req, res) => {
     try {
       console.log(req.file)
@@ -118,7 +134,58 @@ exports.getRecipe = async (req, res) => {
             steps: steps
           })
     } else {
-        req.flash('error', 'Error occurred in retrieving recipe.')
+        req.flash('error', 'Error occurred in retrieving recipe (getRecipe).')
+        res.redirect(`/admin/recipes`)
+    }
+}
+
+exports.getRecipeForUpdate = async (req, res) => {
+    const recipeId = req.params.id
+    const recipe = await Recipe.findByPk(recipeId)
+    if (recipe) {
+        res.render('./admin/recipe/recipeForm', {
+            employee: req.user,
+            recipe: recipe,
+            mode: "UPDATE"
+          })
+    } else {
+        req.flash('error', 'Error occurred in retrieving recipe (getRecipeForUpdate).')
+        res.redirect(`/admin/recipes`)
+    }
+}
+
+exports.updateRecipe = async (req, res) => {
+    console.log("in update recipe")
+    console.log(req.body)
+    const recipe = {
+        name: req.body.name,
+        cuisine: req.body.cuisine,
+        prepTime: req.body.prepTime,
+        prepTimeUom: req.body.prepTimeUom,
+        description: req.body.description ? req.body.description : null
+    }
+    const recipeId = req.params.id
+    const recipeInDB = await Recipe.findByPk(recipeId)
+    if (recipeInDB) {
+        Recipe.update(
+            { 
+                name: recipe.name,
+                cuisine: recipe.cuisine,
+                prepTime: recipe.prepTime,
+                prepTimeUom: recipe.prepTimeUom,
+                description: recipe.description
+            }, 
+            { where: { id: recipeId } }
+        ).then(data => {
+            req.flash('success', 'Recipe details updated successfully.')
+            res.redirect(`/admin/recipes/${recipeId}/uploadPhoto`)
+        }).catch(err => {
+            console.log(err)
+            req.flash('error', 'Error occurred in updating recipe details.')
+            res.redirect(`/admin/recipes/${recipeId}`)
+        });
+    } else {
+        req.flash('error', 'Error occurred in retrieving recipe (updateRecipe).')
         res.redirect(`/admin/recipes`)
     }
 }

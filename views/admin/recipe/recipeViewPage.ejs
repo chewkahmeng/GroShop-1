@@ -6,6 +6,11 @@
         <h1 class="card-title text-center" style="color:rgb(0, 16, 87); font-weight:bold">
             <%= recipe.name %>
         </h1>
+        <h5>Cuisine: <%= recipe.cuisine %></h5>
+        <h5>Prep Time: <%=recipe.prepTime%> <%=recipe.prepTimeUom%></h5>
+        <% if (recipe.description) { %>
+        <h5>Description: <%= recipe.description %></h5>
+        <% } %>
     </div>
     <hr />
     <% if (typeof image !== 'undefined') { %>

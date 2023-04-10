@@ -11,6 +11,7 @@
     <div class="row justify-content-md-center">
         <div class="col-md-8 col-md-offset-2">
             <%- include('../../partials/alerts.ejs') %>
+            <% if (mode === 'CREATE') { %>
             <form action="/admin/recipes/create" method="POST" enctype=”multipart/form-data”>
                 <div class="form-group mb-3" >
                     <label for="name" class="form-label">Name</label>
@@ -53,6 +54,50 @@
                 <a class="btn btn-light" href="/admin/recipes" value="Cancel">Cancel</a>
                 <br><br>
             </form>
+            <% } else if (mode === 'UPDATE' && recipe) { %>
+                <form action="/admin/recipes/<%= recipe.id %>/update" method="POST" >
+                    <div class="form-group mb-3" >
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" name="name" value="<%=recipe.name%>" required>
+                    </div>
+                    <div class="form-group mb-3" >
+                        <label for="description" class="form-label">Description</label>
+                        <input type="text" class="form-control" name="description" value="<%=recipe.description%>">
+                    </div>
+                    <div class="form-group mb-3" >
+                        <label for="account-type">Cuisine</label>
+                        <select id="cuisine" class="form-select" name="cuisine"   required>
+                            <option value="Local" <% if(recipe.cuisine === "Local"){ %>selected<% } %> >Local</option>
+                            <option value="Chinese" <% if(recipe.cuisine === "Chinese"){ %>selected<% } %>>Chinese</option>
+                            <option value="Malay" <% if(recipe.cuisine === "Malay"){ %>selected<% } %>>Malay</option>
+                            <option value="Indian" <% if(recipe.cuisine === "Indian"){ %>selected<% } %>>Indian</option>
+                            <option value="Thai" <% if(recipe.cuisine === "Thai"){ %>selected<% } %>>Thai</option>
+                            <option value="Western" <% if(recipe.cuisine === "Western"){ %>selected<% } %>>Western</option>
+                            <option value="Italian" <% if(recipe.cuisine === "Italian"){ %>selected<% } %>>Italian</option>
+                            <option value="Indonesian" <% if(recipe.cuisine === "Indonesian"){ %>selected<% } %>>Indonesian</option>
+                            <option value="Japanese" <% if(recipe.cuisine === "Japanese"){ %>selected<% } %>>Japanese</option>
+                            <option value="Korean" <% if(recipe.cuisine === "Korean"){ %>selected<% } %>>Korean</option>
+                        </select>
+                    </div>
+                    <label for="prepTime" class="form-label">Prep Time</label>
+                    <div class="input-group row">
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" name="prepTime" value="<%=recipe.prepTime%>" required>
+                        </div>
+                        <div class="col-md-3">
+                            <select id="prepTimeUom" class="form-select form-control" name="prepTimeUom" required>
+                                <option value="minute" <% if(recipe.prepTimeUom === "minute"){ %>selected<% } %>>minute(s)</option>
+                                <option value="hour" <% if(recipe.prepTimeUom === "hour"){ %>selected<% } %>>hour(s)</option>
+                            </select>
+                        </div>
+                    </div>
+    
+                    <br><br>
+                    <button class="btn btn-primary" type="submit" value="Save">Update</button>
+                    <a class="btn btn-light" href="/admin/recipes" value="Cancel">Cancel</a>
+                    <br><br>
+                </form>            
+            <% } %>
         </div>
     </div>
 </div>
