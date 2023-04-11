@@ -1,7 +1,7 @@
 var router = require("express").Router();
 const middleware = require("../middleware/middleware.js")
 const upload = require("../middleware/image.middleware.js");
-const recipeController = require("../controllers/recipe/recipe.controller.js");
+const recipeController = require("../controllers/recipe/recipeAdmin.controller.js");
 const recipeIngredientController = require("../controllers/recipe/recipeIngredient.controller.js");
 const recipeStepController = require("../controllers/recipe/recipeStep.controller.js");
 
@@ -45,5 +45,8 @@ router.get("/:id", middleware.isLoggedIn, recipeController.getRecipe)
 // Update Recipe
 router.get("/:id/update", middleware.isLoggedIn, recipeController.getRecipeForUpdate)
 router.post("/:id/update", middleware.isLoggedIn, recipeController.updateRecipe)
+
+// Delete Recipe
+router.post("/:id/delete", middleware.isLoggedIn, recipeController.deleteRecipe)
 
 module.exports = router

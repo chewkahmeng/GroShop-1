@@ -16,6 +16,7 @@ exports.getRecipeHome = async (req, res) => {
     })
 }
 
+
 // Enter Recipe Details
 exports.createRecipe = (req, res) => {
     console.log(req.body)
@@ -186,6 +187,50 @@ exports.updateRecipe = async (req, res) => {
         });
     } else {
         req.flash('error', 'Error occurred in retrieving recipe (updateRecipe).')
+        res.redirect(`/admin/recipes`)
+    }
+}
+
+exports.deleteRecipe = async (req, res) => {
+    const recipeId = req.params.id
+    const recipe = await Recipe.findByPk(recipeId)
+    if (recipe) {
+        // delete recipe steps
+        RecipeStep.destroy({where: {recipeId: recipeId}})
+        .then(data => {})
+        .catch(err => {
+            console.log(err)
+            req.flash('error', 'Error occurred in deleting steps.')
+            res.redirect(`/admin/recipes`)
+        })
+        // delete recipe ingredients
+        RecipeIngredient.destroy({where: {recipeId: recipeId}})
+        .then(data => {})
+        .catch(err => {
+            console.log(err)
+            req.flash('error', 'Error occurred in deleting ingredients.')
+            res.redirect(`/admin/recipes`)
+        })
+        // delete recipe photo
+        RecipeImage.destroy({where: {id: recipe.imageId}})
+        .then(data => {})
+        .catch(err => {
+            console.log(err)
+            req.flash('error', 'Error occurred in deleting photo.')
+            res.redirect(`/admin/recipes`)
+        })
+        // delete recipe photo
+        Recipe.destroy({where: {id: recipeId}})
+        .then(data => {})
+        .catch(err => {
+            console.log(err)
+            req.flash('error', 'Error occurred in deleting recipe.')
+            res.redirect(`/admin/recipes`)
+        })
+        req.flash('success', 'Recipe deleted successfully.')
+        res.redirect(`/admin/recipes`)
+    } else {
+        req.flash('error', 'No recipe found.')
         res.redirect(`/admin/recipes`)
     }
 }

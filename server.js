@@ -76,15 +76,20 @@ app.use(express.static(path.join(__dirname, "public")));
  */
 require('./app/routes/passport.routes.js')(app, passport);
 
+// USER ROUTES (/home/...)
 const user = require("./app/routes/user.routes.js");
 app.use("/home/profile", user);
 
 const address = require("./app/routes/address.routes.js");
 app.use("/home/address", address);
 
-const recipe = require("./app/routes/recipe.routes.js");
-app.use("/admin/recipes", recipe);
+const recipeForUser = require("./app/routes/recipeUser.routes.js");
+app.use("/home/recipes", recipeForUser);
 
+
+// EMPLOYEE ROUTES (/admin/...)
+const recipeForAdmin = require("./app/routes/recipeAdmin.routes.js");
+app.use("/admin/recipes", recipeForAdmin);
 
 
 app.get('/', (req, res) => {res.redirect('/login')})
