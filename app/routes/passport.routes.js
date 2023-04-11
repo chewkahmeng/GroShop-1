@@ -14,9 +14,17 @@ module.exports = function(app, passport) {
 
     app.get("/home", isLoggedIn, (req, res) => {
         console.log(req.body)
-        res.render('index', {
-            user: typeof req.user !== 'undefined'?req.user:null
-        })
+        if (req.user.constructor.name === 'Employee') {
+            // if user is an employee, redirect to admin page
+            res.render('admin', {
+                user: typeof req.user !== 'undefined'?req.user:null
+            })
+          } else {
+            //redirect to user page
+            res.render('index', {
+                user: typeof req.user !== 'undefined'?req.user:null
+            })
+          }
     });
 
     app.get('/profile', isLoggedIn, function(req, res) {
