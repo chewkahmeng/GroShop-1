@@ -18,11 +18,15 @@ module.exports = (sequelize, Sequelize) => {
     email: {
       type: DataTypes.STRING,
       allowNull: false
+    },
+    role: {
+      type: DataTypes.STRING,
+      defaultValue: "CUSTOMER"
     }
   }
   // include the following if want to specify the DB table name
   , {
-      tableName: 'tbl_users'
+      tableName: 'tbl_user'
     }
   );
   

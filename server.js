@@ -69,14 +69,25 @@ app.use(express.static(path.join(__dirname, "public")));
 
 /**
  * -------------- ROUTES ----------------
+ * API routes 
+ * welcome page: /login, /register, /welcome
+ * user routes: /home/...
+ * admin routes: /admin/...
  */
 require('./app/routes/passport.routes.js')(app, passport);
 
-const tutorial = require("./app/routes/tutorial.routes.js");
-app.use("/tutorial", tutorial);
+const user = require("./app/routes/user.routes.js");
+app.use("/home/profile", user);
 
-const auth = require("./app/routes/auth.routes.js");
-app.use("/auth", auth);
+const address = require("./app/routes/address.routes.js");
+app.use("/home/address", address);
+
+const recipe = require("./app/routes/recipe.routes.js");
+app.use("/admin/recipes", recipe);
+
+
+
+app.get('/', (req, res) => {res.redirect('/login')})
 
 
 /**

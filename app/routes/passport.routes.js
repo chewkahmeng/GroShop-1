@@ -1,39 +1,46 @@
 // https://www.digitalocean.com/community/tutorials/easy-node-authentication-setup-and-local#displaying-user-and-secure-profile-page-views-profile-ejs
+const middleware = require("../middleware/middleware.js")
+const { check, validationResult } = require('express-validator')
+const db = require("../models");
+
+
 module.exports = function(app, passport) {
-    app.get("/", (req, res) => {
+    app.get("/welcome", (req, res) => {
         var isAuthenticated;
         if (typeof req.user === 'undefined') {
             isAuthenticated = null
         } else {
             isAuthenticated = req.user
         }
-        res.render("welcome", {
-            user: typeof req.user !== 'undefined'?req.user:null,
-        });
+        if (isAuthenticated === null) {
+            res.render("welcome", {
+                user: typeof req.user !== 'undefined'?req.user:null,
+            });
+        } else {
+            res.redirect('/home')
+        }
     });
 
-    app.get("/home", isLoggedIn, (req, res) => {
-        console.log(req.body)
-        if (req.user.constructor.name === 'Employee') {
-            // if user is an employee, redirect to admin page
-            res.render('admin', {
+    app.get("/home", middleware.isLoggedIn, (req, res) => {
+        if (req.user.role === 'CUSTOMER') {
+            res.render('user/index', {
                 user: typeof req.user !== 'undefined'?req.user:null
             })
-          } else {
-            //redirect to user page
-            res.render('index', {
-                user: typeof req.user !== 'undefined'?req.user:null
-            })
-          }
+        } else if (req.user.role === 'ADMIN') {
+            res.redirect("/admin")
+        }
+
     });
 
-    app.get('/profile', isLoggedIn, function(req, res) {
-        res.render('profile', {
-            user: req.user // get the user out of session and pass to template
-        });
-    });
+    app.get("/admin", middleware.isLoggedIn, (req, res) => {
+        res.render('admin/index', {
+            employee: typeof req.user !== 'undefined'?req.user:null
+        })
+    })
 
-    app.get('/login', (req, res) => {res.redirect("/")})
+
+
+    app.get('/login', (req, res) => {res.redirect("/welcome")})
     app.post('/login', passport.authenticate('local', {
         successRedirect: '/home',
         failureRedirect: '/login',
@@ -43,11 +50,24 @@ module.exports = function(app, passport) {
     app.get('/register', (req, res) => {res.render("register", {
         user: typeof req.user !== 'undefined'?req.user:null
     })})
-    app.post('/register', passport.authenticate('local-signup', {
-        successRedirect: '/home',
-        failureRedirect: '/register',
-        failureFlash: true
-    }))
+
+    app.post('/register', 
+        middleware.validateRegister, 
+        (req, res, next) => {
+            const errors = validationResult(req)
+            if (!errors.isEmpty()) {
+                errors.array().forEach(err => req.flash('error', err.msg));
+                return res.redirect('/register');
+            }
+            console.log("here")
+            next()
+        },
+        passport.authenticate('local-signup', {
+            successRedirect: '/home',
+            failureRedirect: '/register',
+            failureFlash: true
+        })
+    )
 
     app.post('/logout', function(req, res, next) {
         req.logout(function(err) {
@@ -55,15 +75,7 @@ module.exports = function(app, passport) {
             res.redirect('/');
         });
     });
+
 }
 
 // route middleware to make sure a user is logged in
-function isLoggedIn(req, res, next) {
-
-    // if user is authenticated in the session, carry on
-    if (req.isAuthenticated())
-        return next();
-
-    // if they aren't redirect them to the home page
-    res.redirect('/');
-}
