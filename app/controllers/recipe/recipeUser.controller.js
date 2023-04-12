@@ -13,7 +13,7 @@ exports.getRecipeHomeForUser = async (req, res) => {
       });
     // console.log(JSON.stringify(recipes, null, 2));
 
-    res.render('user/recipe/recipe', {
+    res.render('./user/recipe/recipe', {
         user: req.user,
         recipes: recipes
     })
@@ -56,7 +56,7 @@ exports.getRecipeForUser = async (req, res) => {
         })
     } else {
         req.flash('error', 'Error occurred in retrieving recipe.')
-        res.redirect(`/user/recipes`)
+        res.redirect(`/home/recipes`)
     }
 }
 
@@ -131,4 +131,18 @@ exports.postComment = async (req, res) => {
     }
 }
 
+exports.getFavouriteRecipesForUser = async (req, res) => {
+    var recipes = await Recipe.findAll({
+        include: [{ model: RecipeImage}, {model: Favourites, required: false}]
+      });
+    console.log(JSON.stringify(recipes, null, 2));
+    if (recipes) {
+        recipes = recipes.filter(recipe => recipe.favourite !== null)
+    }
+    console.log(recipes.length)
 
+    res.render('./user/recipe/favourites', {
+        user: req.user,
+        recipes: recipes.length > 0 ? recipes : null
+    })
+}

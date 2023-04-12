@@ -135,7 +135,7 @@ exports.getRecipe = async (req, res) => {
             steps: steps
           })
     } else {
-        req.flash('error', 'Error occurred in retrieving recipe (getRecipe).')
+        req.flash('error', 'Error occurred in retrieving recipe.')
         res.redirect(`/admin/recipes`)
     }
 }

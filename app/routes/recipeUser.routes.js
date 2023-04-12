@@ -10,14 +10,19 @@ const { check, validationResult } = require('express-validator')
 // Recipe Home Page
 router.get("/", middleware.isLoggedIn, recipeController.getRecipeHomeForUser)
 
+// Favourite Recipes Page
+router.get("/favourites", middleware.isLoggedIn, recipeController.getFavouriteRecipesForUser)
+
 // View Recipe
 router.get("/:id", middleware.isLoggedIn, recipeController.getRecipeForUser)
 
 // Favourite Recipe
 router.post("/:id/favourite", middleware.isLoggedIn, recipeController.favouriteRecipe)
 
-// Favourite Recipe
+// Unfavourite Recipe
 router.post("/:id/unfavourite", middleware.isLoggedIn, recipeController.unfavouriteRecipe)
+
+
 
 
 module.exports = router
