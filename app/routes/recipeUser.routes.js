@@ -13,5 +13,11 @@ router.get("/", middleware.isLoggedIn, recipeController.getRecipeHomeForUser)
 // View Recipe
 router.get("/:id", middleware.isLoggedIn, recipeController.getRecipeForUser)
 
+// Favourite Recipe
+router.post("/:id/favourite", middleware.isLoggedIn, recipeController.favouriteRecipe)
+
+// Favourite Recipe
+router.post("/:id/unfavourite", middleware.isLoggedIn, recipeController.unfavouriteRecipe)
+
 
 module.exports = router

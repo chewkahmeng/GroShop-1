@@ -6,13 +6,12 @@
         <h1 class="card-title text-center" style="color:rgb(0, 16, 87); font-weight:bold">
             <%= recipe.name %>
         </h1>
-        <h5>Cuisine: <%= recipe.cuisine %></h5>
-        <h5>Prep Time: <%=recipe.prepTime%> <%=recipe.prepTimeUom%></h5>
+        <h6 class="fw-normal text-center"><i class="fa-solid fa-utensils"></i>  <%= recipe.cuisine %> &nbsp; &nbsp; &nbsp;<i class="fa-solid fa-clock"></i>  <%=recipe.prepTime%> <%=recipe.prepTimeUom%></h6>
         <% if (recipe.description) { %>
-        <h5>Description: <%= recipe.description %></h5>
+        <h6 class="fw-light text-center">Description: <%= recipe.description %></h6>
         <% } %>
     </div>
-    <hr />
+
     <% if (typeof image !== 'undefined') { %>
     <div class="row justify-content-md-center mb-3">
         <div class="col-md-8 col-md-offset-2 text-center">
@@ -27,54 +26,54 @@
         <div class="col-md-8 col-md-offset-2">
             <%- include('../../partials/alerts.ejs') %>
             <br>
-            <hr />
             <% if (ingredients) { %>
                 <div class="row justify-content-md-center mb-3">
-                    <h2 class="text-center" style="color:rgb(0, 16, 87); font-weight:bold">
+                    <h2 class="text-center fw-bold" style="color:rgb(0, 16, 87);">
                         Ingredients
                     </h2>
                 </div>
-                <% for (let i in ingredients) { %>
+                <div class="card">
+                    <div class="card-body">
+                    <% for (let i in ingredients) { %>
                     <% const curr = ingredients[i] %>
-                    <div class="card">
-                        <div class="card-body row">
+                    <div class="row">
                             <div class="col-sm-1"><%= parseInt(i)+1 %>. </div>
                             <div class="col-sm-8">
-                                <%= ingredients[i].amount %>
-                                <% if (ingredients[i].uom !== 'quantity') { %>
-                                <%= ingredients[i].uom %> 
+                                <%= curr.amount %>
+                                <% if (curr.uom !== 'quantity') { %>
+                                <%= curr.uom %> 
                                 <% } %>
                                 x
-                                <%= ingredients[i].name %> 
-                                <% if (ingredients[i].description) { %>
-                                    (<%= ingredients[i].description %>)
+                                <%= curr.name %> 
+                                <% if (curr.description) { %>
+                                    (<%= curr.description %>)
                                 <% } %>
                             </div>
-                        </div>
-
                     </div>
-                <% } %>
+                    <% } %>
+                    </div>
+                </div>
             <% } %>
-            <hr />
-
+            <br>
             <% if (steps) { %>
                 <div class="row justify-content-md-center mb-3">
-                    <h2 class="text-center" style="color:rgb(0, 16, 87); font-weight:bold">
+                    <h2 class="text-center fw-bold" style="color:rgb(0, 16, 87);">
                         Steps
                     </h2>
                 </div>
-                <% for (let i in steps) { %>
+                <div class="card">
+                    <div class="card-body">
+                    <% for (let i in steps) { %>
                     <% const curr = steps[i] %>
-                    <div class="card">
-                        <div class="card-body row">
-                            <div class="col-sm-1"><%= parseInt(i)+1 %>. </div>
+                        <div class="row">
+                           <div class="col-sm-1"><%= parseInt(i)+1 %>. </div>
                             <div class="col-sm-8">
                                 <%= steps[i].description %> 
-                            </div>
+                            </div> 
                         </div>
-
+                    <% } %>
                     </div>
-                <% } %>
+                </div>
             <% } %>
         </div>
     </div>
