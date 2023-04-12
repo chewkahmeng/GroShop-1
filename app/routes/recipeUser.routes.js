@@ -22,6 +22,9 @@ router.post("/:id/favourite", middleware.isLoggedIn, recipeController.favouriteR
 // Unfavourite Recipe
 router.post("/:id/unfavourite", middleware.isLoggedIn, recipeController.unfavouriteRecipe)
 
+// Comment on Recipe
+router.post("/:id/comment", middleware.isLoggedIn, recipeController.postComment)
+
 
 
 

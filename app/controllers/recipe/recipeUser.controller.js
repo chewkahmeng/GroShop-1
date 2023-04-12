@@ -1,4 +1,5 @@
 const db = require("../../models")
+const { Op } = require("sequelize");
 const Recipe = db.recipes
 const RecipeImage = db.recipeImages;
 const RecipeIngredient = db.recipeIngredients;
@@ -7,16 +8,54 @@ const Favourites = db.favourites;
 const Comment = db.comments;
 
 
-exports.getRecipeHomeForUser = async (req, res) => {
-    const recipes = await Recipe.findAll({
-        include: [{ model: RecipeImage}]
-      });
-    // console.log(JSON.stringify(recipes, null, 2));
+const getPagination = (page, size) => {
+    if (page < 0) page = 0
+    const limit = size ? +size : 2;
+    const offset = page ? page * limit : 0;
+  
+    return { limit, offset };
+};
 
-    res.render('./user/recipe/recipe', {
-        user: req.user,
-        recipes: recipes
+const getPagingData = (data, page, limit) => {
+    const { count: totalItems, rows: recipes } = data;
+    const currentPage = page ? +page : 0;
+    const totalPages = Math.ceil(totalItems / limit);
+    const prevPage = (+page - 1) >= 0 ? (+page - 1) : null;
+    const nextPage = (+page + 1) <= totalPages ? (+page + 1) : null;
+
+    return { totalItems, recipes, totalPages, currentPage, prevPage, nextPage };
+};
+
+exports.getRecipeHomeForUser = async (req, res) => {
+    const { page, size } = req.query;
+    const { limit, offset } = getPagination(+page - 1, size);
+
+    Recipe.findAndCountAll({
+        include: [{ model: RecipeImage}],
+        limit, offset
+      })
+    .then(data => {
+        const response = getPagingData(data, page, limit);
+        res.render('./user/recipe/recipe', {
+            user: req.user,
+            recipes: response.recipes,
+            pageObj: {
+                currentPage: response.currentPage,
+                totalPages: response.totalPages,
+                nextPage: response.nextPage,
+                prevPage: response.prevPage
+            }
+        })
     })
+    .catch(err => {
+        res.render('./user/recipe/recipe', {
+            user: req.user,
+            recipes: null,
+            pageObj: null
+        })
+    });
+
+
 }
 
 exports.getRecipeForUser = async (req, res) => {
@@ -122,27 +161,46 @@ exports.postComment = async (req, res) => {
         Comment.create(comment)
         .then(data => {
             req.flash('success', 'Comment posted!')
+            res.redirect(`/home/recipes/${recipeId}`)
         }).catch(err => {
             console.log(err)
             req.flash('error', 'Error in posting comment.')
+            res.redirect(`/home/recipes/${recipeId}`)
         })
     } else {
         req.flash('error', 'Error in retrieving recipe to comment.')
+        res.redirect(`/home/recipes/${recipeId}`)
     }
 }
 
 exports.getFavouriteRecipesForUser = async (req, res) => {
-    var recipes = await Recipe.findAll({
-        include: [{ model: RecipeImage}, {model: Favourites, required: false}]
-      });
-    console.log(JSON.stringify(recipes, null, 2));
-    if (recipes) {
-        recipes = recipes.filter(recipe => recipe.favourite !== null)
-    }
-    console.log(recipes.length)
-
-    res.render('./user/recipe/favourites', {
-        user: req.user,
-        recipes: recipes.length > 0 ? recipes : null
+    const { page, size } = req.query;
+    const { limit, offset } = getPagination(+page - 1, size);
+    console.log(req.user.id)
+    Recipe.findAndCountAll({
+        include: [{ model: RecipeImage}, {model: Favourites, where: {
+            userId: {[Op.eq]: req.user.id}
+        }}],
+        limit, offset
+      })
+    .then(data => {
+        const response = getPagingData(data, page, limit);
+        res.render('./user/recipe/favourites', {
+            user: req.user,
+            recipes: response.recipes.length > 0 ? response.recipes : null,
+            pageObj: {
+                currentPage: response.currentPage,
+                totalPages: response.totalPages,
+                nextPage: response.nextPage,
+                prevPage: response.prevPage
+            }
+        })
     })
+    .catch(err => {
+        res.render('./user/recipe/favourites', {
+            user: req.user,
+            recipes: null,
+            pageObj: null
+        })
+    });
 }
