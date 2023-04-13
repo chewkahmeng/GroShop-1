@@ -8,27 +8,27 @@ const Favourites = db.favourites;
 const Comment = db.comments;
 
 
-const getPagination = (page, size) => {
+const getPagination = (page, size, itemsPerPage) => {
     if (page < 0) page = 0
-    const limit = size ? +size : 2; // set limit of items per page
+    const limit = size ? +size : itemsPerPage; // set limit of items per page
     const offset = page ? page * limit : 0;
   
     return { limit, offset };
 };
 
 const getPagingData = (data, page, limit) => {
-    const { count: totalItems, rows: recipes } = data;
+    const { count: totalItems, rows: items } = data;
     const currentPage = page ? +page : 0;
     const totalPages = Math.ceil(totalItems / limit);
     const prevPage = (+page - 1) >= 0 ? (+page - 1) : null;
     const nextPage = (+page + 1) <= totalPages ? (+page + 1) : null;
 
-    return { totalItems, recipes, totalPages, currentPage, prevPage, nextPage };
+    return { totalItems, items, totalPages, currentPage, prevPage, nextPage };
 };
 
 exports.getRecipeHomeForUser = async (req, res) => {
     const { page, size } = req.query;
-    const { limit, offset } = getPagination(+page - 1, size);
+    const { limit, offset } = getPagination(+page - 1, size, 12);
 
     Recipe.findAndCountAll({
         include: [{ model: RecipeImage}],
@@ -38,7 +38,7 @@ exports.getRecipeHomeForUser = async (req, res) => {
         const response = getPagingData(data, page, limit);
         res.render('./user/recipe/recipe', {
             user: req.user,
-            recipes: response.recipes,
+            recipes: response.items,
             pageObj: {
                 currentPage: response.currentPage,
                 totalPages: response.totalPages,
@@ -80,21 +80,38 @@ exports.getRecipeForUser = async (req, res) => {
         const favourite = await Favourites.findOne({
             where: {userId: req.user.id, recipeId: recipeId}
         })
-        const comments = await Comment.findAll({
-            where: {recipeId: recipeId}
-        })
-        console.log(comments)
-        console.log(comments.length)
 
-        res.render('./user/recipe/recipeViewPage', {
-            user: req.user,
-            recipe: recipe,
-            image: image,
-            ingredients: ingredients,
-            steps: steps,
-            favourite: favourite ? favourite : null,
-            comments: comments.length > 0 ? comments : null
+        const { page, size } = req.query;
+        const { limit, offset } = getPagination(+page - 1, size, 5);
+        
+        Comment.findAndCountAll({
+            where: {recipeId: recipeId},
+            offset, limit
         })
+        .then(data => {
+            const response = getPagingData(data, page, limit)
+            res.render('./user/recipe/recipeViewPage', {
+                user: req.user,
+                recipe: recipe,
+                image: image,
+                ingredients: ingredients,
+                steps: steps,
+                favourite: favourite ? favourite : null,
+                comments: response.items.length > 0 ? response.items : null,
+                pageObj: {
+                    currentPage: response.currentPage,
+                    totalPages: response.totalPages,
+                    nextPage: response.nextPage,
+                    prevPage: response.prevPage
+                }
+            })
+        })
+        .catch(err => {
+            console.log(err)
+            req.flash('error', 'Error occurred in retrieving recipe contents.')
+            res.redirect(`/home/recipes`)
+        })
+
     } else {
         req.flash('error', 'Error occurred in retrieving recipe.')
         res.redirect(`/home/recipes`)
