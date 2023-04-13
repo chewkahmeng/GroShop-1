@@ -4,16 +4,56 @@ const RecipeImage = db.recipeImages;
 const RecipeIngredient = db.recipeIngredients;
 const RecipeStep = db.recipeSteps;
 
-exports.getRecipeHome = async (req, res) => {
-    const recipes = await Recipe.findAll({
-        include: [{ model: RecipeImage}]
-      });
-    // console.log(JSON.stringify(recipes, null, 2));
 
-    res.render('admin/recipe/recipe', {
-        employee: req.user,
-        recipes: recipes
+const getPagination = (page, size, itemsPerPage) => {
+    if (page < 0) page = 0
+    const limit = size ? +size : itemsPerPage; // set limit of items per page
+    const offset = page ? page * limit : 0;
+  
+    return { limit, offset };
+};
+
+const getPagingData = (data, page, limit) => {
+    const { count: totalItems, rows: items } = data;
+    const currentPage = page ? +page : 0;
+    const totalPages = Math.ceil(totalItems / limit);
+    const prevPage = (+page - 1) >= 0 ? (+page - 1) : null;
+    const nextPage = (+page + 1) <= totalPages ? (+page + 1) : null;
+
+    return { totalItems, items, totalPages, currentPage, prevPage, nextPage };
+};
+
+const RECIPES_PER_PAGE = 12
+
+exports.getRecipeHome = async (req, res) => {
+    const { page, size } = req.query;
+    const { limit, offset } = getPagination(+page - 1, size, RECIPES_PER_PAGE);
+
+    Recipe.findAndCountAll({
+        include: [{ model: RecipeImage}],
+        limit, offset
+      })
+    .then(data => {
+        const response = getPagingData(data, page, limit);
+        res.render('./admin/recipe/recipe', {
+            employee: req.user,
+            recipes: response.items,
+            pageObj: {
+                currentPage: response.currentPage,
+                totalPages: response.totalPages,
+                nextPage: response.nextPage,
+                prevPage: response.prevPage
+            }
+        })
     })
+    .catch(err => {
+        req.flash("info", "Error in retrieving recipes.")
+        res.render('./admin/recipe/recipe', {
+            user: req.user,
+            recipes: null,
+            pageObj: null
+        })
+    });
 }
 
 

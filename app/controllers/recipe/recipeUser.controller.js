@@ -26,9 +26,12 @@ const getPagingData = (data, page, limit) => {
     return { totalItems, items, totalPages, currentPage, prevPage, nextPage };
 };
 
+const RECIPES_PER_PAGE = 12
+const COMMENTS_PER_PAGE = 5
+
 exports.getRecipeHomeForUser = async (req, res) => {
     const { page, size } = req.query;
-    const { limit, offset } = getPagination(+page - 1, size, 12);
+    const { limit, offset } = getPagination(+page - 1, size, RECIPES_PER_PAGE);
 
     Recipe.findAndCountAll({
         include: [{ model: RecipeImage}],
@@ -82,7 +85,7 @@ exports.getRecipeForUser = async (req, res) => {
         })
 
         const { page, size } = req.query;
-        const { limit, offset } = getPagination(+page - 1, size, 5);
+        const { limit, offset } = getPagination(+page - 1, size, COMMENTS_PER_PAGE);
         
         Comment.findAndCountAll({
             where: {recipeId: recipeId},
