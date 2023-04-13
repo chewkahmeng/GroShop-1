@@ -10,7 +10,7 @@ const Comment = db.comments;
 
 const getPagination = (page, size) => {
     if (page < 0) page = 0
-    const limit = size ? +size : 2;
+    const limit = size ? +size : 2; // set limit of items per page
     const offset = page ? page * limit : 0;
   
     return { limit, offset };
@@ -83,6 +83,8 @@ exports.getRecipeForUser = async (req, res) => {
         const comments = await Comment.findAll({
             where: {recipeId: recipeId}
         })
+        console.log(comments)
+        console.log(comments.length)
 
         res.render('./user/recipe/recipeViewPage', {
             user: req.user,
@@ -91,7 +93,7 @@ exports.getRecipeForUser = async (req, res) => {
             ingredients: ingredients,
             steps: steps,
             favourite: favourite ? favourite : null,
-            comments: comments ? comments : null
+            comments: comments.length > 0 ? comments : null
         })
     } else {
         req.flash('error', 'Error occurred in retrieving recipe.')

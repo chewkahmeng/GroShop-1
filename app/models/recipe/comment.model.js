@@ -8,7 +8,7 @@ module.exports = (sequelize, Sequelize) => {
     const DataTypes = Sequelize.DataTypes;
     const Comment = sequelize.define("comment", {
         content: {
-            type: DataTypes.STRING,
+            type: DataTypes.TEXT('long'),
             allowNull: false
         },
         author: {

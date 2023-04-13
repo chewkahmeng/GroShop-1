@@ -40,7 +40,7 @@
             <br>
             <% if (ingredients) { %>
                 <div class="row justify-content-md-center mb-3">
-                    <h2 class="text-center fw-bold" style="color:rgb(0, 16, 87);">
+                    <h2 class="fw-bold" style="color:rgb(0, 16, 87);">
                         Ingredients
                     </h2>
                 </div>
@@ -69,7 +69,7 @@
             <br>
             <% if (steps) { %>
                 <div class="row justify-content-md-center mb-3">
-                    <h2 class="text-center fw-bold" style="color:rgb(0, 16, 87);">
+                    <h2 class="fw-bold" style="color:rgb(0, 16, 87);">
                         Steps
                     </h2>
                 </div>
@@ -87,6 +87,28 @@
                     </div>
                 </div>
             <% } %>
+            <br>
+            <div class="row justify-content-md-center">
+                <h2 class="fw-bold" style="color:rgb(0, 16, 87);">
+                    Comments
+                </h2>
+                <form  id="postCommentForm" action="/home/recipes/<%=recipe.id%>/comment" method="POST">
+                    <div class="form-group mb-2">
+                        <textarea class="form-control" name="content" rows="2" ></textarea> 
+                    </div>
+                    <button type="submit" class="btn btn-success mb-2" >Post</button>
+                </form>
+                <% if (comments) { %>
+                    <% for (let i in comments) { %>
+                        <div class="card mb-1">
+                            <p class="card-body" style="padding:1%"><%= comments[i].content %></p>
+                            <p class="card-text text-end "><small class="small fw-light fst-italic text-muted" >Posted by <%= comments[i].author %> on <%=comments[i].createdAt.toISOString().split('T')[0]%></small></p>
+                        </div>
+                    <% } %>
+                <% } else { %>
+                    <p>No comments added yet...</p>
+                <% } %>
+            </div>
         </div>
     </div>
     <br>
@@ -96,15 +118,7 @@
         </div>
     </div>
     <hr />
-    <div class="row justify-content-md-center">
-        <div class="col-md-8 col-md-offset-2">
-            <form id="postCommentForm" action="/home/recipes/<%=recipe.id%>/comment" method="POST">
-                <h6>Add comment</h6>
-                <textarea class="form-control" name="content" style="width:40%; vertical-align: top;"></textarea>
-                <input type="submit" class="btn btn-primary" style="display: inline-block; margin-top: 10px;">
-            </form>
-        </div>
-    </div>
+
 </div>
 
 
