@@ -86,6 +86,8 @@ app.use("/home/address", address);
 const recipeForUser = require("./app/routes/recipeUser.routes.js");
 app.use("/home/recipes", recipeForUser);
 
+const cart = require("./app/routes/cart.routes.js");
+app.use("/home/cart", cart);
 
 // EMPLOYEE ROUTES (/admin/...)
 const recipeForAdmin = require("./app/routes/recipeAdmin.routes.js");
