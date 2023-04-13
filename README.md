@@ -19,13 +19,13 @@
     - `models` contains all the models of the application
     - `routes` contains all the api routes of the application
 - `node_modules` - imported npm packages that are used in the application
-- `public` - contains the static content
+- `public` - public static content
     - `css` contains all the css files
     - `images` contains all the image files used in application
 - `views` contains all application templates
-    - `admin` - contains all the admin templates
-    - `partials` - contains all the partials templates that can be used in both admin and user
-    - `user` - contains all the user templates
+    - `admin` contains all the admin templates
+    - `partials` contains all the partials templates that can be used in both admin and user
+    - `user` contains all the user templates
 - `package-lock.json`
 - `package.json`
 - `server.js` - main application file to run
