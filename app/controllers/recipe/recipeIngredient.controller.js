@@ -46,7 +46,7 @@ exports.updateIngredient = async (req, res) => {
     const existingRecipe = await Recipe.findByPk(recipeId)
     if (existingRecipe) {
         RecipeIngredient.update({
-            name: recipeIngredient.name, amount: recipeIngredient.amount, uom: recipeIngredient.uom
+            name: recipeIngredient.name, amount: recipeIngredient.amount, uom: recipeIngredient.uom, description: recipeIngredient.description
         }, {
             where: {id: req.params.ingredientId}
         })
