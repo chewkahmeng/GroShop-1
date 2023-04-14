@@ -44,6 +44,8 @@ db.favourites.belongsTo(db.recipes, {foreignKey: "recipeId", constraints: false}
 db.comments = require("./recipe/comment.model.js")(sequelize, Sequelize);
 db.products = require("./product/product.model.js")(sequelize, Sequelize);
 db.productImages = require("./product/image.model.js")(sequelize, Sequelize);
+db.productImages.hasOne(db.products, {foreignKey: "imageId", constraints: false})
+db.products.belongsTo(db.productImages)
 db.adminAddress = require("./adminAddress.model.js")(sequelize, Sequelize);
 
 module.exports = db;
