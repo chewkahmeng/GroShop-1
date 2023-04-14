@@ -18,14 +18,18 @@ module.exports = (sequelize, Sequelize) => {
       },
       cuisine: {
         type: DataTypes.STRING,
-        // allowNull: false
+        allowNull: false
       },
       prepTime: {
         type: DataTypes.INTEGER,
-        // allowNull: false
+        allowNull: false
       },
       prepTimeUom: {
         type: DataTypes.STRING,
+        allowNull: false
+      },
+      difficulty: {
+        type: DataTypes.INTEGER,
         // allowNull: false
       }
     }

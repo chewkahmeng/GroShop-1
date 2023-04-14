@@ -67,6 +67,7 @@ exports.createRecipe = (req, res) => {
         cuisine: req.body.cuisine ? req.body.cuisine : null,
         prepTime: req.body.prepTime ? req.body.prepTime : null,
         prepTimeUom: req.body.prepTimeUom ? req.body.prepTimeUom : null,
+        difficulty: req.body.difficulty ? req.body.difficulty : null,
     };
 
     Recipe.create(recipe)
@@ -203,7 +204,8 @@ exports.updateRecipe = async (req, res) => {
         cuisine: req.body.cuisine,
         prepTime: req.body.prepTime,
         prepTimeUom: req.body.prepTimeUom,
-        description: req.body.description ? req.body.description : null
+        description: req.body.description ? req.body.description : null,
+        difficulty: req.body.difficulty
     }
     const recipeId = req.params.id
     const recipeInDB = await Recipe.findByPk(recipeId)
@@ -214,7 +216,8 @@ exports.updateRecipe = async (req, res) => {
                 cuisine: recipe.cuisine,
                 prepTime: recipe.prepTime,
                 prepTimeUom: recipe.prepTimeUom,
-                description: recipe.description
+                description: recipe.description,
+                difficulty: recipe.difficulty
             }, 
             { where: { id: recipeId } }
         ).then(data => {
@@ -231,44 +234,36 @@ exports.updateRecipe = async (req, res) => {
     }
 }
 
+function deleteRecipeDetails(recipeId) {
+    return Recipe.destroy({where: {id: recipeId}})
+}
+function deleteRecipeImage(imageId) {
+    return RecipeImage.destroy({where: {id: imageId}})
+}
+function deleteRecipeIngredients(recipeId) {
+    return RecipeIngredient.destroy({where: {recipeId: recipeId}})
+}
+function deleteRecipeSteps(recipeId) {
+    return RecipeStep.destroy({where: {recipeId: recipeId}})
+}
+
 exports.deleteRecipe = async (req, res) => {
     const recipeId = req.params.id
     const recipe = await Recipe.findByPk(recipeId)
     if (recipe) {
-        // delete recipe steps
-        RecipeStep.destroy({where: {recipeId: recipeId}})
-        .then(data => {})
-        .catch(err => {
+        Promise.all([
+            deleteRecipeImage(recipe.imageId),
+            deleteRecipeIngredients(recipeId),
+            deleteRecipeSteps(recipeId),
+            deleteRecipeDetails(recipeId)
+        ]).then(data => {
+            req.flash('success', 'Recipe deleted successfully.')
+            res.redirect(`/admin/recipes`)
+        }).catch(err => {
             console.log(err)
-            req.flash('error', 'Error occurred in deleting steps.')
+            req.flash('error', `Error occurred in deleting recipe: ${err}`)
             res.redirect(`/admin/recipes`)
         })
-        // delete recipe ingredients
-        RecipeIngredient.destroy({where: {recipeId: recipeId}})
-        .then(data => {})
-        .catch(err => {
-            console.log(err)
-            req.flash('error', 'Error occurred in deleting ingredients.')
-            res.redirect(`/admin/recipes`)
-        })
-        // delete recipe photo
-        RecipeImage.destroy({where: {id: recipe.imageId}})
-        .then(data => {})
-        .catch(err => {
-            console.log(err)
-            req.flash('error', 'Error occurred in deleting photo.')
-            res.redirect(`/admin/recipes`)
-        })
-        // delete recipe photo
-        Recipe.destroy({where: {id: recipeId}})
-        .then(data => {})
-        .catch(err => {
-            console.log(err)
-            req.flash('error', 'Error occurred in deleting recipe.')
-            res.redirect(`/admin/recipes`)
-        })
-        req.flash('success', 'Recipe deleted successfully.')
-        res.redirect(`/admin/recipes`)
     } else {
         req.flash('error', 'No recipe found.')
         res.redirect(`/admin/recipes`)

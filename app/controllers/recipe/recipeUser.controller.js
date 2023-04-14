@@ -209,7 +209,7 @@ exports.getFavouriteRecipesForUser = async (req, res) => {
         const response = getPagingData(data, page, limit);
         res.render('./user/recipe/favourites', {
             user: req.user,
-            recipes: response.recipes.length > 0 ? response.recipes : null,
+            recipes: response.items.length > 0 ? response.items : null,
             pageObj: {
                 currentPage: response.currentPage,
                 totalPages: response.totalPages,

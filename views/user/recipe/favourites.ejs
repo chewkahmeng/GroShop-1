@@ -25,7 +25,8 @@
         </div>
         <br><br>
         <!-- PAGINATION -->
-        <ul class="pagination justify-content-center">
+        <%- include('../../partials/pagination.ejs') %>
+        <!-- <ul class="pagination justify-content-center">
             <% if (pageObj.prevPage) { %>
             <li class="page-item"><a class="page-link" href="?page=<%= pageObj.prevPage %>">Previous</a></li>
             <% } else { %>
@@ -43,7 +44,7 @@
             <% } else { %>
             <li class="page-item disabled"><span class="page-link">Next</span></li>
             <% } %>
-        </ul>
+        </ul> -->
         <% } else { %>
 
         <center>

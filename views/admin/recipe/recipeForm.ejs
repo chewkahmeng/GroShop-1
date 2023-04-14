@@ -22,7 +22,7 @@
                     <input type="text" class="form-control" name="description">
                 </div>
                 <div class="form-group mb-3" >
-                    <label for="account-type">Cuisine</label>
+                    <label for="cuisine">Cuisine</label>
                     <select id="cuisine" class="form-select" name="cuisine" required>
                         <option value="Local">Local</option>
                         <option value="Chinese">Chinese</option>
@@ -35,6 +35,12 @@
                         <option value="Japanese">Japanese</option>
                         <option value="Korean">Korean</option>
                     </select>
+                </div>
+                <div class="form-group mb-3" >
+                    <div class="col-md-3">
+                        <label for="difficulty">Difficulty (out of 5)</label>
+                        <input type="number" class="form-control" name="difficulty" id="difficulty" min="1" max="5" required>
+                    </div>
                 </div>
                 <label for="prepTime" class="form-label">Prep Time</label>
                 <div class="input-group row">
@@ -78,6 +84,12 @@
                             <option value="Japanese" <% if(recipe.cuisine === "Japanese"){ %>selected<% } %>>Japanese</option>
                             <option value="Korean" <% if(recipe.cuisine === "Korean"){ %>selected<% } %>>Korean</option>
                         </select>
+                    </div>
+                    <div class="form-group mb-3" >
+                        <div class="col-md-3">
+                            <label for="difficulty">Difficulty (out of 5)</label>
+                            <input type="number" class="form-control" name="difficulty" id="difficulty" min="1" max="5" value="<%=recipe.difficulty%>" required>
+                        </div>
                     </div>
                     <label for="prepTime" class="form-label">Prep Time</label>
                     <div class="input-group row">
