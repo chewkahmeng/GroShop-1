@@ -3,7 +3,6 @@
 // id, title, description, published, createdAt, updatedAt.
 
 // https://sequelize.org/docs/v6/core-concepts/model-basics/
-
 module.exports = (sequelize, Sequelize) => {
     const DataTypes = Sequelize.DataTypes;
     const Recipe = sequelize.define("recipe", {

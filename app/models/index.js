@@ -32,8 +32,16 @@ db.employees = require("./employee.model.js")(sequelize, Sequelize);
 db.address = require("./address.model.js")(sequelize, Sequelize);
 db.recipes = require("./recipe/recipe.model.js")(sequelize, Sequelize);
 db.recipeImages = require("./recipe/image.model.js")(sequelize, Sequelize);
+db.recipeImages.hasOne(db.recipes, {foreignKey: "imageId", constraints: false})
+db.recipes.belongsTo(db.recipeImages)
 db.recipeIngredients = require("./recipe/ingredient.model.js")(sequelize, Sequelize);
 db.recipeSteps = require("./recipe/step.model.js")(sequelize, Sequelize);
+db.favourites = require("./recipe/favourites.model.js")(sequelize, Sequelize);
+
+db.recipes.hasOne(db.favourites, {foreignKey: "recipeId", constraints: false})
+db.favourites.belongsTo(db.recipes, {foreignKey: "recipeId", constraints: false})
+
+db.comments = require("./recipe/comment.model.js")(sequelize, Sequelize);
 db.products = require("./product/product.model.js")(sequelize, Sequelize);
 db.productImages = require("./product/image.model.js")(sequelize, Sequelize);
 db.adminAddress = require("./adminAddress.model.js")(sequelize, Sequelize);

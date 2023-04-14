@@ -31,7 +31,7 @@
                 <br><br>
             </form>
             <hr />
-            <% if (typeof image !== 'undefined') { %>
+            <% if (typeof image !== 'undefined' && image) { %>
             <h4>Current Photo</h4>
             <img id="uploaded-image" src="<%=image.srcPath%>" width="50%">
             <br>

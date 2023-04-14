@@ -1,0 +1,146 @@
+<%- include('../../partials/header.ejs') %>
+<body>
+<%- include('../../partials/navbar-user.ejs') %>
+<div class="card page-card">
+    <div class="row justify-content-md-center mb-3">
+        <%- include('../../partials/alerts.ejs') %>
+        <h1 class="card-title text-center fw-bold" style="color:rgb(0, 16, 87);">
+            <%= recipe.name %>
+        </h1>
+        <h6 class="fw-normal text-center"><i class="fa-solid fa-utensils"></i>&nbsp;  <%= recipe.cuisine %> &nbsp; &nbsp; &nbsp;<i class="fa-solid fa-clock"></i> &nbsp; <%=recipe.prepTime%> <%=recipe.prepTimeUom%></h6>
+        <% if (recipe.description) { %>
+        <h6 class="fw-light text-center">Description: <%= recipe.description %></h6>
+        <% } %>
+        <div class="text-center">
+            <% if (favourite) { %>
+                <form action="/home/recipes/<%=recipe.id%>/unfavourite" method="POST">
+                    <button type="Submit" class="btn btn-danger text-center" value="Unfavourite"><i class="fa-solid fa-circle-minus"></i>&nbsp; Unfavourite </button>
+                </form>
+            <% } else { %> 
+                <form action="/home/recipes/<%=recipe.id%>/favourite" method="POST">
+                    <button type="Submit" class="btn btn-success text-center" value="Favourite"><i class="fa-solid fa-circle-plus"></i>&nbsp; Favourite </button>
+                </form>
+            <% } %> 
+        </div>
+  
+    </div>
+    <!-- <hr /> -->
+    <% if (typeof image !== 'undefined' && image) { %>
+    <div class="row justify-content-md-center mb-3">
+        <div class="col-md-8 col-md-offset-2 text-center">
+            <img id="uploaded-image" src="<%=image.srcPath%>" width="70%">
+            <br>
+        </div>
+
+    </div>
+    <% } %>
+    <div class="row justify-content-md-center">
+        <div class="col-md-8 col-md-offset-2">
+
+            <br>
+            <% if (ingredients) { %>
+                <div class="row justify-content-md-center mb-3">
+                    <h2 class="fw-bold" style="color:rgb(0, 16, 87);">
+                        Ingredients
+                    </h2>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                    <% for (let i in ingredients) { %>
+                    <% const curr = ingredients[i] %>
+                    <div class="row">
+                            <div class="col-sm-1"><%= parseInt(i)+1 %>. </div>
+                            <div class="col-sm-8">
+                                <%= curr.amount %>
+                                <% if (curr.uom !== 'quantity') { %>
+                                <%= curr.uom %> 
+                                <% } %>
+                                x
+                                <%= curr.name %> 
+                                <% if (curr.description) { %>
+                                    (<%= curr.description %>)
+                                <% } %>
+                            </div>
+                    </div>
+                    <% } %>
+                    </div>
+                </div>
+            <% } %>
+            <br>
+            <% if (steps) { %>
+                <div class="row justify-content-md-center mb-3">
+                    <h2 class="fw-bold" style="color:rgb(0, 16, 87);">
+                        Steps
+                    </h2>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                    <% for (let i in steps) { %>
+                    <% const curr = steps[i] %>
+                        <div class="row">
+                           <div class="col-sm-1"><%= parseInt(i)+1 %>. </div>
+                            <div class="col-sm-8">
+                                <%= steps[i].description %> 
+                            </div> 
+                        </div>
+                    <% } %>
+                    </div>
+                </div>
+            <% } %>
+            <br>
+            <div class="row justify-content-md-center">
+                <h2 class="fw-bold" style="color:rgb(0, 16, 87);">
+                    Comments
+                </h2>
+                <form  id="postCommentForm" action="/home/recipes/<%=recipe.id%>/comment" method="POST">
+                    <div class="form-group mb-2">
+                        <textarea class="form-control" name="content" rows="2" ></textarea> 
+                    </div>
+                    <button type="submit" class="btn btn-success mb-2" >Post</button>
+                </form>
+                <% if (comments) { %>
+                    <% for (let i in comments) { %>
+                        <div class="card mb-1">
+                            <p class="card-body" style="padding:1%"><%= comments[i].content %></p>
+                            <p class="card-text text-end "><small class="small fw-light fst-italic text-muted" >Posted by <%= comments[i].author %> on <%=comments[i].createdAt.toISOString().split('T')[0]%></small></p>
+                        </div>
+                    <% } %>
+                    <!-- PAGINATION -->
+                    <ul class="pagination justify-content-center">
+                        <% if (pageObj.prevPage) { %>
+                        <li class="page-item"><a class="page-link" href="?page=<%= pageObj.prevPage %>">Previous</a></li>
+                        <% } else { %>
+                        <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                        <% } %>
+                        <% for (let i=1; i < pageObj.totalPages + 1; i++) { %>
+                            <% if (pageObj.currPage === i) { %>
+                            <li class="page-item active"><span class="page-link"><%= i %></span></li>
+                            <% } else { %>
+                            <li class="page-item"><a class="page-link" href="?page=<%= i %>"><%= i %></a></li>
+                            <% } %>
+                            <% } %>
+                        <% if (pageObj.nextPage) { %>
+                        <li class="page-item"><a class="page-link" href="?page=<%= pageObj.nextPage %>">Next</a></li>
+                        <% } else { %>
+                        <li class="page-item disabled"><span class="page-link">Next</span></li>
+                        <% } %>
+                    </ul>
+                <% } else { %>
+                    <p>No comments added yet...</p>
+                <% } %>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row justify-content-md-center">
+        <div class="col-md-8 col-md-offset-2">
+            <a href="/home/recipes" class="btn btn-primary" value="Back to Recipes Home">Back to Recipes Home</a>
+        </div>
+    </div>
+    <hr />
+
+</div>
+
+
+</body>
+<%- include('../../partials/footer.ejs') %>
