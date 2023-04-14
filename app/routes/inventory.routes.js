@@ -6,12 +6,7 @@ const inventoryController = require("../controllers/inventory/inventory.controll
 const { check, validationResult } = require('express-validator')
 
 // Inventory Home Page
-router.get("/", middleware.isLoggedIn, 
-(req, res) => res.render('admin/inventory/inventory', {
-    employee: req.user
-}));
-
-router.get("/productViewPage", middleware.isLoggedIn, inventoryController.viewProducts)
+router.get("/", middleware.isLoggedIn, inventoryController.viewProducts)
 
 // Upload Product details
 router.get("/create", middleware.isLoggedIn, (req, res) => {

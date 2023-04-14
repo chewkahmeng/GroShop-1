@@ -2,15 +2,47 @@ const db = require("../../models")
 const Product = db.products
 const ProductImage = db.productImages;
 
-const mysql = require("mysql2");
-const dbConfig = require("../../config/db.config.js");
-// Create a connection to the database
-const connection = mysql.createConnection({
-  host: dbConfig.HOST,
-  user: dbConfig.USER,
-  password: dbConfig.PASSWORD,
-  database: dbConfig.DB
-});
+const getPagination = (page, size, itemsPerPage) => {
+    if (page < 0) page = 0
+    const limit = size ? +size : itemsPerPage; // set limit of items per page
+    const offset = page ? page * limit : 0;
+  
+    return { limit, offset };
+};
+
+const getPagingData = (data, page, limit) => {
+    const { count: totalItems, rows: items } = data;
+    const currentPage = page ? +page : 0;
+    const totalPages = Math.ceil(totalItems / limit);
+    const prevPage = (+page - 1) >= 0 ? (+page - 1) : null;
+    const nextPage = (+page + 1) <= totalPages ? (+page + 1) : null;
+
+    return { totalItems, items, totalPages, currentPage, prevPage, nextPage };
+};
+
+const PRODUCTS_PER_PAGE = 12
+
+exports.viewProducts = async (req, res) => {
+    const { page, size } = req.query;
+    const { limit, offset } = getPagination(+page - 1, size, PRODUCTS_PER_PAGE);
+    Product.findAndCountAll({
+        include: [{ model: ProductImage}],
+        limit, offset
+      })
+      .then(data => {
+        const response = getPagingData(data, page, limit);
+        res.render('./admin/inventory/inventory', {
+            employee: req.user,
+            products: response.items,
+            pageObj: {
+                currentPage: response.currentPage,
+                totalPages: response.totalPages,
+                nextPage: response.nextPage,
+                prevPage: response.prevPage
+            }
+        })
+    })
+}
 
 // Enter Product Details
 exports.createProduct = (req, res) => {
@@ -87,25 +119,6 @@ exports.addPhotoToProduct = (req, res) => {
     });
 }
 
-exports.viewProducts = async (req, res) => {
-    connection.query('SELECT p.id, p.name, description, quantity, price, pi.srcPath FROM tbl_product p, tbl_product_image pi WHERE p.imageId = pi.id;', (err, res2) => {
-        if (err){
-            req.flash('error', 'Error occurred in viewing product.')
-        }
-        //connection.end();
-        console.log(res2);
-        if (res2) {
-            res.render('./admin/inventory/productViewPage', {
-                employee: req.user,
-                product: res2
-            })
-        } else {
-            req.flash('error', 'Error occurred in retrieving product.')
-            res.redirect(`/admin/inventory`)
-        }
-    });
-}
-
 exports.updateProduct = (req, res) => {
     console.log(req.body)
     console.log('req.user: ' + req.user.username)
@@ -126,7 +139,7 @@ exports.updateProduct = (req, res) => {
     .then(num => {
       if (num == 1) {
         req.flash('success', 'Product updated successfully.')
-        res.redirect('/admin/inventory/productViewPage')
+        res.redirect('/admin/inventory')
       } else {
         req.flash('error', 'No product found in database')
         res.redirect(`/admin/inventory/${req.params.id}/update`)
@@ -158,7 +171,7 @@ exports.deleteProduct = async (req, res) => {
     .then(num => {
         if (num == 1) {
             req.flash('success', 'Product deleted successfully.')
-            res.redirect('/admin/inventory/productViewPage')
+            res.redirect('/admin/inventory')
         } else {
             req.flash('error', 'No product found in database')
             res.redirect(`/admin/inventory/${req.params.id}/update`)
@@ -166,7 +179,7 @@ exports.deleteProduct = async (req, res) => {
         })
         .catch(err => {
             console.log(err)
-            req.flash('error', `Error occurred in deleing product.: ${err}`)
+            req.flash('error', `Error occurred in deleting product.: ${err}`)
             res.redirect('/admin/inventory')
         });
 }
