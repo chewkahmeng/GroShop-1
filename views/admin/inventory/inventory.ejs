@@ -1,0 +1,18 @@
+<%- include('../../partials/header.ejs') %>
+
+<body>
+<%- include('../../partials/navbar-admin.ejs') %>
+<div id="admin-home-page">
+    <div class="container justify-content-center">
+        <%- include('../../partials/alerts.ejs') %>
+        <h1>INVENTORY PAGE...</h1>
+        <!-- <a href='/admin/recipes/create' class="btn btn-primary"><i class="fa-solid fa-circle-plus"></i>&nbsp;&nbsp;Add Recipe</a> -->
+         <a href='/admin/inventory/create' class="btn btn-primary"><i class="fa-solid fa-circle-plus"></i>&nbsp;&nbsp;Add Product</a>
+         <br>
+         <br>
+         <a href='/admin/inventory/productViewPage' class="btn btn-primary"><i class="fa-solid"></i>&nbsp;&nbsp;View Products</a>
+    </div>
+</div>
+</body>
+
+<%- include('../../partials/footer.ejs') %>

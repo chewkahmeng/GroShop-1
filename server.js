@@ -85,7 +85,14 @@ app.use("/home/address", address);
 const recipe = require("./app/routes/recipe.routes.js");
 app.use("/admin/recipes", recipe);
 
+const inventory = require("./app/routes/inventory.routes.js");
+app.use("/admin/inventory", inventory);
 
+const admin = require("./app/routes/admin.routes.js");
+app.use("/admin/profile", admin);
+
+const adminAddress = require("./app/routes/adminAddress.routes.js");
+app.use("/admin/address", adminAddress);
 
 app.get('/', (req, res) => {res.redirect('/login')})
 
