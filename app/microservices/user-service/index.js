@@ -25,6 +25,41 @@ db.connect(function(err) {
 })
 
 
+app.get("/:id/deleteuser", (req, res) => {
+  const userid =req.params.id;
+  var q1 = `
+  SELECT *
+  FROM
+    userservice.tbl_user 
+  WHERE 
+    (id = ${userid});
+  DELETE FROM 
+    userservice.tbl_user 
+  WHERE 
+    (id = ${userid});
+  DELETE FROM 
+    userservice.tbl_address 
+  WHERE 
+    (userId = ${userid});`
+  
+  db.query(q1, (err, data)=> {
+    if(err){
+      return res.json(err)
+    }
+    else{
+      if(data[0]=''){
+        res.send({
+          message: "User was deleted successfully!"
+        });
+      }else{
+        res.send({
+          message: `Cannot delete User with id=${userid}. Maybe User was not found!`
+        });
+      }      
+    }
+  })
+})
+
 app.get("/:id/getuserprofile", (req, res) => {
   const userid =req.params.id;
   var q1 = `
