@@ -13,7 +13,8 @@ const db = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "password",
-  database: "cartservice"
+  database: "userservice",
+  multipleStatements : true
 });
 //test connection. if cannot connect then try 
 //execut this in mysql workbench
@@ -24,32 +25,36 @@ db.connect(function(err) {
 })
 
 
-app.get("/:id/api", (req, res) => {
+app.get("/:id/getuserprofile", (req, res) => {
   const userid =req.params.id;
-  const q = `
+  var q1 = `
   SELECT 
-	  productId
+	  *
 	FROM 
-		cartservice.productincart as a 
-	inner join 
-		cartservice.cart b 
-	on 
-		a.cartid = b.cartid 
+		userservice.tbl_user 
     where 
-		b.userid="${userid}"
-	and 
-		b.cartstatus="pending";`
-  db.query(q, (err, data)=> {
+		id=${userid};
+  SELECT 
+    *
+  FROM 
+    userservice.tbl_address 
+  where 
+    userId=${userid};`
+  
+  db.query(q1, (err, data)=> {
     if(err){
       return res.json(err)
     }
     else{
-      return res.json(data)
+      const result = {
+        user: data[0][0],
+        address: data[1][0]
+      }
+      return res.json(result);
     }
-
   })
 })
 
-app.listen(4000, () => {
-  console.log("Listening on 4000");
+app.listen(4001, () => {
+  console.log("Listening on 4001");
 });

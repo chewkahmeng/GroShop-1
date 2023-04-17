@@ -1,8 +1,31 @@
-<%- include('../../partials/header.ejs') %>
+<!DOCTYPE html>
+<head>
+    <script>
+        const url = "http://localhost:4000/1/api";
+
+        function callCartService(url) {
+        fetch(url, {
+            method: 'GET'
+        })
+        .then(response => response.json())
+        .then(() => {
+            var x = document.createElement("div")
+
+            x.innerHTML = `  
+            <card>
+                ${response.data}
+            </card>  `
+
+            document.getElementById('cart-view').append(x)
+        });    
+        }
+        window.onload = callCartService(url);
+    </script>
+</head>
+
 <body>
-<%- include('../../partials/navbar-user.ejs') %>
 <br>
-<div class="card page-card">
+<div class="card page-card" id="cart-view">
     <div class="row justify-content-md-center mb-3">
         <h1 class="card-title text-center" style="color:rgb(0, 16, 87); font-weight:bold">
             My Cart
@@ -10,10 +33,9 @@
     </div>
     <div class="row justify-content-md-center">
         <div class="col-md-8 col-md-offset-2">
-            <%- include('../../partials/alerts.ejs') %>
             <h1>TO BE ADDED</h1>
         </div>
     </div>
 </div>
 </body>
-<%- include('../../partials/footer.ejs') %>
+
