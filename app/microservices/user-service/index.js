@@ -24,6 +24,55 @@ db.connect(function(err) {
   console.log("connected")
 })
 
+app.post("/:id/updateuser", (req, res) => {
+  const userid =req.params.id;
+  if (JSON.stringify(req.body) == "{}") {
+    return res.status(400).send({
+      message: "Content can not be empty!"
+    });
+  }
+  let output = JSON.stringify(req.body);
+  output = output.toString().replace("{", "");
+  output = output.toString().replace("}", "");
+  output = output.toString().replace(/:/g, "=");
+  if(output.toString().search("username")){
+    output = output.toString().replace(`"username"`, `username`);
+  };
+  if(output.toString().search("password")){
+    output = output.toString().replace(`"password"`, `password`);
+  };
+  if(output.toString().search("email")){
+    output = output.toString().replace(`"email"`, `email`);
+  };
+  if(output.toString().search("role")){
+    output = output.toString().replace(`"role"`, `role`);
+  };
+  if(output.toString().search("createdAt")){
+    output = output.toString().replace(`"createdAt"`, `createdAt`);
+  };
+  if(output.toString().search("updatedAt")){
+    output = output.toString().replace(`"updatedAt"`, `updatedAt`);
+  };
+  console.log(output);
+  //UPDATE `userservice`.`tbl_user` SET `password` = '$2b$10$8A8/EfrDMyoJQ2.aPkNCH.CITxygrA9XvWoqBlYWmCj1VOnR2', `email` = '123@123.m' WHERE (`id` = '1');
+  var q1 = `
+  UPDATE userservice.tbl_user	SET 
+		${output}
+    where 
+		id=${userid};`
+  console.log(q1);
+  db.query(q1, (err, data)=> {
+    if(err){
+      return res.json(err)
+    }
+    else{
+      return res.send({
+        message: `User details: ${output}, updated successfully!`
+      });
+    }
+  })
+})
+
 
 app.get("/:id/deleteuser", (req, res) => {
   const userid =req.params.id;
