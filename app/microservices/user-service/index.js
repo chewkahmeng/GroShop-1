@@ -24,6 +24,8 @@ db.connect(function(err) {
   console.log("connected")
 })
 
+
+//only allowed to crud self
 app.post("/:id/updateuser", (req, res) => {
   const userid =req.params.id;
   if (JSON.stringify(req.body) == "{}") {
@@ -130,6 +132,183 @@ app.get("/:id/getuserprofile", (req, res) => {
       return res.json(err)
     }
     else{
+      const result = {
+        user: data[0][0],
+        address: data[1][0]
+      }
+      return res.json(result);
+    }
+  })
+})
+
+
+//privileged to update others 
+
+app.post("/updatetargetuser", (req, res) => {
+  if (JSON.stringify(req.body) == "{}") {
+    return res.status(400).send({
+      error: "Content can not be empty!"
+    });
+  }
+  let output = JSON.stringify(req.body);
+  if(!output.toString().search("id")){
+    return res.status(400).send({
+      error: "Must include id of target user!"
+    });
+  }else if(JSON.stringify(req.body.id) == `""`){
+    return res.status(400).send({
+      error: "Must have value for id!"
+    });
+  }
+  const userid =req.body.id;
+  output = output.toString().replace("{", "");
+  output = output.toString().replace("}", "");
+  output = output.toString().replace(/:/g, "=");
+  if(output.toString().search("id")){
+    output = output.toString().replace(`"id"`, `id`);
+  };
+  if(output.toString().search("username")){
+    output = output.toString().replace(`"username"`, `username`);
+  };
+  if(output.toString().search("password")){
+    output = output.toString().replace(`"password"`, `password`);
+  };
+  if(output.toString().search("email")){
+    output = output.toString().replace(`"email"`, `email`);
+  };
+  if(output.toString().search("role")){
+    output = output.toString().replace(`"role"`, `role`);
+  };
+  if(output.toString().search("createdAt")){
+    output = output.toString().replace(`"createdAt"`, `createdAt`);
+  };
+  if(output.toString().search("updatedAt")){
+    output = output.toString().replace(`"updatedAt"`, `updatedAt`);
+  };
+  console.log(output);
+  //UPDATE `userservice`.`tbl_user` SET `password` = '$2b$10$8A8/EfrDMyoJQ2.aPkNCH.CITxygrA9XvWoqBlYWmCj1VOnR2', `email` = '123@123.m' WHERE (`id` = '1');
+  var q1 = `
+  SELECT *
+  FROM
+    userservice.tbl_user 
+  WHERE 
+    (id = ${userid});
+  UPDATE userservice.tbl_user	SET 
+		${output}
+    where 
+		id=${userid};`
+  console.log(q1);
+  db.query(q1, (err, data)=> {
+    if(err){
+      return res.json(err)
+    }
+    else{
+      if(JSON.stringify(data[0][0])==undefined){
+        return res.send({
+          message: `Cannot update User with id=${userid}. Maybe User was not found!`
+        });
+      }else{
+        return res.send({
+          message: "User was updated successfully!"
+        });
+      }      
+    }
+  })
+})
+
+
+app.get("/deletetargetuser", (req, res) => {
+  if (JSON.stringify(req.body) == "{}") {
+    return res.status(400).send({
+      error: "Content can not be empty!"
+    });
+  }
+  let output = JSON.stringify(req.body);
+  if(!output.toString().search("id")){
+    return res.status(400).send({
+      error: "Must include id of target user!"
+    });
+  }else if(JSON.stringify(req.body.id) == `""`){
+    return res.status(400).send({
+      error: "Must have value for id!"
+    });
+  }
+  const userid =req.body.id;
+  var q1 = `
+  SELECT *
+  FROM
+    userservice.tbl_user 
+  WHERE 
+    (id = ${userid});
+  DELETE FROM 
+    userservice.tbl_user 
+  WHERE 
+    (id = ${userid});
+  DELETE FROM 
+    userservice.tbl_address 
+  WHERE 
+    (userId = ${userid});`
+  
+  db.query(q1, (err, data)=> {
+    if(err){
+      return res.json(err)
+    }
+    else{
+      console.log(JSON.stringify(data[0][0]))
+      if(JSON.stringify(data[0][0])==undefined){
+        return res.send({
+          message: `Cannot delete User with id=${userid}. Maybe User was not found!`
+        });
+      }else{
+        return res.send({
+          message: "User was deleted successfully!"
+        });
+      }      
+    }
+  })
+})
+
+app.get("/gettargetuserprofile", (req, res) => {
+  if (JSON.stringify(req.body) == "{}") {
+    return res.status(400).send({
+      error: "Content can not be empty!"
+    });
+  }
+  let output = JSON.stringify(req.body);
+  if(!output.toString().search("id")){
+    return res.status(400).send({
+      error: "Must include id of target user!"
+    });
+  }else if(JSON.stringify(req.body.id) == `""`){
+    return res.status(400).send({
+      error: "Must have value for id!"
+    });
+  }
+  const userid =req.body.id;
+  var q1 = `
+  SELECT 
+	  *
+	FROM 
+		userservice.tbl_user 
+    where 
+		id=${userid};
+  SELECT 
+    *
+  FROM 
+    userservice.tbl_address 
+  where 
+    userId=${userid};`
+  
+  db.query(q1, (err, data)=> {
+    if(err){
+      return res.json(err)
+    }
+    else{
+      if(JSON.stringify(data[0][0]) == undefined){
+        return res.status(400).send({
+          error: "User does not exist!"
+        });
+      }
       const result = {
         user: data[0][0],
         address: data[1][0]
