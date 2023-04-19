@@ -1,5 +1,6 @@
 const LocalStrategy = require('passport-local').Strategy
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+const { response } = require('express');
 const {body, validationResult} = require('express-validator')
 const db = require("../models");
 const userDB = db.users;
@@ -132,6 +133,31 @@ function initialize(passport) {
         console.log(req.body)
         const accountType = req.body['account-type'];
         if (accountType === 'user') {
+            const url = 'http://localhost:4001/login';
+            let data = {
+              email: email,
+              password: password
+            }
+            let fetchData = {
+              method: 'POST',
+              body: JSON.stringify(data),
+              headers: new Headers({
+                'Content-Type': 'application/json; charset=UTF-8'
+              })
+            }
+            await fetch(url, fetchData)
+              .then((response) => {
+                return response.json();
+              }).then((data) =>{
+                console.log("data=======> \n",data);
+                //the data here will return json output. 
+                // {
+                //     message: "eg message",
+                //     user: {
+                //         user object here for passport to use
+                //     }
+                // }
+              });
             const user = await userDB.findOne({
                 where: {email: `${email}`}
             })

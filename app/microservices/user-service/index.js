@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const mysql = require("mysql");
+const bcrypt = require('bcrypt')
 //const db = require('./db.js');
 
 
@@ -314,6 +315,63 @@ app.get("/gettargetuserprofile", (req, res) => {
         address: data[1][0]
       }
       return res.json(result);
+    }
+  })
+})
+
+ app.post("/login", async (req, res) => {
+  if (JSON.stringify(req.body) == "{}") {
+    return res.status(400).send({
+      error: "Content can not be empty!"
+    });
+  }
+  if(req.body.email == undefined){
+    return res.status(400).send({
+      error: "Must include email and password of target user!"
+    });
+  }
+  if(req.body.password == undefined){
+    return res.status(400).send({
+      error: "Must include email and password of target user!"
+  });
+  }
+  if((JSON.stringify(req.body.email)) == `""` || (JSON.stringify(req.body.password) == `""`)){
+    return res.status(400).send({
+      error: "Must have value for email and password!"
+    });
+  }
+  const userEmail =req.body.email;
+  const userPassword = JSON.stringify(req.body.password).replace(/"/g, "");
+  //UPDATE `userservice`.`tbl_user` SET `password` = '$2b$10$8A8/EfrDMyoJQ2.aPkNCH.CITxygrA9XvWoqBlYWmCj1VOnR2', `email` = '123@123.m' WHERE (`id` = '1');
+  var q1 = `
+  SELECT *
+  FROM
+    userservice.tbl_user 
+  WHERE 
+    (email = "${userEmail}");`
+  console.log(q1);
+  db.query(q1, async (err, data)=> {
+    if(err){
+      return res.json(err)
+    }
+    else{
+      if(JSON.stringify(data)==undefined){
+        return res.send({
+          message: `Email/password incorrect.`
+        });
+      }else{
+        console.log(data[0].password)
+        if(await bcrypt.compare(userPassword, data[0].password)){
+          return res.status(200).send({
+            message: "User logged in!",
+            user: data[0]
+          });
+        }else{
+          return res.status(400).send({
+            error: "Email/password incorrect."
+          });
+        }
+      }      
     }
   })
 })
