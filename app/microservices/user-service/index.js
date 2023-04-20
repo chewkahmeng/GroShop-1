@@ -10,6 +10,38 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
+// "Promise" wrapped database class
+
+class Database {
+  constructor( config ) {
+      this.connection = mysql.createConnection( {
+        host: "localhost",
+        user: "root",
+        password: "password",
+        database: "userservice",
+        multipleStatements : true
+      } );
+  }
+  query( sql, args ) {
+      return new Promise( ( resolve, reject ) => {
+          this.connection.query( sql, args, ( err, rows ) => {
+              if ( err )
+                  return reject( err );
+              resolve( rows );
+          } );
+      } );
+  }
+  close() {
+      return new Promise( ( resolve, reject ) => {
+          this.connection.end( err => {
+              if ( err )
+                  return reject( err );
+              resolve();
+          } );
+      } );
+  }
+}
+
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
@@ -374,7 +406,83 @@ app.get("/gettargetuserprofile", (req, res) => {
       }      
     }
   })
-})
+});
+
+ app.post("/register", async (req, res) => {
+  //this is abit special, because it requires it to be wrapped in a "Promise" like class
+  //Because when running two separate set of mysql instructions in this case, select and insert
+  // undefined behavior may happen because they are time sensitive
+  // I recommend this short read up - "https://codeburst.io/node-js-mysql-and-promises-4c3be599909b"
+
+const database=  new Database();
+
+  //MUST PASS IN HASHED PASSWORD
+  var output;
+  if (JSON.stringify(req.body) == "{}") {
+    return res.status(400).send({
+      error: "Content can not be empty!"
+    });
+  }
+  if(req.body.email == undefined){
+    return res.status(400).send({
+      error: "Must include email and password of target user!"
+    });
+  }
+  if(req.body.password == undefined){
+    return res.status(400).send({
+      error: "Must include email and password of target user!"
+  });
+  }
+  if((JSON.stringify(req.body.email)) == `""` || (JSON.stringify(req.body.password) == `""`)){
+    return res.status(400).send({
+      error: "Must have value for email and password!"
+    });
+  }
+  const userEmail =req.body.email;
+  const userPassword = req.body.password;
+  const userUsername = req.body.username;
+  //UPDATE `userservice`.`tbl_user` SET `password` = '$2b$10$8A8/EfrDMyoJQ2.aPkNCH.CITxygrA9XvWoqBlYWmCj1VOnR2', `email` = '123@123.m' WHERE (`id` = '1');
+  //INSERT INTO `userservice`.`tbl_user` (`id`, `username`, `password`, `email`, `role`, `createdAt`, `updatedAt`) VALUES ('2', 'd1331343', '$10$bCfwzUZhdPBFV50EqSGa3O9Rpr5U60WcY832w2Fwp8BeOYsGEvOsO', '123@123.com.sg', 'CUSTOMER', '2023-04-17 22:53:33', '2023-04-17 22:53:33');
+
+  database.query( 
+    `SELECT count(*) as count FROM userservice.tbl_user 
+    where 
+    username = "${userUsername}" or email = "${userEmail}";` )
+    .then( rows => {
+        console.log(JSON.stringify(rows[0].count))
+        if(JSON.stringify(rows[0].count) != "0"){
+          console.log("error, cannot create")
+          return database.close();
+        }else{
+          console.log("success, can create here")
+          return database.query( 
+          `
+          INSERT INTO 
+            userservice.tbl_user 
+            (username, password, email, role, createdAt, updatedAt) 
+          VALUES ('${userUsername}', '${userPassword}', '${userEmail}', 'CUSTOMER', now(), now());`
+          )
+        }
+    }, err =>{
+      return database.close().then( () => { throw err; } )
+    } ).then(output =>{
+      console.log(JSON.stringify(output))
+      if(output == undefined){
+        return res.status(400).send({
+          message: "User already exists in DB!",
+          output: output
+        });
+      }else{
+        return res.status(200).send({
+          message: "User resigted in DB!",
+          output: output
+        });
+      }
+      
+    }).catch( err =>{
+      return res.json(err);
+    })
+});
 
 app.listen(4001, () => {
   console.log("Listening on 4001");
