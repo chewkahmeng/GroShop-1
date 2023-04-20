@@ -145,11 +145,13 @@ function initialize(passport) {
                 'Content-Type': 'application/json; charset=UTF-8'
               })
             }
+            var user = null
             await fetch(url, fetchData)
               .then((response) => {
                 return response.json();
               }).then((data) =>{
                 console.log("data=======> \n",data);
+                user = data["user"]
                 //the data here will return json output. 
                 // {
                 //     message: "eg message",
@@ -158,21 +160,13 @@ function initialize(passport) {
                 //     }
                 // }
               });
-            const user = await userDB.findOne({
-                where: {email: `${email}`}
-            })
+            console.log(user)
             if (user == null) {
                 return done(null, false, { message: 'Email/password incorrect.'})
+            } else {
+                return done(null, user)
             }
-            try {
-                if (await bcrypt.compare(password, user.password)) {
-                    return done(null, user)
-                } else {
-                    return done(null, false, {message: 'Email/password incorrect.'})
-                }
-            } catch (e) {
-                return done(e)
-            }
+            
         } else if (accountType === 'employee') {
             const employee = await employeeDB.findOne({
                 where: {email: `${email}`}

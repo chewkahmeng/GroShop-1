@@ -1,6 +1,27 @@
 <%- include('../partials/header.ejs') %>
 <body>
 <%- include('../partials/navbar-user.ejs') %>
+<script type="text/javascript">
+    function onDelete(id) {
+        if (confirm("Are you sure you want to delete this address?")) {
+            document.getElementById("deleteAddressForm").submit();
+        }
+    }
+    function getUserProfileDetails() {
+        const profileUrl = `http://localhost:4001/<%=user.Id%>/getuserprofile`;
+        fetch(profileUrl)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            const user = data["user"]
+
+            // update user content
+            document.getElementById('username').innerHTML = user["username"]
+            document.getElementById('email').innerHTML = user["email"]
+        })
+    }
+    // window.onload = getUserProfileDetails
+</script>
 <br>
 <div class="card page-card">
     <div class="row justify-content-md-center mb-3">
@@ -12,10 +33,10 @@
         <div class="col-md-8 col-md-offset-2">
             <%- include('../partials/alerts.ejs') %>
             <% if (mode === "UE") { %>
-                <form action="/home/profile/<%=user.id%>/update" method="POST">
+                <form id="" method="POST">
                     <div class="form-group mb-3" >
                         <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control" name="username" value="<%=user.username%>" required>
+                        <input type="text" class="form-control" name="username" id="username" value="<%=user.username%>" required>
                     </div>
                     <button class="btn btn-primary" type="submit" value="Save">Save</button>
                     <a class="btn btn-light" href="/home/profile" value="Cancel">Cancel</a>

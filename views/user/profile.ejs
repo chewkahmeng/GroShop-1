@@ -4,15 +4,51 @@
 <script type="text/javascript">
     function onDelete(id) {
         if (confirm("Are you sure you want to delete this address?")) {
-            var deleteUrl = `/home/address/${id}/delete`
             document.getElementById("deleteAddressForm").submit();
         }
     }
+    function getUserProfileDetails() {
+        const profileUrl = `http://localhost:4001/1/getuserprofile`;
+        fetch(profileUrl)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            const user = data["user"]
+            const address = data["address"]
+
+            // update user content
+            document.getElementById('username').innerHTML = user["username"]
+            document.getElementById('email').innerHTML = user["email"]
+
+            if (address != null) {
+                // update address content
+                document.getElementById('addressName').innerHTML = address["name"]
+                document.getElementById('addressFloorNo').innerHTML = address["floorNo"] ? address["floorNo"] : "-"
+                document.getElementById('addressUnitNo').innerHTML = address["unitNo"] ? address["unitNo"] : "-"
+                document.getElementById('addressPostalCode').innerHTML = address["postalCode"]
+                
+                const updateAddressUrl = `/home/address/${address["id"]}/update`
+                const deleteAddressUrl = `/home/address/${address["id"]}/delete`
+                document.getElementById('updateAddress').href = updateAddressUrl
+                
+                document.getElementById('deleteAddressForm').action = deleteAddressUrl
+                document.getElementById('deleteAddress').onclick = () => onDelete(`${address["id"]}`)
+            
+            } else {
+                document.getElementById('createAddress').hidden = false
+                document.getElementById('user-profile-address-card').hidden = true
+            }
+
+        })
+    }
+    // window.onload = getUserProfileDetails
 </script>
 <div id = "user-profile-view">
    <div class="container justify-content-center">
+    <h1>My Profile Page</h1>
     <%- include('../partials/alerts.ejs') %>
-        <h2>Profile Details</h2>
+    <% if(user) { %>
+        <h3>Profile Details</h3>
         <div class="card" id="user-profile-card">
             <div class="dropdown text-end">
                 <a class="icon-dropdown" href="#" id="dropdownMenuLink-me" data-bs-toggle="dropdown" aria-expanded="false">
@@ -33,24 +69,25 @@
                     <tr>
                         <td>Username</td>
                         <td>:</td>
-                        <td><%= user.username%></td>
+                        <td id="username"><%=user.username%></td>
                     </tr>
                     <tr>
                         <td>Email</td>
                         <td>:</td>
-                        <td><%= user.email%></td>
+                        <td id="email"><%=user.email%></td>
                     </tr>
                 </tbody>
             </table>
         </div>
         <br>
-        <h2>Shipping Address</h2>
+        <h3>Shipping Address</h3>
+        <% if (address) { %>
         <div class="card" id="user-profile-address-card">
-            <% if (address) { %>
+            
             <span class="text-end">
-                <a href="/home/address/<%=address.id%>/update"><i class="fa-solid fa-pen" data-toggle="tooltip" data-placement="top" title="Update Address"></i></a>
+                <a id="updateAddress" href="/home/address/<%=address.id%>/update"><i class="fa-solid fa-pen" data-toggle="tooltip" data-placement="top" title="Update Address"></i></a>
                 &nbsp;
-                <a href="#" onclick="onDelete(<%=address.id%>)"><i class="fa-solid fa-trash-can" data-toggle="tooltip" data-placement="top" title="Delete Address"></i></a>
+                <a id="deleteAddress" href="#" onclick='onDelete(<%=address.id%>)' ><i class="fa-solid fa-trash-can" data-toggle="tooltip" data-placement="top" title="Delete Address"></i></a>
             </span>
             <table style="width: 100%">
                 <colgroup>
@@ -62,36 +99,39 @@
                     <tr>
                         <td>Street / Building Name</td>
                         <td>:</td>
-                        <td><%= address.name%></td>
+                        <td id="addressName"><%=address.name%></td>
                     </tr>
-                    <% if (address.floorNo) { %>
+                    
                     <tr>
                         <td>Floor No</td>
                         <td>:</td>
-                        <td><%= address.floorNo%></td>
+                        <td id="addressFloorNo"><%=address.floorNo%></td>
                     </tr>
-                    <% } %>
-                    <% if (address.unitNo) { %>
+                    
                     <tr>
                         <td>Unit No</td>
                         <td>:</td>
-                        <td><%= address.unitNo%></td>
+                        <td id="addressUnitNo"><%=address.unitNo%></td>
                     </tr>
-                    <% } %>
+                    
                     <tr>
                         <td>Postal Code</td>
                         <td>:</td>
-                        <td><%= address.postalCode%></td>
+                        <td id="addressPostalCode"><%=address.postalCode%></td>
                     </tr>
                 </tbody>
             </table>
             <br>
             <form hidden id="deleteAddressForm" action="/home/address/<%=address.id%>/delete" method="POST"></form>
-            <% } else {%>
-            <a href='/home/address/create' class="btn btn-primary"><i class="fa-solid fa-circle-plus"></i>&nbsp;Add Address</a>
-            <% } %>
+            
+            
+            
         </div>
+        <% } else { %>
+        <a id ="createAddress" href='#' class="btn btn-primary" hidden><i class="fa-solid fa-circle-plus"></i>&nbsp;Add Address</a>
+        <% } %>
     </div> 
+    <% } %>
 </div>
 
 
