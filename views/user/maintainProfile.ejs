@@ -7,20 +7,6 @@
             document.getElementById("deleteAddressForm").submit();
         }
     }
-    function getUserProfileDetails() {
-        const profileUrl = `http://localhost:4001/<%=user.Id%>/getuserprofile`;
-        fetch(profileUrl)
-        .then(response => response.json())
-        .then(data => {
-            console.log(data)
-            const user = data["user"]
-
-            // update user content
-            document.getElementById('username').innerHTML = user["username"]
-            document.getElementById('email').innerHTML = user["email"]
-        })
-    }
-    // window.onload = getUserProfileDetails
 </script>
 <br>
 <div class="card page-card">

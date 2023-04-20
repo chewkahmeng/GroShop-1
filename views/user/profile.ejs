@@ -7,41 +7,6 @@
             document.getElementById("deleteAddressForm").submit();
         }
     }
-    function getUserProfileDetails() {
-        const profileUrl = `http://localhost:4001/1/getuserprofile`;
-        fetch(profileUrl)
-        .then(response => response.json())
-        .then(data => {
-            console.log(data)
-            const user = data["user"]
-            const address = data["address"]
-
-            // update user content
-            document.getElementById('username').innerHTML = user["username"]
-            document.getElementById('email').innerHTML = user["email"]
-
-            if (address != null) {
-                // update address content
-                document.getElementById('addressName').innerHTML = address["name"]
-                document.getElementById('addressFloorNo').innerHTML = address["floorNo"] ? address["floorNo"] : "-"
-                document.getElementById('addressUnitNo').innerHTML = address["unitNo"] ? address["unitNo"] : "-"
-                document.getElementById('addressPostalCode').innerHTML = address["postalCode"]
-                
-                const updateAddressUrl = `/home/address/${address["id"]}/update`
-                const deleteAddressUrl = `/home/address/${address["id"]}/delete`
-                document.getElementById('updateAddress').href = updateAddressUrl
-                
-                document.getElementById('deleteAddressForm').action = deleteAddressUrl
-                document.getElementById('deleteAddress').onclick = () => onDelete(`${address["id"]}`)
-            
-            } else {
-                document.getElementById('createAddress').hidden = false
-                document.getElementById('user-profile-address-card').hidden = true
-            }
-
-        })
-    }
-    // window.onload = getUserProfileDetails
 </script>
 <div id = "user-profile-view">
    <div class="container justify-content-center">
