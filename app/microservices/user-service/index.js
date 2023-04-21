@@ -387,9 +387,9 @@ app.get("/gettargetuserprofile", (req, res) => {
       return res.json(err)
     }
     else{
-      if(JSON.stringify(data)==undefined){
+      if(JSON.stringify(data[0])==undefined){
         return res.send({
-          message: `Email/password incorrect.`
+          error: `Email/password incorrect.`
         });
       }else{
         console.log(data[0].password)
@@ -441,6 +441,7 @@ const database=  new Database();
   const userEmail =req.body.email;
   const userPassword = req.body.password;
   const userUsername = req.body.username;
+  const userRole = req.body.role;
   //UPDATE `userservice`.`tbl_user` SET `password` = '$2b$10$8A8/EfrDMyoJQ2.aPkNCH.CITxygrA9XvWoqBlYWmCj1VOnR2', `email` = '123@123.m' WHERE (`id` = '1');
   //INSERT INTO `userservice`.`tbl_user` (`id`, `username`, `password`, `email`, `role`, `createdAt`, `updatedAt`) VALUES ('2', 'd1331343', '$10$bCfwzUZhdPBFV50EqSGa3O9Rpr5U60WcY832w2Fwp8BeOYsGEvOsO', '123@123.com.sg', 'CUSTOMER', '2023-04-17 22:53:33', '2023-04-17 22:53:33');
 
@@ -460,7 +461,7 @@ const database=  new Database();
           INSERT INTO 
             userservice.tbl_user 
             (username, password, email, role, createdAt, updatedAt) 
-          VALUES ('${userUsername}', '${userPassword}', '${userEmail}', 'CUSTOMER', now(), now());`
+          VALUES ('${userUsername}', '${userPassword}', '${userEmail}', '${userRole}', now(), now());`
           )
         }
     }, err =>{
@@ -469,12 +470,12 @@ const database=  new Database();
       console.log(JSON.stringify(output))
       if(output == undefined){
         return res.status(400).send({
-          message: "User already exists in DB!",
+          error: "User already exists!",
           output: output
         });
       }else{
         return res.status(200).send({
-          message: "User resigted in DB!",
+          message: "User registered!",
           output: output
         });
       }
@@ -483,6 +484,28 @@ const database=  new Database();
       return res.json(err);
     })
 });
+
+app.get('/:id/getuserdetailsbyid', async (req, res) => {
+  var query = `
+    select * from tbl_user where id = ${req.params.id}
+  `
+  db.query(query, (err, data)=> {
+    if(err){
+      return res.json(err)
+    } else {
+      if(JSON.stringify(data) == undefined){
+        return res.status(400).send({
+          error: "User does not exist!"
+        });
+      }
+      console.log(query)
+      const result = {
+        user: data
+      }
+      return res.json(result);
+    }
+  })
+})
 
 app.listen(4001, () => {
   console.log("Listening on 4001");

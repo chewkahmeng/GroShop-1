@@ -33,7 +33,7 @@ app.get("/getallrecipes", (req, res) => {
   var query = `
     select recipe.*, image.srcpath as srcpath
     from tbl_recipe recipe, tbl_recipe_image image
-    where recipe.imageId = image.id;
+    where recipe.id = image.recipeId;
   `
   db.query(query, (err, data)=> {
     if (err) {
@@ -87,9 +87,10 @@ app.post("/createrecipe", (req, res) => {
     if(err){
       return res.json(err)
     }else{
-      return res.send({
-        message: `Recipe details: ${output}, updated successfully!`
-      });
+      const result = {
+        recipe: data
+      }
+      return res.json(result)
     }
   })
 })
@@ -157,7 +158,31 @@ app.post("/:id/deleterecipe", (req, res) => {
   })
 })
 
-// GET ALL RECIPES
+// GET RECIPE (for Admin)
+app.get("/:id/getrecipe", (req, res) => {
+  const recipeId = req.params.id
+  var query = `
+    SELECT * FROM TBL_RECIPE where id = '${recipeId}';
+  `
+  db.query(query, (err, data)=> {
+    if (err) {
+      return res.json(err)
+    } else {
+      if(JSON.stringify(data) == undefined){
+        return res.status(400).send({
+          error: "Error in getting recipes"
+        });
+      }
+      console.log(JSON.stringify(data))
+      const result = {
+        recipe: data[0]
+      }
+      return res.json(result);
+    }
+  })
+})
+
+// GET RECIPE DETAILS INCLUDING INGREDIENTS, STEPS, PHOTO (for Admin)
 app.get("/:id/getrecipedetails", (req, res) => {
   const recipeId = req.params.id
   var query = `
@@ -187,6 +212,42 @@ app.get("/:id/getrecipedetails", (req, res) => {
   })
 })
 
+// GET RECIPE (for User)
+app.get("/:userId/getrecipedetailsforuser/:recipeId", (req, res) => {
+  const recipeId = req.params.recipeId
+  const userId = req.params.userId
+  var query = `
+    SELECT * FROM TBL_RECIPE where id = '${recipeId}';
+    SELECT * FROM TBL_RECIPE_IMAGE where recipeId = '${recipeId}';
+    SELECT * FROM TBL_RECIPE_INGREDIENT where recipeId = '${recipeId}';
+    SELECT * FROM TBL_RECIPE_STEP where recipeId = '${recipeId}' order by createdAt asc;
+    SELECT * FROM TBL_FAVOURITES where recipeId = ${recipeId} and userId = ${userId};
+    SELECT * FROM TBL_COMMENTS where recipeId = '${recipeId}';
+  `
+  db.query(query, (err, data)=> {
+    if (err) {
+      return res.json(err)
+    } else {
+      console.log(query)
+      if(JSON.stringify(data) == undefined){
+        return res.status(400).send({
+          error: "Error in getting recipes"
+        });
+      }
+      console.log(data)
+      const result = {
+        recipe: data[0],
+        image: data[1],
+        ingredients: data[2],
+        steps: data[3],
+        favourite: data[4],
+        comments: data[5]
+      }
+      return res.json(result);
+    }
+  })
+})
+
 ////////////////////////////////////////////////////
 // RECIPE PHOTO FUNCTIONS
 ////////////////////////////////////////////////////
@@ -199,9 +260,9 @@ app.post('/:id/uploadphoto', (req, res) => {
   }
   console.log(req.body)
   const image = {
-    type: req.body.mimetype,
-    name: req.body.originalname,
-    srcPath: "/images/uploads/" + req.body.filename 
+    type: req.body.type,
+    name: req.body.name,
+    srcPath: req.body.srcPath
   }
   let output = `
   '${image.type}',
@@ -212,15 +273,16 @@ app.post('/:id/uploadphoto', (req, res) => {
   INSERT into TBL_RECIPE_IMAGE
   (type, name, srcPath)
   VALUES(${output});
-`
+  `
   console.log(query);
   db.query(query, (err, data)=> {
     if(err){
       return res.json(err)
     }else{
-      return res.send({
-        message: `Image details: ${output}, uploaded successfully!`
-      });
+      const result = {
+        image: data
+      }
+      return res.json(result)
     }
   })
 })
@@ -253,8 +315,8 @@ app.post('/:id/savephototorecipe', (req, res) => {
   })
 })
 
-// GET RECIPE PHOTO
-app.get('/:id/getuploadedphoto', (req, res) => {
+// GET PHOTO BY RECIPEID
+app.get('/:id/getphotobyrecipe', (req, res) => {
   const recipeId = req.params.id;
   var query = `
   select image.* from tbl_recipe_image image
@@ -278,6 +340,30 @@ app.get('/:id/getuploadedphoto', (req, res) => {
   })
 })
 
+// GET PHOTO BY IMAGEID
+app.get('/getphotobyid/:id', (req, res) => {
+  const imageId = req.params.id;
+  var query = `
+  select image.* from tbl_recipe_image image
+  where image.id = '${imageId}';
+  `
+  db.query(query, (err, data)=> {
+    if (err) {
+      return res.json(err)
+    } else {
+      if(JSON.stringify(data) == undefined){
+        return res.status(400).send({
+          error: "No photo uploaded yet"
+        });
+      }
+      console.log(JSON.stringify(data))
+      const result = {
+        image: data
+      }
+      return res.json(result);
+    }
+  })
+})
 ////////////////////////////////////////////////////
 // RECIPE INGREDIENT FUNCTIONS
 ////////////////////////////////////////////////////
@@ -532,11 +618,110 @@ app.get('/:recipeId/getallsteps', (req, res) => {
 ////////////////////////////////////////////////////
 // FAVOURITE RECIPE FUNCTIONS
 ////////////////////////////////////////////////////
+// FAVOURITE RECIPE
+app.post('/:userId/favouriterecipe/:recipeId', (req, res) => {
+  const recipeId = req.params.recipeId
+  const userId = req.params.userId
+  
+  var query = `
+  INSERT INTO TBL_FAVOURITES
+  (userId, recipeId)
+  values('${userId}', '${recipeId}');
+  `
+  console.log(query);
+  db.query(query, (err, data)=> {
+    if(err){
+      return res.json(err)
+    }else{
+      console.log(data)
+      return res.send({
+        message: `Recipe favourited successfully!`
+      });
+    }
+  })
+})
+
+// UNFAVOURITE RECIPE
+app.post('/:userId/unfavouriterecipe/:recipeId', (req, res) => {
+  const recipeId = req.params.recipeId
+  const userId = req.params.userId
+  
+  var query = `
+  DELETE FROM TBL_FAVOURITES
+  WHERE USERID = '${userId}' AND RECIPEID = '${recipeId}';
+  `
+  console.log(query);
+  db.query(query, (err, data)=> {
+    if(err){
+      return res.json(err)
+    }else{
+      console.log(data)
+      return res.send({
+        message: `Recipe unfavourited successfully!`
+      });
+    }
+  })
+})
+
+// GET FAVOURITE RECIPES FOR USER
+app.get('/:userId/getfavouriterecipes', (req, res) => {
+  const userId = req.params.userId
+  
+  var query = `
+  select recipe.*, image.srcpath as srcpath
+  from tbl_recipe recipe, tbl_recipe_image image
+  where recipe.id = image.recipeId 
+  and recipe.id in 
+    (select fav.recipeId from tbl_favourites fav where fav.userId = '${userId}')
+  ;
+  `
+  console.log(query);
+  db.query(query, (err, data)=> {
+    if(err){
+      return res.json(err)
+    }else{
+      console.log(data)
+      return res.send({
+        message: `Favourite Recipes retrieved successfully!`
+      });
+    }
+  })
+})
 
 ////////////////////////////////////////////////////
 // COMMENT FUNCTIONS
 ////////////////////////////////////////////////////
+app.post('/:recipeId/postcomment', (req, res) => {
+  const recipeId = req.params.recipeId
+  if (JSON.stringify(req.body) == "{}") {
+    return res.status(400).send({
+      message: "Content can not be empty!"
+    });
+  }
+  console.log(req.body)
+  const comment = {
+    content: `'${req.body.content}'`,
+    author: `'${req.body.author}'`,
+    recipeId: `'${recipeId}'`
+  }
 
+  var query = `
+  INSERT INTO TBL_COMMENTS
+  (content, author, recipeId)
+  VALUES(${comment.content}, ${comment.author}, ${comment.recipeId});
+  `
+  console.log(query);
+  db.query(query, (err, data)=> {
+    if(err){
+      return res.json(err)
+    }else{
+      console.log(data)
+      return res.send({
+        message: `Comment posted successfully!`
+      });
+    }
+  })
+})
 
 ////////////////////////////////////////////////////
 // INITIALISE SERVER
