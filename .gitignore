@@ -3,4 +3,5 @@ views/test.html
 TODO.txt
 .env
 public/images/uploads/
-
+node_modules
+db scripts
