@@ -22,6 +22,8 @@ module.exports = function(app, passport) {
     });
 
     app.get("/home", middleware.isLoggedIn, (req, res) => {
+        console.log('redirecting to home')
+        console.log(req.user)
         if (req.user.role === 'CUSTOMER') {
             res.render('user/index', {
                 user: typeof req.user !== 'undefined'?req.user:null
@@ -32,7 +34,7 @@ module.exports = function(app, passport) {
 
     });
 
-    app.get("/admin", middleware.isLoggedIn, (req, res) => {
+    app.get("/admin", middleware.isLoggedIn, middleware.isAdmin, (req, res) => {
         res.render('admin/index', {
             employee: typeof req.user !== 'undefined'?req.user:null
         })

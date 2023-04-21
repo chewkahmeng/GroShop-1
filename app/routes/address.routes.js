@@ -15,7 +15,7 @@ router.get("/create",
 
 router.post("/create", 
     middleware.isLoggedIn,
-    addressController.validateAddress,
+    middleware.validateAddress,
     (req, res, next) => {
         const errors = validationResult(req)
         if (!errors.isEmpty()) {
@@ -36,7 +36,7 @@ router.get("/:id/update",
 
 router.post("/:id/update",
     middleware.isLoggedIn,
-    addressController.validateAddress,
+    middleware.validateAddress,
     (req, res, next) => {
         const errors = validationResult(req)
         if (!errors.isEmpty()) {

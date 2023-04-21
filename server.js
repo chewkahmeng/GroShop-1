@@ -49,7 +49,7 @@ const db = require("./app/models");
 // sync() - just sync db (data only)
 // sync({ force: true }) - force Sequelize to create a table, dropping it first if it already existed
 // sync({ alter: true }) - alters the columns and data types of an existing table to match the model
-db.sequelize.sync({ alter: true })
+db.sequelize.sync()
   .then(() => {
     console.log("Synced db.");
   })

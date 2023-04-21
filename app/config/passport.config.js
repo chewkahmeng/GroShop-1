@@ -14,21 +14,26 @@ function initialize(passport) {
     // passport needs ability to serialize and unserialize users out of session
 
     // serialize user for session
-    passport.serializeUser((user, done) => done(null, { id: user.id, email: user.email }))
+    passport.serializeUser((user, done) => done(null, { id: user.id }))
 
     //deserialize user
     passport.deserializeUser(async (login, done) => {
         console.log("deserialize [login]: " + login)
         try {
-            const userInDB = await userDB.findOne({where: {email: `${login.email}`, id:`${login.id}`}});
-            const employeeInDB = await employeeDB.findOne({where: {email: `${login.email}`, id:`${login.id}`}});
-            if (userInDB !== null) {
-                return done(null, userInDB)
-            } else if (employeeInDB !== null) {
-                return done(null, employeeInDB)
-            } else {
-                done(null, null);
-            }  
+            const url = `http://localhost:4001/${login.id}/getuserdetailsbyid`
+            let user = null;
+            await fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                user = data["user"][0]
+                if (user !== null) {
+                    return done(null, user)
+                } else {
+                    done(null, null);
+                }  
+            }).catch(err => {
+                done(err, null)
+            })
         } catch (err) {
             console.log(err)
             done(err, null)
@@ -42,84 +47,72 @@ function initialize(passport) {
     const register = async (req, email, password, done) => {
         console.log('registering user')
         const accountType = req.body['account-type'];
-        // const errors = validationResult(req)
-        // if (!errors.isEmpty()) {
-        //     errors.array().forEach(err => req.flash('error', err.msg));
-        //     return res.redirect('/register');
-        // }
-        if (accountType === 'user') {
+        if (accountType == undefined) {
+            return done(null, false, { message: 'No account type given!'})
+        } else {
             // password validation
             if (password !== req.body.passwordConfirmation) {
                 return done(null, false, { message: 'Passwords do not match!'})
             }
-            // checking if user already exist as Employee
-            const userByEmail = await userDB.findOne({where: {email: `${email}`}})
-            const isEmployeeByEmail = await employeeDB.findOne({where: {email: `${email}`}});
-            if (userByEmail !== null || isEmployeeByEmail !== null) {
-                return done(null, false, { message: 'That email is already taken!'})
+            var role = null;
+            if (accountType === 'customer') {
+                role = 'CUSTOMER'
+            } else if (accountType === 'admin') {
+                role = 'ADMIN'
+            } else {
+                return done(null, false, { message: 'Cannot find role as no account type given!'})
             }
-            const userByUserName = await userDB.findOne({where: {username: `${req.body.username}`}})
-            const isEmployeeByUserName = await employeeDB.findOne({where: {username: `${req.body.username}`}})
-            if (userByUserName !== null || isEmployeeByUserName !== null) {
-                return done(null, false, { message: 'That username is already taken!'})
-            }
-
             // registering user
             const hashedPassword = await bcrypt.hash(password, 10)
-            const newUser = {
+
+
+            const url = 'http://localhost:4001/register';
+            let data = {
                 username: req.body.username,
                 password: hashedPassword,
-                email: email
+                email: email,
+                role: role
             }
-            userDB.create(newUser)
-            .then(data => {
-                console.log ("--------> Created new User");
-                // console.log('data: ' + data);
-                return done(null, data)
-            })
-            .catch(err => {
-                return done(err)
+            let fetchData = {
+              method: 'POST',
+              body: JSON.stringify(data),
+              headers: new Headers({
+                'Content-Type': 'application/json; charset=UTF-8'
+              })
+            }
+            var insertedId = null
+            var user = null
+            var error = null
+            await fetch(url, fetchData)
+            .then((response) => response.json())
+            .then((data) =>{
+                console.log("data=======> \n",data);
+                if (typeof data["output"] != 'undefined') {
+                    insertedId = data["output"]["insertId"]
+                } else {
+                    error = data["error"]
+                }
             });
-        } else if (accountType === 'employee') {
-            // validation
-            if (password !== req.body.passwordConfirmation) {
-                return done(null, false, { message: 'Passwords do not match!'})
-            }
-            // checking if user already exist as Employee
-            const employeeByEmail = await employeeDB.findOne({where: {email: `${email}`}})
-            const isUserByEmail = await userDB.findOne({where: {email: `${email}`}})
-            if (employeeByEmail !== null || isUserByEmail !== null) {
-                return done(null, false, { message: 'That email is already taken!'})
-            }
-            const employeeByUserName = await employeeDB.findOne({where: {username: `${req.body.username}`}})
-            const isUserByUserName = await userDB.findOne({where: {username: `${req.body.username}`}})
-            if (employeeByUserName !== null || isUserByUserName !== null) {
-                return done(null, false, { message: 'That username is already taken!'})
-            }
 
-            // registering employee
-            const hashedPassword = await bcrypt.hash(password, 10)
-            const newEmployee = {
-                username: req.body.username,
-                password: hashedPassword,
-                email: email
+            if (insertedId != null) {
+                const profileUrl = `http://localhost:4001/${insertedId}/getuserdetailsbyid`
+                await fetch(profileUrl)
+                .then(response => response.json())
+                .then(data => {
+                    user = data["user"][0]        
+                    if (user == null) {
+                        return done(null, false, { message: 'Failed to create user'})
+                    } else {
+                        return done(null, user)
+                    } 
+                }).catch(err => {
+                    done(err, null)
+                })
+            } else {
+                return done(null, false, { message: error})
             }
-            employeeDB.create(newEmployee)
-            .then(data => {
-                console.log ("--------> Created new Employee");
-                // console.log('data: ' + data);
-                return done(null, data)
-            })
-            .catch(err => {
-                return done(err)
-            });
-        } else {
-            return done(null, false, { message: 'No account type given!'})
-        }
-
-
-        
     }
+}
     passport.use('local-signup', new LocalStrategy({
         usernameField: 'email',
         passwordField: 'password',
@@ -132,7 +125,7 @@ function initialize(passport) {
     const login = async (req, email, password, done) => {
         console.log(req.body)
         const accountType = req.body['account-type'];
-        if (accountType === 'user') {
+        if (accountType) {
             const url = 'http://localhost:4001/login';
             let data = {
               email: email,
@@ -147,9 +140,8 @@ function initialize(passport) {
             }
             var user = null
             await fetch(url, fetchData)
-              .then((response) => {
-                return response.json();
-              }).then((data) =>{
+              .then((response) => response.json() )
+              .then((data) =>{
                 console.log("data=======> \n",data);
                 user = data["user"]
                 //the data here will return json output. 
@@ -160,34 +152,15 @@ function initialize(passport) {
                 //     }
                 // }
               });
-            console.log(user)
+            console.log("logging in ========> \n", user)
             if (user == null) {
                 return done(null, false, { message: 'Email/password incorrect.'})
             } else {
                 return done(null, user)
             }
-            
-        } else if (accountType === 'employee') {
-            const employee = await employeeDB.findOne({
-                where: {email: `${email}`}
-            })
-            if (employee == null) {
-                return done(null, false, { message: 'Email/password incorrect.'})
-            }
-            try {
-                if (await bcrypt.compare(password, employee.password)) {
-                    return done(null, employee)
-                } else {
-                    return done(null, false, {message: 'Email/password incorrect.'})
-                }
-            } catch (e) {
-                return done(e)
-            }
         }
     } 
     passport.use(new LocalStrategy({usernameField: 'email', passReqToCallback: true}, login))
-    
-
 }
 
 module.exports = initialize

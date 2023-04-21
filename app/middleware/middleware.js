@@ -1,5 +1,5 @@
 // Include Express Validator Functions
-const { check, validationResult } = require('express-validator');
+const { check, body, validationResult } = require('express-validator');
 
 exports.isLoggedIn = (req, res, next) => {
     // if user is authenticated in the session, carry on
@@ -7,7 +7,17 @@ exports.isLoggedIn = (req, res, next) => {
         return next();
 
     // if they aren't redirect them to the home page
-    res.redirect('/');
+    res.redirect('/login');
+}
+
+exports.isAdmin = (req, res, next) => {
+    // if user is authenticated in the session, carry on
+    console.log("checking if is admin: ", req.user)
+    if (req.isAuthenticated() && req.user.role === 'ADMIN')
+        return next();
+
+    // if they aren't redirect them to the home page
+    res.redirect('/login');
 }
 
 exports.validateRegister = 
@@ -30,3 +40,9 @@ exports.validatePasswordChange = [
     })
     .trim().escape()
   ]
+
+
+exports.validateAddress = [
+    // body('name').isEmpty().withMessage('Please enter a valid Street name / Apartment building etc'),
+    body('postalCode').isInt().withMessage('Please enter a valid Postal Code')
+]
