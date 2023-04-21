@@ -484,7 +484,6 @@ const database=  new Database();
       return res.json(err);
     })
 });
-
 app.get('/:id/getuserdetailsbyid', async (req, res) => {
   var query = `
     select * from tbl_user where id = ${req.params.id}
@@ -506,6 +505,42 @@ app.get('/:id/getuserdetailsbyid', async (req, res) => {
     }
   })
 })
+
+// Client side must provide the following in the body
+// {
+//   "name": "Q123",
+//   "floorNo": "qwe",
+//   "unitNo": "qwer",
+//   "postalCode": "das",
+//   "country": "asdf",
+//   "userId": "mvnc"
+// }
+app.post("/:id/createaddress", (req, res) => {
+  if (JSON.stringify(req.body) == "{}") {
+    return res.status(400).send({
+      message: "Content can not be empty!"
+    });
+  }
+  var q1 = `
+  INSERT INTO
+   userservice.tbl_address 
+		(name, floorNo, unitNo, postalCode, country, userId, createdAt, updatedAt)
+  VALUE 
+		("${req.body.name}", "${req.body.floorNo}", "${req.body.unitNo}", "${req.body.postalCode}", "${req.body.country}", "${req.body.userId}",now(),now());`
+  console.log(q1);
+  db.query(q1, (err, data)=> {
+    if(err){
+      return res.json(err)
+    }
+    else{
+      return res.send({
+        message: `Address created successfully!`
+      });
+    }
+  })
+})
+
+
 
 app.listen(4001, () => {
   console.log("Listening on 4001");
