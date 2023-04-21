@@ -102,10 +102,10 @@
                     <% for (let i in comments) { %>
                         <div class="card mb-1">
                             <p class="card-body" style="padding:1%"><%= comments[i].content %></p>
-                            <p class="card-text text-end "><small class="small fw-light fst-italic text-muted" >Posted by <%= comments[i].author %> on <%=comments[i].createdAt.toISOString().split('T')[0]%></small></p>
+                            <p class="card-text text-end "><small class="small fw-light fst-italic text-muted" >Posted by <%= comments[i].author %> on <%=comments[i].createdAt%></small></p>
                         </div>
                     <% } %>
-                    <%- include('../../partials/pagination.ejs') %>
+                    <%- //include('../../partials/pagination.ejs') %>
                 <% } else { %>
                     <p>No comments added yet...</p>
                 <% } %>

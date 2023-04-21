@@ -8,7 +8,9 @@ const recipeStepController = require("../controllers/recipe/recipeStep.controlle
 //////////////////////////////////////////////////////////////////////
 // Recipe Home Page
 //////////////////////////////////////////////////////////////////////
-router.get("/", middleware.isLoggedIn, middleware.isAdmin, async (req, res) => {
+router.get("/", 
+  middleware.isLoggedIn, middleware.isAdmin, 
+  async (req, res) => {
   const url = `http://localhost:4003/getallrecipes`
   var recipes = null
   await fetch(url)
@@ -94,6 +96,7 @@ router.post("/create",
 //////////////////////////////////////////////////////////////////////
 // Create Recipe -> Upload Photo of Dish
 //////////////////////////////////////////////////////////////////////
+// GET UPLOADED PHOTO
 router.get("/:id/uploadPhoto", 
   middleware.isLoggedIn, middleware.isAdmin,  
   async (req, res) => {
@@ -104,7 +107,7 @@ router.get("/:id/uploadPhoto",
     .then(response => response.json())
     .then(data => {
       console.log("data: ", data)
-      image = data["image"]
+      image = data["image"][0]
       console.log(`image: ${image}`)
       if (image == null || image == undefined || image == "") {
         image = null
@@ -120,6 +123,8 @@ router.get("/:id/uploadPhoto",
     })
   }
 )
+
+// UPLOAD AND CREATE RECIPE IMAGE RECORD
 router.post("/:id/uploadPhoto", 
   middleware.isLoggedIn, middleware.isAdmin,  upload.single('image'), 
   async (req, res) => {
@@ -131,6 +136,7 @@ router.post("/:id/uploadPhoto",
       return res.redirect(`/admin/recipes/${recipeId}/uploadPhoto`)
     }
 
+    // UPLOAD PHOTO
     const url = `http://localhost:4003/${recipeId}/uploadphoto`
     const data = {
       type: req.file.mimetype,
@@ -144,6 +150,8 @@ router.post("/:id/uploadPhoto",
         'Content-Type': 'application/json; charset=UTF-8'
       })
     }
+
+    // GET THE NEWLY UPLOADED PHOTO
     var createdImageId = null
     await fetch(url, fetchData)
     .then((response) => response.json())
@@ -184,6 +192,7 @@ router.post("/:id/uploadPhoto",
   }
 )
 
+// SAVE PHOTO TO RECIPE
 router.post("/:id/savePhoto", 
   middleware.isLoggedIn, middleware.isAdmin,  
   async (req, res) => {
@@ -217,33 +226,395 @@ router.post("/:id/savePhoto",
 //////////////////////////////////////////////////////////////////////
 // Create Recipe -> Enter Recipe Ingredients
 //////////////////////////////////////////////////////////////////////
-router.get("/:id/ingredients", middleware.isLoggedIn, middleware.isAdmin,  recipeIngredientController.getAllIngredients)
-router.post("/:id/ingredients/add", middleware.isLoggedIn, middleware.isAdmin,  recipeIngredientController.addIngredient)
-router.post("/:id/ingredients/:ingredientId/update", middleware.isLoggedIn, middleware.isAdmin,  recipeIngredientController.updateIngredient)
-router.post("/:id/ingredients/:ingredientId/delete", middleware.isLoggedIn, middleware.isAdmin,  recipeIngredientController.deleteIngredient)
+// GET RECIPE INGREDIENTS
+router.get("/:id/ingredients", 
+  middleware.isLoggedIn, middleware.isAdmin,  
+  async (req, res) => {
+    const recipeId = req.params.id
+    const url = `http://localhost:4003/${recipeId}/getallingredients`
+    var ingredients = null
+    await fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      ingredients = data["ingredients"]
+      console.log("data=======> ", ingredients)
+      if (ingredients == null || ingredients == undefined  || ingredients[0] == null) {
+        req.flash('info', 'Please add ingredients.')
+        ingredients = null
+      }
+      res.render('./admin/recipe/recipeIngredientForm', {
+        recipeId: recipeId,
+        ingredients: ingredients
+      })
+    })
+    .catch(err => {
+      req.flash('info', `Error in accessing recipe ingredients.: ${err}`)
+      res.render('./admin/recipe/recipeIngredientForm', {
+        recipeId: recipeId,
+        ingredients: null
+      })
+    })
+  }
+)
+
+// ADD RECIPE INGREDIENT
+router.post("/:id/ingredients/add", 
+  middleware.isLoggedIn, middleware.isAdmin,  
+  async (req, res) => {
+    const recipeId = req.params.id
+    const url = `http://localhost:4003/${recipeId}/addingredient`
+    const data = {
+      name: req.body.name,
+      amount: req.body.amount,
+      uom: req.body.uom,
+      description: req.body.description ? req.body.description : null,
+      recipeId: recipeId
+    };
+    let fetchData = {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: new Headers({
+        'Content-Type': 'application/json; charset=UTF-8'
+      })
+    }
+    await fetch(url, fetchData)
+    .then((response) => response.json())
+    .then((data) =>{
+      console.log("data=======> \n",data);
+      req.flash('success', 'Ingredient added successfully.')
+      res.redirect(`/admin/recipes/${recipeId}/ingredients`)
+    })
+    .catch(err => {
+      console.log(err)
+      req.flash('error', 'Error occurred in adding ingredient.')
+      res.redirect(`/admin/recipes/${recipeId}/ingredients`)
+    })
+  }
+)
+
+// UPDATE RECIPE INGREDIENT
+router.post("/:id/ingredients/:ingredientId/update", 
+  middleware.isLoggedIn, middleware.isAdmin,  
+  async (req, res) => {
+    const recipeId = req.params.id
+    const ingredientId = req.params.ingredientId
+    const url = `http://localhost:4003/${recipeId}/updateingredient/${ingredientId}`
+    const data = {
+      name: req.body.name,
+      amount: req.body.amount,
+      uom: req.body.uom,
+      description: req.body.description ? req.body.description : null,
+      recipeId: recipeId
+    };
+    let fetchData = {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: new Headers({
+        'Content-Type': 'application/json; charset=UTF-8'
+      })
+    }
+    await fetch(url, fetchData)
+    .then((response) => response.json())
+    .then((data) =>{
+      console.log("data=======> \n",data);
+      req.flash('success', 'Ingredient updated successfully.')
+      res.redirect(`/admin/recipes/${recipeId}/ingredients`)
+    })
+    .catch(err => {
+      console.log(err)
+      req.flash('error', 'Error occurred in updated ingredient.')
+      res.redirect(`/admin/recipes/${recipeId}/ingredients`)
+    })
+  }
+)
+
+// DELETE RECIPE INGREDIENT
+router.post("/:id/ingredients/:ingredientId/delete", 
+  middleware.isLoggedIn, middleware.isAdmin,  
+  async (req, res) => {
+    const recipeId = req.params.id
+    const ingredientId = req.params.ingredientId
+    const url = `http://localhost:4003/${recipeId}/deleteingredient/${ingredientId}`
+
+    let fetchData = {
+      method: 'POST',
+      headers: new Headers({
+        'Content-Type': 'application/json; charset=UTF-8'
+      })
+    }
+    await fetch(url, fetchData)
+    .then((response) => response.json())
+    .then((data) =>{
+      console.log("data=======> \n",data);
+      req.flash('success', 'Ingredient deleted successfully.')
+      res.redirect(`/admin/recipes/${recipeId}/ingredients`)
+    })
+    .catch(err => {
+      console.log(err)
+      req.flash('error', 'Error occurred in deleting ingredient.')
+      res.redirect(`/admin/recipes/${recipeId}/ingredients`)
+    })
+  }
+)
 
 //////////////////////////////////////////////////////////////////////
 // Create Recipe -> Enter Recipe Steps
 //////////////////////////////////////////////////////////////////////
-router.get("/:id/steps", middleware.isLoggedIn, middleware.isAdmin,  recipeStepController.getAllSteps)
-router.post("/:id/steps/add", middleware.isLoggedIn, middleware.isAdmin,  recipeStepController.addStep)
-router.post("/:id/steps/:stepId/update", middleware.isLoggedIn, middleware.isAdmin,  recipeStepController.updateStep)
-router.post("/:id/steps/:stepId/delete", middleware.isLoggedIn, middleware.isAdmin,  recipeStepController.deleteStep)
+// GET ALL STEPS
+router.get("/:id/steps", 
+  middleware.isLoggedIn, middleware.isAdmin,  
+  async (req, res) => {
+    const recipeId = req.params.id
+    const url = `http://localhost:4003/${recipeId}/getallsteps`
+    var steps = null
+    await fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      steps = data["steps"]
+      console.log("data=======> ", steps)
+      if (steps == null || steps == undefined || steps[0] == null) {
+        req.flash('info', 'Please add steps.')
+        steps = null
+      }
+      res.render('./admin/recipe/recipeStepForm', {
+        recipeId: recipeId,
+        steps: steps
+      })
+    })
+    .catch(err => {
+      req.flash('info', `Error in accessing recipe steps.: ${err}`)
+      res.render('./admin/recipe/recipeStepForm', {
+        recipeId: recipeId,
+        steps: null
+      })
+    })
+  }
+)
+// ADD STEP
+router.post("/:id/steps/add", 
+  middleware.isLoggedIn, middleware.isAdmin,  
+  async (req, res) => {
+    const recipeId = req.params.id
+    const url = `http://localhost:4003/${recipeId}/addstep`
+    const data = {
+      description: req.body.description,
+      recipeId: recipeId
+    };
+    let fetchData = {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: new Headers({
+        'Content-Type': 'application/json; charset=UTF-8'
+      })
+    }
+    await fetch(url, fetchData)
+    .then((response) => response.json())
+    .then((data) =>{
+      console.log("data=======> \n",data);
+      req.flash('success', 'Step added successfully.')
+      res.redirect(`/admin/recipes/${recipeId}/steps`)
+    })
+    .catch(err => {
+      console.log(err)
+      req.flash('error', 'Error occurred in adding Step.')
+      res.redirect(`/admin/recipes/${recipeId}/steps`)
+    })
+  }
+)
+
+router.post("/:id/steps/:stepId/update", 
+  middleware.isLoggedIn, middleware.isAdmin,  
+  async (req, res) => {
+    const recipeId = req.params.id
+    const stepId = req.params.stepId
+    const url = `http://localhost:4003/${recipeId}/updatestep/${stepId}`
+    const data = {
+      description: req.body.description,
+      recipeId: recipeId
+    };
+    let fetchData = {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: new Headers({
+        'Content-Type': 'application/json; charset=UTF-8'
+      })
+    }
+    await fetch(url, fetchData)
+    .then((response) => response.json())
+    .then((data) =>{
+      console.log("data=======> \n",data);
+      req.flash('success', 'Step updated successfully.')
+      res.redirect(`/admin/recipes/${recipeId}/steps`)
+    })
+    .catch(err => {
+      console.log(err)
+      req.flash('error', 'Error occurred in updating Step.')
+      res.redirect(`/admin/recipes/${recipeId}/steps`)
+    })
+  }
+)
+router.post("/:id/steps/:stepId/delete", 
+  middleware.isLoggedIn, middleware.isAdmin,  
+  async (req, res) => {
+    const recipeId = req.params.id
+    const stepId = req.params.stepId
+    const url = `http://localhost:4003/${recipeId}/deletestep/${stepId}`
+
+    let fetchData = {
+      method: 'POST',
+      headers: new Headers({
+        'Content-Type': 'application/json; charset=UTF-8'
+      })
+    }
+    await fetch(url, fetchData)
+    .then((response) => response.json())
+    .then((data) =>{
+      console.log("data=======> \n",data);
+      req.flash('success', 'Step deleted successfully.')
+      res.redirect(`/admin/recipes/${recipeId}/steps`)
+    })
+    .catch(err => {
+      console.log(err)
+      req.flash('error', 'Error occurred in deleting step.')
+      res.redirect(`/admin/recipes/${recipeId}/steps`)
+    })
+  }
+)
 
 //////////////////////////////////////////////////////////////////////
 // View Recipe
 //////////////////////////////////////////////////////////////////////
-router.get("/:id", middleware.isLoggedIn, middleware.isAdmin,  recipeController.getRecipe)
+router.get("/:id", 
+  middleware.isLoggedIn, middleware.isAdmin,  
+  async (req, res) => {
+    var recipe = null
+    var image = null
+    var ingredients = null
+    var steps = null
+
+    const recipeId = req.params.id
+
+    const url = `http://localhost:4003/${recipeId}/getrecipedetails`
+    await fetch(url)
+    .then ((response) => response.json())
+    .then((data => {
+      recipe = data["recipe"]
+      image = data["image"]
+      ingredients = data["ingredients"]
+      steps = data["steps"]
+      if (recipe == null || recipe == undefined) {
+        req.flash('error', 'Cannot retrieve recipe.')
+        recipe = null
+        image = null
+        ingredients = null
+        steps = null
+      }
+      res.render('./admin/recipe/recipeViewPage', {
+        recipe: recipe,
+        image: image,
+        ingredients: ingredients,
+        steps: steps
+      })
+    }))
+    .catch(err => {
+      console.log(err)
+      req.flash('error', `Error occurred in retrieving recipe: ${err}`)
+      res.redirect(`/admin/recipes`)
+    })
+  }
+)
 
 //////////////////////////////////////////////////////////////////////
 // Update Recipe
 //////////////////////////////////////////////////////////////////////
-router.get("/:id/update", middleware.isLoggedIn, middleware.isAdmin,  recipeController.getRecipeForUpdate)
-router.post("/:id/update", middleware.isLoggedIn, middleware.isAdmin,  recipeController.updateRecipe)
+router.get("/:id/update", 
+  middleware.isLoggedIn, middleware.isAdmin,  
+  async (req, res) => {
+    const recipeId = req.params.id
+    const url = `http://localhost:4003/${recipeId}/getrecipe`
+    await fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      var recipe = data["recipe"]
+      if (recipe != null || recipe != undefined) {
+        return res.render('./admin/recipe/recipeForm', {
+          recipe: recipe,
+          mode: "UPDATE"
+        })
+      } else {
+        req.flash('error', 'Error occurred in retrieving recipe from recipe service')
+        res.redirect(`/admin/recipes`)
+      }
+    }).catch(err => {
+      req.flash('error', `Error occurred in retrieving recipe for update: ${err}`)
+      res.redirect(`/admin/recipes`)
+    })
+  }
+)
+router.post("/:id/update", 
+  middleware.isLoggedIn, middleware.isAdmin,  
+  async (req, res) => {
+    const recipeId = req.params.id
+    const url = `http://localhost:4003/${recipeId}/updaterecipe`
+
+    const data = {
+      name: req.body.name,
+      cuisine: req.body.cuisine,
+      prepTime: req.body.prepTime,
+      prepTimeUom: req.body.prepTimeUom,
+      description: req.body.description ? req.body.description : null,
+      difficulty: req.body.difficulty
+    };
+    let fetchData = {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: new Headers({
+        'Content-Type': 'application/json; charset=UTF-8'
+      })
+    }
+    await fetch(url, fetchData)
+    .then((response) => response.json())
+    .then((data) =>{
+      console.log("data=======> \n",data);
+      req.flash('success', 'Recipe details updated successfully.')
+      res.redirect(`/admin/recipes/${recipeId}/uploadPhoto`)
+    })
+    .catch(err => {
+      console.log(err)
+      req.flash('error', 'Error occurred in updating recipe details.')
+      res.redirect(`/admin/recipes/${recipeId}`)
+    })
+  }
+)
 
 //////////////////////////////////////////////////////////////////////
 // Delete Recipe
 //////////////////////////////////////////////////////////////////////
-router.post("/:id/delete", middleware.isLoggedIn, middleware.isAdmin,  recipeController.deleteRecipe)
+router.post("/:id/delete", 
+  middleware.isLoggedIn, middleware.isAdmin,  
+  async (req, res) => {
+    const recipeId = req.params.id
+    const url = `http://localhost:4003/${recipeId}/deleterecipe`
+
+    let fetchData = {
+      method: 'POST',
+      headers: new Headers({
+        'Content-Type': 'application/json; charset=UTF-8'
+      })
+    }
+    await fetch(url, fetchData)
+    .then((response) => response.json())
+    .then((data) =>{
+      console.log("data=======> \n",data);
+      req.flash('success', 'Recipe deleted successfully.')
+      res.redirect(`/admin/recipes`)
+    })
+    .catch(err => {
+      console.log(err)
+      req.flash('error', 'Error occurred in deleting recipe.')
+      res.redirect(`/admin/recipes`)
+    })
+  }
+)
 
 module.exports = router

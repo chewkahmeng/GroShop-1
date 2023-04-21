@@ -200,10 +200,11 @@ app.get("/:id/getrecipedetails", (req, res) => {
           error: "Error in getting recipes"
         });
       }
-      console.log(JSON.stringify(data))
+      console.log("getting recipe details")
+      console.log(data)
       const result = {
-        recipe: data[0],
-        image: data[1],
+        recipe: data[0][0],
+        image: data[1][0],
         ingredients: data[2],
         steps: data[3]
       }
@@ -222,7 +223,7 @@ app.get("/:userId/getrecipedetailsforuser/:recipeId", (req, res) => {
     SELECT * FROM TBL_RECIPE_INGREDIENT where recipeId = '${recipeId}';
     SELECT * FROM TBL_RECIPE_STEP where recipeId = '${recipeId}' order by createdAt asc;
     SELECT * FROM TBL_FAVOURITES where recipeId = ${recipeId} and userId = ${userId};
-    SELECT * FROM TBL_COMMENTS where recipeId = '${recipeId}';
+    SELECT id, content, author, recipeId, date_format(createdAt,'%d/%m/%Y') as createdAt, date_format(updatedAt,'%d/%m/%Y') as updatedAt FROM TBL_COMMENTS where recipeId = '${recipeId}';
   `
   db.query(query, (err, data)=> {
     if (err) {
@@ -236,11 +237,11 @@ app.get("/:userId/getrecipedetailsforuser/:recipeId", (req, res) => {
       }
       console.log(data)
       const result = {
-        recipe: data[0],
-        image: data[1],
+        recipe: data[0][0],
+        image: data[1][0],
         ingredients: data[2],
         steps: data[3],
-        favourite: data[4],
+        favourite: data[4][0],
         comments: data[5]
       }
       return res.json(result);
@@ -490,6 +491,7 @@ app.get('/:recipeId/getallingredients', (req, res) => {
       const result = {
         ingredients: data
       }
+      console.log("ingredients: ", result)
       return res.json(result)
     }
   })
@@ -681,9 +683,10 @@ app.get('/:userId/getfavouriterecipes', (req, res) => {
       return res.json(err)
     }else{
       console.log(data)
-      return res.send({
-        message: `Favourite Recipes retrieved successfully!`
-      });
+      const result = {
+        recipes: data
+      }
+      return res.json(result)
     }
   })
 })
