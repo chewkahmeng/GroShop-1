@@ -1,5 +1,5 @@
 // Include Express Validator Functions
-const { check, validationResult } = require('express-validator');
+const { check, body, validationResult } = require('express-validator');
 
 exports.isLoggedIn = (req, res, next) => {
     // if user is authenticated in the session, carry on
@@ -30,3 +30,9 @@ exports.validatePasswordChange = [
     })
     .trim().escape()
   ]
+
+
+exports.validateAddress = [
+    // body('name').isEmpty().withMessage('Please enter a valid Street name / Apartment building etc'),
+    body('postalCode').isInt().withMessage('Please enter a valid Postal Code')
+]
