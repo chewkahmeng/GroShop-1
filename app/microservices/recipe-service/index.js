@@ -53,6 +53,34 @@ app.get("/getallrecipes", (req, res) => {
   })
 })
 
+// GET ALL RECIPES WITH PAGINATION (LIMIT AND OFFSET)
+app.get("/getallrecipes/:limit/:offset", (req, res) => {
+  var query = `
+    select count(1) as count from tbl_recipe recipe, tbl_recipe_image image where recipe.id = image.recipeId;
+    select recipe.*, image.srcpath as srcpath
+    from tbl_recipe recipe, tbl_recipe_image image
+    where recipe.id = image.recipeId
+    limit ${req.params.limit} offset ${req.params.offset};
+  `
+  db.query(query, (err, data)=> {
+    if (err) {
+      return res.json(err)
+    } else {
+      if(JSON.stringify(data) == undefined){
+        return res.status(400).send({
+          error: "Error in getting recipes"
+        });
+      }
+      console.log(`recipes: ${JSON.stringify(data)}`)
+      const result = {
+        count: data[0][0]["count"],
+        recipes: data[1]
+      }
+      return res.json(result);
+    }
+  })
+})
+
 // CREATE NEW RECIPE
 app.post("/createrecipe", (req, res) => {
   if (JSON.stringify(req.body) == "{}") {
@@ -722,6 +750,30 @@ app.post('/:recipeId/postcomment', (req, res) => {
       return res.send({
         message: `Comment posted successfully!`
       });
+    }
+  })
+})
+
+app.get('/:recipeId/getcomments/:startIndex/:limit', (req, res) => {
+  const recipeId = req.params.recipeId
+  const startIndex = req.params.startIndex
+  const limit = req.params.limit
+
+  var query = `
+  SELECT id, content, author, recipeId, date_format(createdAt,'%d/%m/%Y') as createdAt, date_format(updatedAt,'%d/%m/%Y') as updatedAt 
+  FROM TBL_COMMENTS WHERE recipeId = ${recipeId} order by createdAt asc
+  limit ${startIndex}, ${limit};
+  `
+  console.log(query)
+  db.query(query, (err, data) => {
+    if (err) {
+      return res.json(err)
+    } else {
+      console.log(data)
+      const result = {
+        comments: data
+      }
+      return res.json(result)
     }
   })
 })

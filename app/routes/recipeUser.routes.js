@@ -1,32 +1,61 @@
 var router = require("express").Router();
 const middleware = require("../middleware/middleware.js")
-const upload = require("../middleware/image.middleware.js");
-const recipeController = require("../controllers/recipe/recipeUser.controller.js");
-const recipeIngredientController = require("../controllers/recipe/recipeIngredient.controller.js");
-const recipeStepController = require("../controllers/recipe/recipeStep.controller.js");
 
-const { check, validationResult } = require('express-validator')
+const getPagination = (page, size, itemsPerPage) => {
+    if (page < 0) page = 0
+    const limit = size ? +size : itemsPerPage; // set limit of items per page
+    const offset = page ? page * limit : 0;
+  
+    return { limit, offset };
+};
+
+const getPagingData = (count, items, page, limit) => {
+    page = page ? page : 1
+    const currentPage = page ? +page : 0;
+    const totalPages = Math.ceil(count / limit);
+    const prevPage = (currentPage - 1) >= 0 ? (currentPage - 1) : null;
+    const nextPage = (currentPage + 1) <= totalPages ? (currentPage + 1) : null;
+    console.log(`page: ${page}`)
+    return { count, items, totalPages, currentPage, prevPage, nextPage };
+};
+
+const RECIPES_PER_PAGE = 6 // will change to 12
+const COMMENTS_PER_PAGE = 5
 
 // Recipe Home Page
 router.get("/", 
     middleware.isLoggedIn, 
     async (req, res) => {
-        const url = `http://localhost:4003/getallrecipes`
+        const { page, size } = req.query;
+        const { limit, offset } = getPagination(+page - 1, size, RECIPES_PER_PAGE);
+        
         var recipes = null
+
+        // const url = `http://localhost:4003/getallrecipes`
+        const url = `http://localhost:4003/getallrecipes/${limit}/${offset}`
         await fetch(url)
         .then(response => response.json())
         .then(data => {
+          const response = getPagingData(data["count"], data["recipes"], page, limit);
+          console.log(`response: ${JSON.stringify(response)}`)
           recipes = data["recipes"]
           if (recipes != null) {
             res.render('./user/recipe/recipe', {
-              recipes: recipes,
-              user: req.user
+                user: req.user,
+                recipes: recipes,
+                pageObj: {
+                    currentPage: response.currentPage,
+                    totalPages: response.totalPages,
+                    nextPage: response.nextPage,
+                    prevPage: response.prevPage
+                }
             })
           } else {
             req.flash("info", "Error in retrieving recipes.")
             res.render('./user/recipe/recipe', {
                 user: req.user,
-                recipes: null
+                recipes: null,
+                pageObj: null
             })
           }
         })
@@ -69,10 +98,10 @@ router.get("/:id",
         var ingredients = null
         var steps = null
         var favourite = null
-        var comments = null
+        // var comments = null
     
         const recipeId = req.params.id
-        const userId = req.user.id
+        const userId = req.user ? req.user.id : null
         const url = `http://localhost:4003/${userId}/getrecipedetailsforuser/${recipeId}`
         await fetch(url)
         .then ((response) => response.json())
@@ -82,7 +111,7 @@ router.get("/:id",
             ingredients = data["ingredients"]
             steps = data["steps"]
             favourite = data["favourite"]
-            comments = data["comments"]
+            // comments = data["comments"]
             console.log(`view recipe by user: ${data}`)
             if (recipe == null || recipe == undefined) {
                 req.flash('error', 'Cannot retrieve recipe.')
@@ -91,7 +120,7 @@ router.get("/:id",
                 ingredients = null
                 steps = null
                 favourite = null
-                comments = null
+                // comments = null
             }
             res.render('./user/recipe/recipeViewPage', {
                 recipe: recipe,
@@ -99,7 +128,7 @@ router.get("/:id",
                 ingredients: ingredients,
                 steps: steps,
                 favourite: favourite,
-                comments: comments
+                // comments: comments
             })
         }))
         .catch(err => {

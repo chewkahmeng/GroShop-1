@@ -98,17 +98,12 @@
                     </div>
                     <button type="submit" class="btn btn-success mb-2" >Post</button>
                 </form>
-                <% if (comments) { %>
-                    <% for (let i in comments) { %>
-                        <div class="card mb-1">
-                            <p class="card-body" style="padding:1%"><%= comments[i].content %></p>
-                            <p class="card-text text-end "><small class="small fw-light fst-italic text-muted" >Posted by <%= comments[i].author %> on <%=comments[i].createdAt%></small></p>
-                        </div>
-                    <% } %>
-                    <%- //include('../../partials/pagination.ejs') %>
-                <% } else { %>
-                    <p>No comments added yet...</p>
-                <% } %>
+                <div id="comments_section">
+                </div>
+                <div >
+                    <button type="button" class="btn btn-dark mb-2" id="load_button" onclick="load_comments_data();">Load More</button>   
+                </div>
+                
             </div>
         </div>
     </div>
@@ -122,6 +117,43 @@
 
 </div>
 
+<script>
+    const comments_section = document.getElementById('comments_section')
+    const load_button = document.getElementById('load_button')
+    var start_index = 0
+    var number_of_record = 5 // allowing 5 comments to be loaded at a time.
+    load_comments_data()
+
+    async function load_comments_data() {
+        load_button.disabled = true;
+        const url = `http://localhost:4003/${<%=recipe.id%>}/getcomments/${start_index}/${number_of_record}`
+        await fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            comments = data["comments"]
+            let html = ''
+            if (comments.length > 0) {
+                comments.forEach(comment => {
+                    html += `
+                    <div class="card mb-1" >
+                        <p class="card-body" style="padding:1%">${comment.content}</p>
+                        <p class="card-text text-end " style="padding-right:1%"><small class="small fw-light fst-italic text-muted" >Posted by ${comment.author} on ${comment.createdAt}</small></p>
+                    </div>
+                    `
+                })
+                start_index += comments.length
+                load_button.disabled = false
+            } else {
+                html += `<p>No more comments found</p>`
+                load_button.remove()
+            }
+            comments_section.innerHTML += html
+            window.scrollTo(0, document.body.scrollHeight);
+        })
+    }
+
+</script>
 
 </body>
 <%- include('../../partials/footer.ejs') %>
