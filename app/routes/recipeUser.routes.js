@@ -19,12 +19,11 @@ const getPagingData = (count, items, page, limit) => {
     return { count, items, totalPages, currentPage, prevPage, nextPage };
 };
 
-const RECIPES_PER_PAGE = 6 // will change to 12
-const COMMENTS_PER_PAGE = 5
+const RECIPES_PER_PAGE = 2 // will change to 12
 
 // Recipe Home Page
 router.get("/", 
-    middleware.isLoggedIn, 
+    // middleware.isLoggedIn, 
     async (req, res) => {
         const { page, size } = req.query;
         const { limit, offset } = getPagination(+page - 1, size, RECIPES_PER_PAGE);
@@ -38,10 +37,11 @@ router.get("/",
         .then(data => {
           const response = getPagingData(data["count"], data["recipes"], page, limit);
           console.log(`response: ${JSON.stringify(response)}`)
+          console.log('current page: ', response.currentPage)
           recipes = data["recipes"]
-          if (recipes != null) {
-            res.render('./user/recipe/recipe', {
-                user: req.user,
+          if (recipes != null && recipes != undefined && recipes.length > 0) {
+            res.render('./user/recipe/recipeHomePage', {
+                user: (req.user !=undefined && req.user != null) ? req.user : null,
                 recipes: recipes,
                 pageObj: {
                     currentPage: response.currentPage,
@@ -52,8 +52,8 @@ router.get("/",
             })
           } else {
             req.flash("info", "Error in retrieving recipes.")
-            res.render('./user/recipe/recipe', {
-                user: req.user,
+            res.render('./user/recipe/recipeHomePage', {
+                user: (req.user !=undefined && req.user != null) ? req.user : null,
                 recipes: null,
                 pageObj: null
             })
@@ -66,23 +66,35 @@ router.get("/",
 router.get("/favourites", 
     middleware.isLoggedIn, 
     async (req, res) => {
+        const { page, size } = req.query;
+        const { limit, offset } = getPagination(+page - 1, size, RECIPES_PER_PAGE);
+
         const userId = req.user.id
-        const url = `http://localhost:4003/${userId}/getfavouriterecipes`
+        const url = `http://localhost:4003/${userId}/getfavouriterecipes/${limit}/${offset}`
         var recipes = null
         await fetch(url)
         .then(response => response.json())
         .then(data => {
+          const response = getPagingData(data["count"], data["recipes"], page, limit);
+          console.log(`response: ${JSON.stringify(response)}`)
           recipes = data["recipes"]
-          if (recipes != null) {
+          if (recipes != null && recipes != undefined && recipes.length > 0) {
             res.render('./user/recipe/favourites', {
               recipes: recipes,
-              user: req.user
+              user: req.user,
+              pageObj: {
+                currentPage: response.currentPage,
+                totalPages: response.totalPages,
+                nextPage: response.nextPage,
+                prevPage: response.prevPage
+              }
             })
           } else {
-            req.flash("info", "No favourite recipes added.")
+            // req.flash("info", "No favourite")
             res.render('./user/recipe/favourites', {
-                user: req.user,
-                recipes: null
+              user: req.user,
+              recipes: null,
+              pageObj: null
             })
           }
         })
@@ -91,7 +103,7 @@ router.get("/favourites",
 
 // View Recipe
 router.get("/:id", 
-    middleware.isLoggedIn, 
+    // middleware.isLoggedIn, 
     async (req, res) => {
         var recipe = null
         var image = null
@@ -112,9 +124,9 @@ router.get("/:id",
             steps = data["steps"]
             favourite = data["favourite"]
             // comments = data["comments"]
-            console.log(`view recipe by user: ${data}`)
-            if (recipe == null || recipe == undefined) {
-                req.flash('error', 'Cannot retrieve recipe.')
+            console.log(`view recipe by user: `, typeof recipe)
+            if (recipe == null || typeof recipe == 'undefined' || recipe.length <= 0) {
+                req.flash('error', 'No recipe found')
                 recipe = null
                 image = null
                 ingredients = null
@@ -123,6 +135,7 @@ router.get("/:id",
                 // comments = null
             }
             res.render('./user/recipe/recipeViewPage', {
+                user: (req.user !=undefined && req.user != null) ? req.user : null,
                 recipe: recipe,
                 image: image,
                 ingredients: ingredients,

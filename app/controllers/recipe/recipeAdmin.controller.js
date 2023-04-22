@@ -35,7 +35,7 @@ exports.getRecipeHome = async (req, res) => {
       })
     .then(data => {
         const response = getPagingData(data, page, limit);
-        res.render('./admin/recipe/recipe', {
+        res.render('./admin/recipe/recipeHomePage', {
             employee: req.user,
             recipes: response.items,
             pageObj: {
@@ -48,7 +48,7 @@ exports.getRecipeHome = async (req, res) => {
     })
     .catch(err => {
         req.flash("info", "Error in retrieving recipes.")
-        res.render('./admin/recipe/recipe', {
+        res.render('./admin/recipe/recipeHomePage', {
             user: req.user,
             recipes: null,
             pageObj: null

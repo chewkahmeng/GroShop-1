@@ -2,6 +2,7 @@
 <body>
 <%- include('../../partials/navbar-admin.ejs') %>
 <div class="card page-card">
+    <% if (recipe) { %>
     <div class="row justify-content-md-center mb-3">
         <h1 class="card-title text-center" style="color:rgb(0, 16, 87); font-weight:bold">
             <%= recipe.name %>
@@ -78,6 +79,7 @@
         </div>
     </div>
     <br>
+    <% } %>    
     <div class="row justify-content-md-center">
         <div class="col-md-8 col-md-offset-2">
             <a href="/admin/recipes" class="btn btn-primary" value="Back to Recipes Home">Back to Recipes Home</a>

@@ -39,7 +39,7 @@ exports.getRecipeHomeForUser = async (req, res) => {
       })
     .then(data => {
         const response = getPagingData(data, page, limit);
-        res.render('./user/recipe/recipe', {
+        res.render('./user/recipe/recipeHomePage', {
             user: req.user,
             recipes: response.items,
             pageObj: {
@@ -51,7 +51,7 @@ exports.getRecipeHomeForUser = async (req, res) => {
         })
     })
     .catch(err => {
-        res.render('./user/recipe/recipe', {
+        res.render('./user/recipe/recipeHomePage', {
             user: req.user,
             recipes: null,
             pageObj: null

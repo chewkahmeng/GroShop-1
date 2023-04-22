@@ -70,7 +70,7 @@ app.use(express.static(path.join(__dirname, "public")));
 /**
  * -------------- ROUTES ----------------
  * API routes 
- * welcome page: /login, /register, /welcome
+ * login/register page: /login, /register, 
  * user routes: /home/...
  * admin routes: /admin/...
  */
@@ -101,7 +101,7 @@ app.use("/admin/profile", admin);
 const adminAddress = require("./app/routes/adminAddress.routes.js");
 app.use("/admin/address", adminAddress);
 
-app.get('/', (req, res) => {res.redirect('/login')})
+app.get('/', (req, res) => {res.redirect('/home')})
 
 
 /**

@@ -5,34 +5,23 @@ const db = require("../models");
 
 
 module.exports = function(app, passport) {
-    app.get("/welcome", (req, res) => {
-        var isAuthenticated;
-        if (typeof req.user === 'undefined') {
-            isAuthenticated = null
-        } else {
-            isAuthenticated = req.user
-        }
-        if (isAuthenticated === null) {
-            res.render("welcome", {
-                user: typeof req.user !== 'undefined'?req.user:null,
-            });
-        } else {
-            res.redirect('/home')
-        }
-    });
 
-    app.get("/home", middleware.isLoggedIn, (req, res) => {
-        console.log('redirecting to home')
-        console.log(req.user)
-        if (req.user.role === 'CUSTOMER') {
-            res.render('user/index', {
-                user: typeof req.user !== 'undefined'?req.user:null
-            })
-        } else if (req.user.role === 'ADMIN') {
-            res.redirect("/admin")
-        }
 
-    });
+    app.get("/home", 
+        // middleware.isLoggedIn, 
+        (req, res) => {
+            console.log('redirecting to home')
+            console.log(req.user)
+            if (req.user == null || req.user == undefined) {
+                console.log("viewing site as guest")
+                res.redirect("/home/recipes")
+            } else if (req.user.role === 'CUSTOMER') {
+                res.redirect("/home/recipes")
+            } else if (req.user.role === 'ADMIN') {
+                res.redirect("/admin")
+            }
+        }
+    );
 
     app.get("/admin", middleware.isLoggedIn, middleware.isAdmin, (req, res) => {
         res.render('admin/index', {
@@ -40,9 +29,22 @@ module.exports = function(app, passport) {
         })
     })
 
+    app.get("/login", (req, res) => {
+        var isAuthenticated;
+        if (typeof req.user === 'undefined') {
+            isAuthenticated = null
+        } else {
+            isAuthenticated = req.user
+        }
+        if (isAuthenticated === null) {
+            res.render("login", {
+                user: typeof req.user !== 'undefined'?req.user:null,
+            });
+        } else {
+            res.redirect('/home')
+        }
+    });
 
-
-    app.get('/login', (req, res) => {res.redirect("/welcome")})
     app.post('/login', passport.authenticate('local', {
         successRedirect: '/home',
         failureRedirect: '/login',

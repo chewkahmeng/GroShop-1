@@ -16,7 +16,7 @@ const getPagingData = (count, items, page, limit) => {
     const totalPages = Math.ceil(count / limit);
     const prevPage = (currentPage - 1) >= 0 ? (currentPage - 1) : null;
     const nextPage = (currentPage + 1) <= totalPages ? (currentPage + 1) : null;
-    console.log(`page: ${page}`)
+    console.log(`page: ${currentPage}`)
     return { count, items, totalPages, currentPage, prevPage, nextPage };
 };
 
@@ -43,8 +43,8 @@ router.get("/",
       const response = getPagingData(data["count"], data["recipes"], page, limit);
       console.log(`response: ${JSON.stringify(response)}`)
       recipes = data["recipes"]
-      if (recipes != null) {
-        res.render('./admin/recipe/recipe', {
+      if (recipes != null && recipes != undefined && recipes.length > 0) {
+        res.render('./admin/recipe/recipeHomePage', {
           recipes: recipes,
           user: req.user,
           pageObj: {
@@ -56,7 +56,7 @@ router.get("/",
         })
       } else {
         req.flash("info", "Error in retrieving recipes.")
-        res.render('./admin/recipe/recipe', {
+        res.render('./admin/recipe/recipeHomePage', {
           user: req.user,
           recipes: null,
           pageObj: null

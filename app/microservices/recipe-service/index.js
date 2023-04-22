@@ -329,7 +329,7 @@ app.post('/:id/savephototorecipe', (req, res) => {
   // only 1 photo per recipe
   var query = `
   DELETE from recipeservice.TBL_RECIPE_IMAGE
-  where recipeId = '${recipeId}';
+  where recipeId = '${recipeId}' and id != '${imageId}';
   UPDATE recipeservice.TBL_RECIPE_IMAGE
   SET recipeId = '${recipeId}'
   WHERE id = '${imageId}';
@@ -721,6 +721,42 @@ app.get('/:userId/getfavouriterecipes', (req, res) => {
   })
 })
 
+// GET ALL RECIPES WITH PAGINATION (LIMIT AND OFFSET)
+app.get("/:userId/getfavouriterecipes/:limit/:offset", (req, res) => {
+  const userId = req.params.userId
+  var query = `
+    select count(1) as count 
+    from recipeservice.tbl_recipe recipe, recipeservice.tbl_recipe_image image 
+    where recipe.id = image.recipeId
+    and recipe.id in 
+    (select fav.recipeId from recipeservice.tbl_favourites fav where fav.userId = '${userId}');
+    
+    select recipe.*, image.srcpath as srcpath
+    from recipeservice.tbl_recipe recipe, recipeservice.tbl_recipe_image image
+    where recipe.id = image.recipeId 
+    and recipe.id in 
+      (select fav.recipeId from recipeservice.tbl_favourites fav where fav.userId = '${userId}')
+    limit ${req.params.limit} offset ${req.params.offset};
+  `
+  db.query(query, (err, data)=> {
+    if (err) {
+      return res.json(err)
+    } else {
+      if(JSON.stringify(data) == undefined){
+        return res.status(400).send({
+          error: "Error in getting recipes"
+        });
+      }
+      console.log(`recipes: ${JSON.stringify(data)}`)
+      const result = {
+        count: data[0][0]["count"],
+        recipes: data[1]
+      }
+      return res.json(result);
+    }
+  })
+})
+
 ////////////////////////////////////////////////////
 // COMMENT FUNCTIONS
 ////////////////////////////////////////////////////
@@ -763,7 +799,7 @@ app.get('/:recipeId/getcomments/:startIndex/:limit', (req, res) => {
 
   var query = `
   SELECT id, content, author, recipeId, date_format(createdAt,'%d/%m/%Y') as createdAt, date_format(updatedAt,'%d/%m/%Y') as updatedAt 
-  FROM recipeservice.TBL_COMMENTS WHERE recipeId = ${recipeId} order by createdAt asc
+  FROM recipeservice.TBL_COMMENTS WHERE recipeId = ${recipeId} order by createdAt desc
   limit ${startIndex}, ${limit};
   `
   console.log(query)
