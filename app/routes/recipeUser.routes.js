@@ -19,7 +19,7 @@ const getPagingData = (count, items, page, limit) => {
     return { count, items, totalPages, currentPage, prevPage, nextPage };
 };
 
-const RECIPES_PER_PAGE = 2 // will change to 12
+const RECIPES_PER_PAGE = 6 // will change to 12
 
 // Recipe Home Page
 router.get("/", 

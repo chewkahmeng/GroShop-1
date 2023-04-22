@@ -385,8 +385,7 @@ app.get("/gettargetuserprofile", (req, res) => {
   db.query(q1, async (err, data)=> {
     if(err){
       return res.json(err)
-    }
-    else{
+    }else{
       if(JSON.stringify(data[0])==undefined){
         return res.send({
           error: `Email/password incorrect.`
@@ -441,7 +440,7 @@ const database=  new Database();
   const userEmail =req.body.email;
   const userPassword = req.body.password;
   const userUsername = req.body.username;
-  const userRole = req.body.role;
+  // const userRole = req.body.role;
   //UPDATE `userservice`.`tbl_user` SET `password` = '$2b$10$8A8/EfrDMyoJQ2.aPkNCH.CITxygrA9XvWoqBlYWmCj1VOnR2', `email` = '123@123.m' WHERE (`id` = '1');
   //INSERT INTO `userservice`.`tbl_user` (`id`, `username`, `password`, `email`, `role`, `createdAt`, `updatedAt`) VALUES ('2', 'd1331343', '$10$bCfwzUZhdPBFV50EqSGa3O9Rpr5U60WcY832w2Fwp8BeOYsGEvOsO', '123@123.com.sg', 'CUSTOMER', '2023-04-17 22:53:33', '2023-04-17 22:53:33');
 
@@ -461,7 +460,7 @@ const database=  new Database();
           INSERT INTO 
             userservice.tbl_user 
             (username, password, email, role, createdAt, updatedAt) 
-          VALUES ('${userUsername}', '${userPassword}', '${userEmail}', '${userRole}', now(), now());`
+          VALUES ('${userUsername}', '${userPassword}', '${userEmail}', 'CUSTOMER', now(), now());`
           )
         }
     }, err =>{

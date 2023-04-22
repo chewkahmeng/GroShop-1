@@ -71,7 +71,7 @@
                         <input type="text" class="form-control" name="description" value="<%=recipe.description%>">
                     </div>
                     <div class="form-group mb-3" >
-                        <label for="account-type">Cuisine</label>
+                        <label for="cuisine">Cuisine</label>
                         <select id="cuisine" class="form-select" name="cuisine"   required>
                             <option value="Local" <% if(recipe.cuisine === "Local"){ %>selected<% } %> >Local</option>
                             <option value="Chinese" <% if(recipe.cuisine === "Chinese"){ %>selected<% } %>>Chinese</option>

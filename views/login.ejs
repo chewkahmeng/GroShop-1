@@ -14,14 +14,6 @@
                 <div id="login-contents">
                     <%- include('partials/alerts.ejs') %>
                     <form action="/login" method="post">
-                        <div>
-                            <label for="account-type">Select account type to login as:</label>
-                            <select id="account-type" name="account-type">
-                                <option value="customer">Customer</option>
-                                <option value="admin">Admin</option>
-                            </select>
-                        </div>
-                        <br>
                         <div class="form-group mb-3">
                             <label for="email" class="form-label">Email</label>
                             <input type="email" class="form-control" name="email" required>

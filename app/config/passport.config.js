@@ -46,32 +46,19 @@ function initialize(passport) {
     // we are using named strategies since we have one for login and one for signup
     const register = async (req, email, password, done) => {
         console.log('registering user')
-        const accountType = req.body['account-type'];
-        if (accountType == undefined) {
-            return done(null, false, { message: 'No account type given!'})
-        } else {
+
             // password validation
             if (password !== req.body.passwordConfirmation) {
                 return done(null, false, { message: 'Passwords do not match!'})
             }
-            var role = null;
-            if (accountType === 'customer') {
-                role = 'CUSTOMER'
-            } else if (accountType === 'admin') {
-                role = 'ADMIN'
-            } else {
-                return done(null, false, { message: 'Cannot find role as no account type given!'})
-            }
+
             // registering user
             const hashedPassword = await bcrypt.hash(password, 10)
-
-
             const url = 'http://localhost:4001/register';
             let data = {
                 username: req.body.username,
                 password: hashedPassword,
-                email: email,
-                role: role
+                email: email
             }
             let fetchData = {
               method: 'POST',
@@ -112,7 +99,6 @@ function initialize(passport) {
                 return done(null, false, { message: error})
             }
     }
-}
     passport.use('local-signup', new LocalStrategy({
         usernameField: 'email',
         passwordField: 'password',
@@ -124,40 +110,37 @@ function initialize(passport) {
     // =========================================================================
     const login = async (req, email, password, done) => {
         console.log(req.body)
-        const accountType = req.body['account-type'];
-        if (accountType) {
-            const url = 'http://localhost:4001/login';
-            let data = {
-              email: email,
-              password: password
-            }
-            let fetchData = {
-              method: 'POST',
-              body: JSON.stringify(data),
-              headers: new Headers({
-                'Content-Type': 'application/json; charset=UTF-8'
-              })
-            }
-            var user = null
-            await fetch(url, fetchData)
-              .then((response) => response.json() )
-              .then((data) =>{
-                console.log("data=======> \n",data);
-                user = data["user"]
-                //the data here will return json output. 
-                // {
-                //     message: "eg message",
-                //     user: {
-                //         user object here for passport to use
-                //     }
-                // }
-              });
-            console.log("logging in ========> \n", user)
-            if (user == null) {
-                return done(null, false, { message: 'Email/password incorrect.'})
-            } else {
-                return done(null, user)
-            }
+        const url = 'http://localhost:4001/login';
+        let data = {
+            email: email,
+            password: password
+        }
+        let fetchData = {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: new Headers({
+            'Content-Type': 'application/json; charset=UTF-8'
+            })
+        }
+        var user = null
+        await fetch(url, fetchData)
+            .then((response) => response.json() )
+            .then((data) =>{
+            console.log("data=======> \n",data);
+            user = data["user"]
+            //the data here will return json output. 
+            // {
+            //     message: "eg message",
+            //     user: {
+            //         user object here for passport to use
+            //     }
+            // }
+            });
+        console.log("logging in ========> \n", user)
+        if (user == null) {
+            return done(null, false, { message: 'Email/password incorrect.'})
+        } else {
+            return done(null, user)
         }
     } 
     passport.use(new LocalStrategy({usernameField: 'email', passReqToCallback: true}, login))
