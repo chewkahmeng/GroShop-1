@@ -18,7 +18,7 @@ function initialize(passport) {
 
     //deserialize user
     passport.deserializeUser(async (login, done) => {
-        console.log("deserialize [login]: " + login)
+        console.log("deserialize [login]: ", login)
         try {
             const url = `http://localhost:4001/${login.id}/getuserdetailsbyid`
             let user = null;

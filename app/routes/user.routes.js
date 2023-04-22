@@ -22,10 +22,12 @@ router.get('/', middleware.isLoggedIn, async (req, res) => {
     .then(data => {
         user = data["user"]
         address = data["address"]
+        console.log('user: ', user)
+        console.log('address: ', address)
         if (user != null) {
             res.render('user/profile', {
                 user: user,
-                address: address
+                address: (address != null && address != undefined )? address : null
             })
         } else {
             req.flash('error', `Error in retrieving user profile`)

@@ -113,7 +113,7 @@ router.post("/create",
       .then(response => response.json())
       .then(data => {
         var recipe = data["recipe"]
-        if (recipe != null || recipe != undefined) {
+        if (recipe != null && recipe != undefined) {
           req.flash('success', 'Recipe created successfully.')
           res.redirect(`/admin/recipes/${recipe.id}/uploadPhoto`)
         }
@@ -199,7 +199,7 @@ router.post("/:id/uploadPhoto",
     })
 
     if ( createdImageId != null ) {
-      const photourl = `http://localhost:4003/getphotobyid/${createdImageId}`
+      const photourl = `http://localhost:4003/${createdImageId}/getphotobyid`
       var image = null
       await fetch(photourl)
       .then(response => response.json())

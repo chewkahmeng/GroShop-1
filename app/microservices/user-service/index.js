@@ -486,7 +486,7 @@ const database=  new Database();
 });
 app.get('/:id/getuserdetailsbyid', async (req, res) => {
   var query = `
-    select * from tbl_user where id = ${req.params.id}
+    select * from userservice.tbl_user where id = ${req.params.id}
   `
   db.query(query, (err, data)=> {
     if(err){
@@ -515,63 +515,147 @@ app.get('/:id/getuserdetailsbyid', async (req, res) => {
 //   "country": "asdf",
 //   "userId": "mvnc"
 // }
-app.post("/:id/createaddress", (req, res) => {
+app.post("/:userId/createaddress", (req, res) => {
   if (JSON.stringify(req.body) == "{}") {
     return res.status(400).send({
       message: "Content can not be empty!"
     });
   }
+  const address = {
+    name: `'${req.body.name}'`,
+    floorNo: req.body.floorNo ? `'${req.body.floorNo}'` : null,
+    unitNo: req.body.unitNo ? `'${req.body.unitNo}'` : null,
+    postalCode: `'${req.body.postalCode}'`,
+    country: `'${req.body.country}'`,
+    userId: `'${req.params.userId}'`
+  };
+  let output = `
+    ${address.name},
+    ${address.floorNo},
+    ${address.unitNo},
+    ${address.postalCode},
+    ${address.country},
+    ${address.userId}
+  `
   var q1 = `
-  INSERT INTO
-   userservice.tbl_address 
-		(name, floorNo, unitNo, postalCode, country, userId, createdAt, updatedAt)
-  VALUE 
-		("${req.body.name}", "${req.body.floorNo}", "${req.body.unitNo}", "${req.body.postalCode}", "${req.body.country}", "${req.body.userId}",now(),now());`
+  INSERT INTO userservice.tbl_address 
+	(name, floorNo, unitNo, postalCode, country, userId)
+  VALUE (${output});`
   console.log(q1);
   db.query(q1, (err, data)=> {
     if(err){
       return res.json(err)
     }
     else{
+      const result = {
+        address: data
+      }
+      return res.json(result)
+    }
+  })
+})
+
+app.get("/:addressId/getaddressbyid", (req, res) => {
+  const addressId = req.params.addressId
+  var query = `
+    select * from userservice.tbl_address where id = ${addressId}
+  `
+  console.log(query)
+  db.query(query, (err, data) => {
+    if (err) {
+      return res.json(err)
+    } else {
+      if(JSON.stringify(data) == undefined){
+        return res.status(400).send({
+          message: "No address retrieved"
+        });
+      }
+      console.log(JSON.stringify(data))
+      const result = {
+        address: data[0]
+      }
+      return res.json(result);
+    }
+  })
+})
+
+app.get("/:userId/getaddressbyuserId", (req, res) => {
+  const userId = req.params.userId
+  var query = `
+    select * from userservice.tbl_address where userId = ${userId}
+  `
+  console.log(query)
+  db.query(query, (err, data) => {
+    if (err) {
+      return res.json(err)
+    } else {
+      if(JSON.stringify(data) == undefined){
+        return res.status(400).send({
+          message: "No address retrieved"
+        });
+      }
+      console.log(JSON.stringify(data))
+      const result = {
+        address: data
+      }
+      return res.json(result);
+    }
+  })
+})
+
+app.post("/:addressId/updateaddress", (req, res) => {
+  const addressId = req.params.addressId
+  if (JSON.stringify(req.body) == "{}") {
+    return res.status(400).send({
+      message: "Content can not be empty!"
+    });
+  }
+  const address = {
+    name: `'${req.body.name}'`,
+    floorNo: req.body.floorNo ? `'${req.body.floorNo}'` : null,
+    unitNo: req.body.unitNo ? `'${req.body.unitNo}'` : null,
+    postalCode: `'${req.body.postalCode}'`,
+    country: `'${req.body.country}'`
+  };
+  let output = `
+    name = ${address.name},
+    floorNo = ${address.floorNo},
+    unitNo = ${address.unitNo},
+    postalCode = ${address.postalCode},
+    country = ${address.country}
+  `
+  var q1 = `
+  UPDATE userservice.tbl_address
+  SET  ${output}
+	WHERE id = ${addressId};
+  `
+  console.log(q1);
+  db.query(q1, (err, data)=> {
+    if(err){
+      return res.json(err)
+    } else {
+      console.log(data)
       return res.send({
-        message: `Address created successfully!`
+        message: `Address: ${addressId}, updated successfully!`
       });
     }
   })
 })
 
-
-
-
-// Client side must provide the following in the body
-// {
-//   "name": "Q123",
-//   "floorNo": "qwe",
-//   "unitNo": "qwer",
-//   "postalCode": "das",
-//   "country": "asdf",
-//   "userId": "mvnc"
-// }
-app.post("/:id/createaddress", (req, res) => {
-  if (JSON.stringify(req.body) == "{}") {
-    return res.status(400).send({
-      message: "Content can not be empty!"
-    });
-  }
+app.post("/:addressId/deleteaddress", (req, res) => {
+  const addressId = req.params.addressId
   var q1 = `
-  INSERT INTO
-   userservice.tbl_address 
-		(name, floorNo, unitNo, postalCode, country, userId, createdAt, updatedAt)
-  VALUE 
-		("${req.body.name}", "${req.body.floorNo}", "${req.body.unitNo}", "${req.body.postalCode}", "${req.body.country}", "${req.body.userId}",now(),now());`
+  DELETE FROM userservice.tbl_address
+	WHERE id = ${addressId};
+  `
   console.log(q1);
   db.query(q1, (err, data)=> {
     if(err){
       return res.json(err)
-    }
-    else{
+    } else {
+      console.log(data)
       return res.send({
-        message: `Address created successfully!`
+        message: `Address: ${addressId}, deleted successfully!`
       });
     }
   })

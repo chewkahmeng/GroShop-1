@@ -102,7 +102,7 @@ exports.deleteAddress = async (req, res) => {
             res.redirect('/home/profile')
         } else {
             req.flash('error', 'No address found in database')
-            res.redirect(`/home/address/${req.params.id}/update`)
+            res.redirect('/home/profile')
           }
         })
         .catch(err => {
