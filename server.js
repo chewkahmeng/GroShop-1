@@ -92,6 +92,7 @@ app.use("/home/cart", cart);
 // EMPLOYEE ROUTES (/admin/...)
 const recipeForAdmin = require("./app/routes/recipeAdmin.routes.js");
 app.use("/admin/recipes", recipeForAdmin);
+
 const inventory = require("./app/routes/inventory.routes.js");
 app.use("/admin/inventory", inventory);
 
