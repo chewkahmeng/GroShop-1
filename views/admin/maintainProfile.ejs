@@ -12,17 +12,17 @@
         <div class="col-md-8 col-md-offset-2">
             <%- include('../partials/alerts.ejs') %>
             <% if (mode === "UE") { %>
-                <form action="/admin/profile/<%=employee.id%>/update" method="POST">
+                <form action="/admin/profile/<%=user.id%>/update" method="POST">
                     <div class="form-group mb-3" >
                         <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control" name="username" value="<%=employee.username%>" required>
+                        <input type="text" class="form-control" name="username" value="<%=user.username%>" required>
                     </div>
                     <button class="btn btn-primary" type="submit" value="Save">Save</button>
                     <a class="btn btn-light" href="/admin/profile" value="Cancel">Cancel</a>
                     <br><br>
                 </form>
             <% } else if (mode === "PW") {%>
-                <form action="/admin/profile/<%=employee.id%>/changePassword" method="POST">
+                <form action="/admin/profile/<%=user.id%>/changePassword" method="POST">
                     <div class="form-group mb-3" >
                         <label for="oldPassword" class="form-label">Old Password</label>
                         <input type="password" class="form-control" name="oldPassword" required>
