@@ -1,23 +1,20 @@
 # GroShop
 ## Installation and Set-up
-1. Install MySQL to create local database. 
-2. Create `.env` file in main directory and set up properties like SESSION_SECRET etc. See `.env.example` file for reference.
-3. Run `npm start` to start the app.
+1. Install MySQL and MYSQL Workbench to create local databases. 
+2. Set up local databases for each microservice under `microservices` folder, i.e. `userservice`, `recipeservice` etc.
+3. Create `.env` file in main directory and set up properties like SESSION_SECRET etc. See `.env.example` file for reference. This is used for user authentication.
+4. Run `npm start` in all the microservices under `microservices` folder to start running the microservices' server.
+5. Run `npm start` for the main application to run the client side application.
 
-## Object-relational mapping
-1. With the incorporation of Sequelize, there is no need to create/drop tables everytime a collaborator makes table changes. 
-2. Please see server.js: DB SYNC (SEQUELIZE) section. There are different settings to the DB sync.
-3. Sequelize links: 
-    - Guide: https://sequelize.org/docs/v6/
-    - API references: https://sequelize.org/api/v6/identifiers.html
-
-## Code Structure
+## Code Structure (to be modified)
 - `app` - main application directory
     - `config` contains all configuration files
-    - `controllers` contains all the backend functions for the respective microservices
+    - `microservices` contains all the microservices
+        - `cart-service` 
+        - `user-service` 
+        - `recipe-service` 
     - `middleware` contains all the middleware files that are used in request validation etc
-    - `models` contains all the models of the application
-    - `routes` contains all the api routes of the application
+    - `routes` contains all the client api routes of the application
 - `node_modules` - imported npm packages that are used in the application
 - `public` - public static content
     - `css` contains all the css files
@@ -30,30 +27,19 @@
 - `package.json`
 - `server.js` - main application file to run
 
-## Completed Modules
+## Completed Microservices
 1. User
     - Register User
     - Login User
     - Logout User
     - Change User Password
     - Update/View/Delete User
-
-2. Address
     - Add/Update/View/Delete shipping address
 
-3. Recipe 
-    - Recipe Details
-        - Add/Update/View/Delete Recipe (For Admin)
-        - Add Recipe Photo (For Admin)
-        - View/Favourite/Comment on Recipe (For User)
-        
-    - Recipe Ingredients
-        - Add/Update/View/Delete Recipe Ingredients (For Admin)
-        - View Recipe Ingredients (For User)
-    
-    - Recipe Steps
-        - Add/Update/View/Delete Recipe Steps (For Admin)
-        - View Recipe Steps (For User)
+2. Recipe 
+    - Admin can Add/Update/View/Delete recipe details, photo, ingredients and steps.
+    - All Users can View recipe details, photo, ingredients and steps.
+    - Only Logged In Users can Favourite/Comment on recipes.
     
 
 
