@@ -3,6 +3,9 @@ var router = express.Router();
 const { check, validationResult } = require('express-validator')
 const middleware = require("../middleware/middleware.js")
 
+// all routes for user's shipping address: /home/address/...
+
+// route: /home/address/create (GET - create address page)
 router.get("/create", 
     middleware.isLoggedIn,
     (req, res) => {
@@ -12,6 +15,7 @@ router.get("/create",
         })
     })
 
+// route: /home/address/create (POST - create address page)
 router.post("/create", 
     middleware.isLoggedIn,
     middleware.validateAddress,
@@ -59,7 +63,7 @@ router.post("/create",
         })
     }
 )
-
+// route: /home/address/:id (GET - get address)
 router.get("/:id", 
     middleware.isLoggedIn,
     async (req, res) => {
@@ -83,6 +87,7 @@ router.get("/:id",
     }
 )
 
+// route: /home/address/:id/update (GET - update address page)
 router.get("/:id/update",
     middleware.isLoggedIn,
     async (req, res) => {
@@ -110,7 +115,7 @@ router.get("/:id/update",
         })
     }
 )
-
+// route: /home/address/:id/update (POST - update address page)
 router.post("/:id/update",
     middleware.isLoggedIn,
     middleware.validateAddress,
@@ -158,7 +163,7 @@ router.post("/:id/update",
         })
     }
 )
-
+// route: /home/address/:id/delete (POST - delete address)
 router.post("/:id/delete",
     middleware.isLoggedIn,
     async (req, res) => {

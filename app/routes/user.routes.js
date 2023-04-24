@@ -7,9 +7,6 @@ const { check, validationResult } = require('express-validator');
 
 //middleware to read req.body.<params>
 
-// in the final code structure for microservice,
-// this api route would be in the main file directory > routes > user.routes.js
-
 // all routes for user: /home/profile/...
 
 // route: /home/profile (GET - view profile page)

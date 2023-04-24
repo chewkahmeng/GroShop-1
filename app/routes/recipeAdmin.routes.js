@@ -23,8 +23,11 @@ const getPagingData = (count, items, page, limit) => {
 const RECIPES_PER_PAGE = 6 // will change to 12
 const COMMENTS_PER_PAGE = 5
 
+// all routes for admin recipe functions: /admin/recipes/...
+
 //////////////////////////////////////////////////////////////////////
-// Recipe Home Page
+// Recipe Home Page 
+// - (/admin/recipes)
 //////////////////////////////////////////////////////////////////////
 router.get("/", 
   middleware.isLoggedIn, middleware.isAdmin, 
@@ -67,7 +70,7 @@ router.get("/",
 )
 
 //////////////////////////////////////////////////////////////////////
-// Create Recipe -> Enter Recipe Details
+// Create Recipe -> Enter Recipe Details (/admin/recipes/create)
 //////////////////////////////////////////////////////////////////////
 router.get("/create", middleware.isLoggedIn, middleware.isAdmin,  (req, res) => {
   res.render('admin/recipe/recipeForm', {
@@ -128,7 +131,9 @@ router.post("/create",
 })
 
 //////////////////////////////////////////////////////////////////////
-// Create Recipe -> Upload Photo of Dish
+// Create Recipe -> Upload Photo of Dish 
+// - /admin/recipes/:id/uploadPhoto
+// - /admin/recipes/:id/savePhoto
 //////////////////////////////////////////////////////////////////////
 // GET UPLOADED PHOTO
 router.get("/:id/uploadPhoto", 
@@ -259,6 +264,10 @@ router.post("/:id/savePhoto",
 
 //////////////////////////////////////////////////////////////////////
 // Create Recipe -> Enter Recipe Ingredients
+// - /admin/recipes/:id/ingredients
+// - /admin/recipes/:id/ingredients/add
+// - /admin/recipes/:id/ingredients/:ingredientId/update
+// - /admin/recipes/:id/ingredients/:ingredientId/delete
 //////////////////////////////////////////////////////////////////////
 // GET RECIPE INGREDIENTS
 router.get("/:id/ingredients", 
@@ -393,6 +402,10 @@ router.post("/:id/ingredients/:ingredientId/delete",
 
 //////////////////////////////////////////////////////////////////////
 // Create Recipe -> Enter Recipe Steps
+// - /admin/recipes/:id/steps
+// - /admin/recipes/:id/steps/add
+// - /admin/recipes/:id/steps/:ingredientId/update
+// - /admin/recipes/:id/steps/:ingredientId/delete
 //////////////////////////////////////////////////////////////////////
 // GET ALL STEPS
 router.get("/:id/steps", 
@@ -517,6 +530,7 @@ router.post("/:id/steps/:stepId/delete",
 
 //////////////////////////////////////////////////////////////////////
 // View Recipe
+// - /admin/recipes/:id
 //////////////////////////////////////////////////////////////////////
 router.get("/:id", 
   middleware.isLoggedIn, middleware.isAdmin,  
@@ -560,6 +574,7 @@ router.get("/:id",
 
 //////////////////////////////////////////////////////////////////////
 // Update Recipe
+// - /admin/recipes/:id/update
 //////////////////////////////////////////////////////////////////////
 router.get("/:id/update", 
   middleware.isLoggedIn, middleware.isAdmin,  
@@ -623,6 +638,7 @@ router.post("/:id/update",
 
 //////////////////////////////////////////////////////////////////////
 // Delete Recipe
+// - /admin/recipes/:id/delete
 //////////////////////////////////////////////////////////////////////
 router.post("/:id/delete", 
   middleware.isLoggedIn, middleware.isAdmin,  

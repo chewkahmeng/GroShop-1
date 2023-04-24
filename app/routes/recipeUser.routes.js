@@ -21,7 +21,10 @@ const getPagingData = (count, items, page, limit) => {
 
 const RECIPES_PER_PAGE = 6 // will change to 12
 
+//////////////////////////////////////////////////////////////////////
 // Recipe Home Page
+// - /home/recipes
+//////////////////////////////////////////////////////////////////////
 router.get("/", 
     // middleware.isLoggedIn, 
     async (req, res) => {
@@ -62,7 +65,10 @@ router.get("/",
     }
 )
 
+//////////////////////////////////////////////////////////////////////
 // Favourite Recipes Page
+// - /home/recipes/favourites
+//////////////////////////////////////////////////////////////////////
 router.get("/favourites", 
     middleware.isLoggedIn, 
     async (req, res) => {
@@ -101,7 +107,10 @@ router.get("/favourites",
     }
 )
 
+//////////////////////////////////////////////////////////////////////
 // View Recipe
+// - /home/recipes/:id
+//////////////////////////////////////////////////////////////////////
 router.get("/:id", 
     // middleware.isLoggedIn, 
     async (req, res) => {
@@ -152,7 +161,11 @@ router.get("/:id",
       }
 )
 
-// Favourite Recipe
+//////////////////////////////////////////////////////////////////////
+// Favourite/Unfavourite Recipe
+// - /home/recipes/:id/favourite
+// - /home/recipes/:id/unfavourite
+//////////////////////////////////////////////////////////////////////
 router.post("/:id/favourite", 
     middleware.isLoggedIn, 
     async (req, res) => {
@@ -180,7 +193,6 @@ router.post("/:id/favourite",
     }
 )
 
-// Unfavourite Recipe
 router.post("/:id/unfavourite", 
     middleware.isLoggedIn, 
     async (req, res) => {
@@ -208,7 +220,11 @@ router.post("/:id/unfavourite",
     }
 )
 
+//////////////////////////////////////////////////////////////////////
 // Comment on Recipe
+// - /home/recipes/:id/comment (POST)
+// - get comments is on the EJS to allow for loading of comments
+//////////////////////////////////////////////////////////////////////
 router.post("/:id/comment", 
     middleware.isLoggedIn, 
     async (req, res) => {
