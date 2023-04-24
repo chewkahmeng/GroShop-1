@@ -2,9 +2,6 @@ const LocalStrategy = require('passport-local').Strategy
 const bcrypt = require('bcrypt');
 const { response } = require('express');
 const {body, validationResult} = require('express-validator')
-const db = require("../models");
-const userDB = db.users;
-const employeeDB = db.employees;
 
 function initialize(passport) {
     // =========================================================================

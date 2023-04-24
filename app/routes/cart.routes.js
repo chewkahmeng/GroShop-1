@@ -1,12 +1,13 @@
 var router = require("express").Router();
 const middleware = require("../middleware/middleware.js")
-const cartController = require("../controllers/cart.controller.js");
-
-
 const { check, validationResult } = require('express-validator')
 
-// Recipe Home Page
-router.get("/mycart", middleware.isLoggedIn, cartController.getMyCart)
+// Cart Home Page
+router.get("/mycart", middleware.isLoggedIn, (req, res) => {
+    res.render('./user/cart/mycart', {
+        user: req.user
+    })
+})
 
 
 module.exports = router

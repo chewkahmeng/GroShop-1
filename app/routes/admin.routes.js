@@ -1,6 +1,5 @@
 const express = require('express');
 var router = express.Router();
-//const adminController = require("../controllers/admin.controller.js");
 const bcrypt = require("bcrypt");
 const middleware = require("../middleware/middleware.js")
 // Include Express Validator Functions

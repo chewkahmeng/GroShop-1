@@ -1,7 +1,6 @@
 const express = require('express');
 var router = express.Router();
 const { check, validationResult } = require('express-validator')
-const adminAddressController = require("../controllers/adminAddress.controller.js");
 const middleware = require("../middleware/middleware.js")
 
 router.get("/create", 
@@ -15,7 +14,7 @@ router.get("/create",
 
 router.post("/create", 
     middleware.isLoggedIn,
-    adminAddressController.validateAddress,
+    middleware.validateAddress,
     (req, res, next) => {
         const errors = validationResult(req)
         if (!errors.isEmpty()) {

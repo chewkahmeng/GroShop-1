@@ -1,7 +1,7 @@
 module.exports = {
     HOST: "127.0.0.1",
     USER: "root",
-    PASSWORD: "groShop23!",
+    PASSWORD: "password",
     DB: "groShopDB",
     dialect: "mysql",
     pool: {
