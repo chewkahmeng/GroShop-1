@@ -3,10 +3,35 @@ const middleware = require("../middleware/middleware.js")
 const { check, validationResult } = require('express-validator')
 
 // Cart Home Page
-router.get("/mycart", middleware.isLoggedIn, (req, res) => {
-    res.render('./user/cart/mycart', {
-        user: req.user
+// Method 1: calling microservice api in cart.routes.js to fetch data 
+// and then render the EJS page to be seen on browser
+// See method 2 in mycart.ejs for another way to fetch data from microservice api 
+router.get("/mycart", middleware.isLoggedIn, async (req, res) => {
+    const id = 1 // some id
+    const url = `http://localhost:4000/${id}/api`
+    await fetch(url)
+    .then(response => response.json())
+    .then(data => {
+        // TODO
+        
+        // page is in views/users/cart/mycart.ejs
+        res.render('./user/cart/mycart', {
+            user: req.user,
+            items: data[items]
+        })
+    }).catch(err => {
+        // display alert error message in mycart.ejs under alert.ejs
+        req.flash("error", `Error in retrieving cart: ${err}`)
+
+        // page is in views/users/cart/mycart.ejs
+        res.render('./user/cart/mycart', {
+            user: req.user,
+            items: null
+        })
     })
+
+
+
 })
 
 

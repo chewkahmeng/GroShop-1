@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <head>
     <script>
+        // method 2: calling microservice api inside EJS page itself under <script> tag
         const url = "http://localhost:4000/1/api";
 
         function callCartService(url) {
@@ -12,9 +13,9 @@
             var x = document.createElement("div")
 
             x.innerHTML = `  
-            <card>
+            <div class="card">
                 ${response.data}
-            </card>  `
+            </div>  `
 
             document.getElementById('cart-view').append(x)
         });    
@@ -25,15 +26,34 @@
 
 <body>
 <br>
-<div class="card page-card" id="cart-view">
+<div class="card page-card" id="cart-page">
     <div class="row justify-content-md-center mb-3">
         <h1 class="card-title text-center" style="color:rgb(0, 16, 87); font-weight:bold">
             My Cart
         </h1>
     </div>
-    <div class="row justify-content-md-center">
+    <div class="row justify-content-md-center" id="cart-view">
         <div class="col-md-8 col-md-offset-2">
-            <h1>TO BE ADDED</h1>
+            <% for (let i in cartItems) { %>
+                <div class="card">
+                    <div class="card-body row">
+                        <div class="col-sm-1"><%= parseInt(i)+1 %>. </div>
+                        <div class="col-sm-6">
+                            <%= cartItems[i].name %> 
+                        </div>
+                        <div class="col-sm-6 text-end">
+                            <a href="#" onclick="">
+                                <i class="fa-solid fa-pen" data-toggle="tooltip" data-placement="top" title="Update Item"></i>
+                            </a>
+                            &nbsp;
+                            <a href="#" onclick="">
+                                <i class="fa-solid fa-trash-can" data-toggle="tooltip" data-placement="top" title="Delete Item"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            <% } %>
         </div>
     </div>
 </div>

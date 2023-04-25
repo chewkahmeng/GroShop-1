@@ -24,7 +24,12 @@
             <h1 class="card-title text-center fw-bold" style="color:rgb(0, 16, 87);">
                 <%= recipe.name %>
             </h1>
-            <h6 class="fw-normal text-center"><i class="fa-solid fa-utensils"></i> &nbsp; <%= recipe.cuisine %> &nbsp; &nbsp; &nbsp;&nbsp;<i class="fa-solid fa-hourglass-end"></i> &nbsp; <%=recipe.prepTime%> <%=recipe.prepTimeUom%> &nbsp; &nbsp;&nbsp; &nbsp; <i class="fa-solid fa-gauge"></i> &nbsp; <%=recipe.difficulty%>/5</h6>
+            <h6 class="fw-normal text-center">
+                <i class="fa-solid fa-utensils"></i> &nbsp; <%= recipe.cuisine %> &nbsp; &nbsp; &nbsp;&nbsp;
+                <i class="fa-solid fa-hourglass-end"></i> &nbsp; <%=recipe.prepTime%> <%=recipe.prepTimeUom%> &nbsp; &nbsp;&nbsp; &nbsp; 
+                <i class="fa-solid fa-gauge"></i> &nbsp; <%=recipe.difficulty%>/5 &nbsp; &nbsp;&nbsp; &nbsp; 
+                <i class="fa-solid fa-user"></i> &nbsp; <%=recipe.servingSize%>
+            </h6>   
             <% if (recipe.description) { %>
             <h6 class="fw-light text-center">Description: <%= recipe.description %></h6>
             <% } %>

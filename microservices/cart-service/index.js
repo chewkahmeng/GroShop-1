@@ -23,7 +23,7 @@ db.connect(function(err) {
   console.log("connected")
 })
 
-
+// microservice api to be called in cart.routes.js
 app.get("/:id/api", (req, res) => {
   const userid =req.params.id;
   const q = `

@@ -9,13 +9,14 @@ CREATE TABLE `tbl_recipe` (
   `name` varchar(255) NOT NULL,
   `description` varchar(255) DEFAULT NULL,
   `cuisine` varchar(255) NOT NULL,
+  `servingSize` int NOT NULL,
   `prepTime` int NOT NULL,
   `prepTimeUom` varchar(255) NOT NULL,
   `difficulty` int DEFAULT NULL,
   `createdAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `tbl_recipe_image` (
   `id` int NOT NULL AUTO_INCREMENT,

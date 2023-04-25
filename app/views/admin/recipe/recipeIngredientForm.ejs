@@ -17,7 +17,7 @@
         document.getElementById("name").value = name
         document.getElementById("description").value = description
         document.getElementById("amount").value = amount
-        opt = document.querySelector(`#prepTimeUom option[value="${uom}"]`);
+        opt = document.querySelector(`#ingredientUom option[value="${uom}"]`);
         opt.selected = true;
 
         // set form action
@@ -54,7 +54,7 @@
                         <input type="number" class="form-control" name="amount" id="amount" min="0" required>
                     </div>
                     <div class="col-sm-4">
-                        <select id="prepTimeUom" class="form-select form-control" name="uom">
+                        <select id="ingredientUom" class="form-select form-control" name="uom">
                             <option value="quantity">quantity</option>
                             <option value="ml">ml</option>
                             <option value="l">l</option>
@@ -62,6 +62,7 @@
                             <option value="kg">kg</option>
                             <option value="teaspoon">teaspoon</option>
                             <option value="tablespoon">tablespoon</option>
+                            <option value="cup">cup</option>
                         </select>
                     </div>
                 </div>

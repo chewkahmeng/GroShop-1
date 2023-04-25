@@ -81,6 +81,51 @@ app.get("/getallrecipes/:limit/:offset", (req, res) => {
   })
 })
 
+app.get("/searchrecipes", (req, res) => {
+  const queryParams = {
+    name: req.query.name ? req.query.name : null,
+    cuisine: req.query.cuisine ? req.query.cuisine : null,
+    difficulty: req.query.difficulty ? req.query.difficulty : null,
+    servingSize: req.query.servingSize ? req.query.servingSize : null,
+    limit: req.query.limit,
+    offset: req.query.offset
+  }
+
+  let filteredQuery = ""
+  if (queryParams.name != null) filteredQuery += `and upper(recipe.name) like upper('%${queryParams.name}%')`
+  if (queryParams.cuisine != null) filteredQuery += `and upper(recipe.cuisine) like upper('%${queryParams.cuisine}%')`
+  if (queryParams.difficulty != null) filteredQuery += `and upper(recipe.difficulty) like upper('%${queryParams.difficulty}%')`
+  if (queryParams.servingSize != null) filteredQuery += `and upper(recipe.servingSize) like upper('%${queryParams.servingSize}%')`
+
+  var query = `
+  select count(1) as count 
+  from recipeservice.tbl_recipe recipe, recipeservice.tbl_recipe_image image 
+  where recipe.id = image.recipeId ${filteredQuery};
+  select recipe.*, image.srcpath as srcpath
+  from recipeservice.tbl_recipe recipe, recipeservice.tbl_recipe_image image
+  where recipe.id = image.recipeId ${filteredQuery}
+  limit ${queryParams.limit} offset ${queryParams.offset};
+  `
+  db.query(query, (err, data)=> {
+    if (err) {
+      return res.json(err)
+    } else {
+      if(JSON.stringify(data) == undefined){
+        return res.status(400).send({
+          error: "Error in getting recipes"
+        });
+      }
+      console.log(`recipes: ${JSON.stringify(data)}`)
+      const result = {
+        count: data[0][0]["count"],
+        recipes: data[1]
+      }
+      return res.json(result);
+    }
+  })
+
+})
+
 // CREATE NEW RECIPE
 app.post("/createrecipe", (req, res) => {
   if (JSON.stringify(req.body) == "{}") {
@@ -93,6 +138,7 @@ app.post("/createrecipe", (req, res) => {
     name: `'${req.body.name}'`,
     description: req.body.description ? `'${req.body.description}'` : null,
     cuisine: `'${req.body.cuisine}'`,
+    servingSize: `'${req.body.servingSize}'`,
     prepTime: `'${req.body.prepTime}'`,
     prepTimeUom: `'${req.body.prepTimeUom}'`,
     difficulty: `'${req.body.difficulty}'`
@@ -101,13 +147,14 @@ app.post("/createrecipe", (req, res) => {
     ${recipe.name},
     ${recipe.description},
     ${recipe.cuisine},
+    ${recipe.servingSize},
     ${recipe.prepTime},
     ${recipe.prepTimeUom},
     ${recipe.difficulty}
   `
   var query = `
     INSERT into recipeservice.TBL_RECIPE
-    (NAME, DESCRIPTION, CUISINE, PREPTIME, PREPTIMEUOM, DIFFICULTY)
+    (NAME, DESCRIPTION, CUISINE, SERVINGSIZE, PREPTIME, PREPTIMEUOM, DIFFICULTY)
     VALUES(${output});
   `
   console.log(query);
@@ -136,6 +183,7 @@ app.post("/:id/updaterecipe", (req, res) => {
     name: `'${req.body.name}'`,
     description: req.body.description ? `'${req.body.description}'` : null,
     cuisine: `'${req.body.cuisine}'`,
+    servingSize: `'${req.body.servingSize}'`,
     prepTime: `'${req.body.prepTime}'`,
     prepTimeUom: `'${req.body.prepTimeUom}'`,
     difficulty: `'${req.body.difficulty}'`
@@ -144,6 +192,7 @@ app.post("/:id/updaterecipe", (req, res) => {
   name = ${recipe.name},
   description = ${recipe.description},
   cuisine = ${recipe.cuisine},
+  servingSize = ${recipe.servingSize},
   prepTime = ${recipe.prepTime},
   prepTimeUom = ${recipe.prepTimeUom},
   difficulty = ${recipe.difficulty}

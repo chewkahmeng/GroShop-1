@@ -6,27 +6,10 @@
     <div class="container justify-content-center">
         <%- include('../../partials/alerts.ejs') %>
         <center><h1>Favourite Recipes</h1></center>
-        <br>
-        <% if (recipes) { %>
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-            
-                <% for (let recipe of recipes) { %>
-                <div class="col">
-                    <div class="card h-100">
-                        <img src="<%= recipe.srcpath%>" class="card-img-top" style="width: 100%; height: 20vw; object-fit: cover;">
-                        <div class="card-body">
-                            <h5 class="card-title"><%=recipe.name%></h5>
-                            <p class="card-text"><%=recipe.cuisine%>, <%=recipe.prepTime%> <%=recipe.prepTimeUom%></p>
-                            <a href="/home/recipes/<%=recipe.id%>" class="btn btn-primary">View Recipe</a>
-                        </div>
-                    </div>
-                </div>
-                <% } %>
-        </div>
-        <br><br>
+        <%- include('recipes.ejs') %>
         <!-- PAGINATION -->
         <%- include('../../partials/pagination.ejs') %>
-        <% } else { %>
+        <% if (recipes == null) { %>
 
         <center>
             <h6 class="fw-normal">No recipes added to favourites yet..</h6>
