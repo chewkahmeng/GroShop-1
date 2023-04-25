@@ -69,6 +69,47 @@ router.get("/",
   }
 )
 
+router.get("/search", async (req, res) => {
+  const { page, size, name, cuisine, difficulty, servingSize } = req.query;
+  const { limit, offset } = getPagination(+page - 1, size, RECIPES_PER_PAGE);
+
+  let queryStr = `?limit=${limit}&offset=${offset}`
+  if (name != null) queryStr += `&name=${name}`
+  if (cuisine != null) queryStr += `&cuisine=${cuisine}`
+  if (difficulty != null) queryStr += `&difficulty=${difficulty}`
+  if (servingSize != null) queryStr += `&servingSize=${servingSize}`
+
+  const url = `http://localhost:4003/searchrecipes${queryStr}`
+  await fetch(url)
+  .then(response => response.json())
+  .then(data => {
+      const response = getPagingData(data["count"], data["recipes"], page, limit);
+      console.log(`response: ${JSON.stringify(response)}`)
+      console.log('current page: ', response.currentPage)
+      recipes = data["recipes"]
+      if (recipes != null && recipes != undefined && recipes.length > 0) {
+      res.render('./admin/recipe/recipeHomePage', {
+          user: (req.user !=undefined && req.user != null) ? req.user : null,
+          recipes: recipes,
+          pageObj: {
+              currentPage: response.currentPage,
+              totalPages: response.totalPages,
+              nextPage: response.nextPage,
+              prevPage: response.prevPage
+          }
+      })
+      } else {
+      req.flash("warning", "No search results found.")
+      res.render('./admin/recipe/recipeHomePage', {
+          user: (req.user !=undefined && req.user != null) ? req.user : null,
+          recipes: null,
+          pageObj: null
+      })
+      }
+  })
+  
+})
+
 //////////////////////////////////////////////////////////////////////
 // Create Recipe -> Enter Recipe Details (/admin/recipes/create)
 //////////////////////////////////////////////////////////////////////
