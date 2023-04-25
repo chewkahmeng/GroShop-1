@@ -1,3 +1,5 @@
+views/recipeFormTest.ejs
+views/test.html
 TODO.txt
-public/images/uploads/
 .env
+node_modules
