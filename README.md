@@ -2,7 +2,7 @@
 ## Installation and Set-up
 1. Install MySQL and MYSQL Workbench. 
 2. Set up local databases for each microservice under `microservices` folder, i.e. `userservice`, `recipeservice` etc. Run the files in `db scripts` folder to set up the database and insert data.
-3. Create `.env` file in main directory and set up properties like SESSION_SECRET etc. See `.env.example` file for reference. This is used for user authentication.
+3. Create `.env` file in main directory and set up properties like SESSION_SECRET etc. See `.env.example` file for reference. This is used for user authentication. (committed the .env file)
 4. In the `app` folder and each microservice under `microservices` folder, if there are no node_modules present, run `npm ci` inside each of these directories to install the necessary node_modules from the `package-lock.json` file 
 5. Run `npm start` in all the microservices under `microservices` folder to start running the microservices' server.
 6. Run `npm start` for the main application to run the client side application.
