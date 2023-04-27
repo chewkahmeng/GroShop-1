@@ -155,7 +155,7 @@ app.post("/createrecipe", (req, res) => {
     ${recipe.difficulty}
   `
   var query = `
-    INSERT into recipeservice.TBL_RECIPE
+    INSERT into recipeservice.tbl_recipe
     (NAME, DESCRIPTION, CUISINE, SERVINGSIZE, PREPTIME, PREPTIMEUOM, DIFFICULTY)
     VALUES(${output});
   `
