@@ -35,7 +35,7 @@ CREATE TABLE `tbl_recipe_ingredient` (
   `description` varchar(255) DEFAULT NULL,
   `amount` int NOT NULL,
   `uom` varchar(255) NOT NULL,
-  `recipeId` varchar(255) NOT NULL,
+  `recipeId` int NOT NULL,
   `createdAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
@@ -44,7 +44,7 @@ CREATE TABLE `tbl_recipe_ingredient` (
 CREATE TABLE `tbl_recipe_step` (
   `id` int NOT NULL AUTO_INCREMENT,
   `description` varchar(255) NOT NULL,
-  `recipeId` varchar(255) NOT NULL,
+  `recipeId` int NOT NULL,
   `createdAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
@@ -52,8 +52,8 @@ CREATE TABLE `tbl_recipe_step` (
 
 CREATE TABLE `tbl_favourites` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `recipeId` varchar(255) NOT NULL,
-  `userId` varchar(255) NOT NULL,
+  `recipeId` int NOT NULL,
+  `userId` int NOT NULL,
   `createdAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
@@ -63,7 +63,7 @@ CREATE TABLE `tbl_comments` (
   `id` int NOT NULL AUTO_INCREMENT,
   `content` longtext NOT NULL,
   `author` varchar(255) NOT NULL,
-  `recipeId` varchar(255) NOT NULL,
+  `recipeId` int NOT NULL,
   `createdAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)

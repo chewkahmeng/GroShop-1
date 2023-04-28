@@ -345,4 +345,46 @@ router.post("/:id/delete",
   }
 )
 
+//////////////////////////////////////////////////////////////////////
+// Search Product
+//////////////////////////////////////////////////////////////////////
+router.get("/search", async (req, res) => {
+  const { page, size, name, price } = req.query;
+  const { limit, offset } = getPagination(+page - 1, size, PRODUCTS_PER_PAGE);
+
+  let queryStr = `?limit=${limit}&offset=${offset}`
+  if (name != null) queryStr += `&name=${name}`
+  if (price != null) queryStr += `&price=${price}`
+
+  const url = `http://localhost:4005/searchproducts${queryStr}`
+  await fetch(url)
+  .then(response => response.json())
+  .then(data => {
+      const response = getPagingData(data["count"], data["products"], page, limit);
+      console.log(`response: ${JSON.stringify(response)}`)
+      console.log('current page: ', response.currentPage)
+      products = data["products"]
+      if (products != null && products != undefined && products.length > 0) {
+      res.render('./admin/inventory/inventory', {
+          user: (req.user !=undefined && req.user != null) ? req.user : null,
+          products: products,
+          pageObj: {
+              currentPage: response.currentPage,
+              totalPages: response.totalPages,
+              nextPage: response.nextPage,
+              prevPage: response.prevPage
+          }
+      })
+      } else {
+      req.flash("warning", "No search results found.")
+      res.render('./admin/inventory/inventory', {
+          user: (req.user !=undefined && req.user != null) ? req.user : null,
+          products: null,
+          pageObj: null
+      })
+      }
+  })
+
+})
+
 module.exports = router

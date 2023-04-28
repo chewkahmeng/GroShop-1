@@ -54,7 +54,7 @@ router.get("/",
                 }
             })
           } else {
-            req.flash("info", "Error in retrieving recipes.")
+            req.flash("info", "No recipes found.")
             res.render('./user/recipe/recipeHomePage', {
                 user: (req.user !=undefined && req.user != null) ? req.user : null,
                 recipes: null,

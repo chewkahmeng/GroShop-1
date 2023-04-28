@@ -8,7 +8,7 @@ CREATE TABLE `tbl_product` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `description` varchar(255) DEFAULT NULL,
-  `quantity` varchar(255) NOT NULL,
+  `quantity` int NOT NULL,
   `price` float NOT NULL,
   `createdAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
