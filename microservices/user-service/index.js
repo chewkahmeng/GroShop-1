@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -15,10 +17,10 @@ app.use(cors());
 class Database {
   constructor( config ) {
       this.connection = mysql.createConnection( {
-        host: "localhost",
-        user: "root",
-        password: "password",
-        database: "userservice",
+        host: process.env.MYSQL_HOST,
+        user: process.env.MYSQL_USER,
+        password: process.env.MYSQL_PASSWORD,
+        database: process.env.MYSQL_DATABASE,
         multipleStatements : true
       } );
   }
@@ -43,10 +45,10 @@ class Database {
 }
 
 const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "password",
-  database: "userservice",
+  host: process.env.MYSQL_HOST,
+  user: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASSWORD,
+  database: process.env.MYSQL_DATABASE,
   multipleStatements : true
 });
 //test connection. if cannot connect then try 
