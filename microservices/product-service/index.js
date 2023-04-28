@@ -374,6 +374,48 @@ app.get('/:id/getphotobyid', (req, res) => {
   })
 })
 
+//SEARCH PRODUCT
+app.get("/searchproducts", (req, res) => {
+  const queryParams = {
+    name: req.query.name ? req.query.name : null,
+    price: req.query.price ? req.query.price : null,
+    limit: req.query.limit,
+    offset: req.query.offset
+  }
+
+  let filteredQuery = ""
+  if (queryParams.name != null) filteredQuery += `and upper(product.name) like upper('%${queryParams.name}%')`
+  if (queryParams.price != null) filteredQuery += `and product.price <= ${queryParams.price}`
+
+  var query = `
+  select count(1) as count 
+  from productservice.tbl_product product, productservice.tbl_product_image image 
+  where product.id = image.productId ${filteredQuery};
+  select product.*, image.srcpath as srcpath
+  from productservice.tbl_product product, productservice.tbl_product_image image
+  where product.id = image.productId ${filteredQuery}
+  limit ${queryParams.limit} offset ${queryParams.offset};
+  `
+  db.query(query, (err, data)=> {
+    if (err) {
+      return res.json(err)
+    } else {
+      if(JSON.stringify(data) == undefined){
+        return res.status(400).send({
+          error: "Error in getting products"
+        });
+      }
+      console.log(`products: ${JSON.stringify(data)}`)
+      const result = {
+        count: data[0][0]["count"],
+        products: data[1]
+      }
+      return res.json(result);
+    }
+  })
+
+})
+
 ////////////////////////////////////////////////////
 // INITIALISE SERVER
 ////////////////////////////////////////////////////
