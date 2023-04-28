@@ -100,10 +100,10 @@ app.post("/:id/updateuser", (req, res) => {
   console.log(q1);
   db.query(q1, (err, data)=> {
     if(err){
-      return res.json(err)
+      return res.status(400).json(err)
     }
     else{
-      return res.send({
+      return res.status(200).send({
         message: `User details: ${output}, updated successfully!`
       });
     }

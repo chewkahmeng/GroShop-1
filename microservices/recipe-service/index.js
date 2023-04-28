@@ -39,7 +39,7 @@ app.get("/getallrecipes", (req, res) => {
   `
   db.query(query, (err, data)=> {
     if (err) {
-      return res.json(err)
+      return res.status(400).json(err)
     } else {
       if(JSON.stringify(data) == undefined){
         return res.status(400).send({
@@ -50,7 +50,7 @@ app.get("/getallrecipes", (req, res) => {
       const result = {
         recipes: data
       }
-      return res.json(result);
+      return res.status(200).json(result);
     }
   })
 })
@@ -66,7 +66,7 @@ app.get("/getallrecipes/:limit/:offset", (req, res) => {
   `
   db.query(query, (err, data)=> {
     if (err) {
-      return res.json(err)
+      return res.status(400).json(err)
     } else {
       if(JSON.stringify(data) == undefined){
         return res.status(400).send({
@@ -78,7 +78,7 @@ app.get("/getallrecipes/:limit/:offset", (req, res) => {
         count: data[0][0]["count"],
         recipes: data[1]
       }
-      return res.json(result);
+      return res.status(200).json(result);
     }
   })
 })
@@ -110,7 +110,7 @@ app.get("/searchrecipes", (req, res) => {
   `
   db.query(query, (err, data)=> {
     if (err) {
-      return res.json(err)
+      return res.status(400).json(err)
     } else {
       if(JSON.stringify(data) == undefined){
         return res.status(400).send({
@@ -122,7 +122,7 @@ app.get("/searchrecipes", (req, res) => {
         count: data[0][0]["count"],
         recipes: data[1]
       }
-      return res.json(result);
+      return res.status(200).json(result);
     }
   })
 
@@ -162,12 +162,12 @@ app.post("/createrecipe", (req, res) => {
   console.log(query);
   db.query(query, (err, data)=> {
     if(err){
-      return res.json(err)
+      return res.status(400).json(err)
     }else{
       const result = {
         recipe: data
       }
-      return res.json(result)
+      return res.status(200).json(result)
     }
   })
 })
@@ -207,7 +207,7 @@ app.post("/:id/updaterecipe", (req, res) => {
   console.log(query);
   db.query(query, (err, data)=> {
     if(err){
-      return res.json(err)
+      return res.status(400).json(err)
     }else{
       return res.send({
         message: `Recipe details: ${output}, updated successfully!`
@@ -228,7 +228,7 @@ app.post("/:id/deleterecipe", (req, res) => {
   console.log(query);
   db.query(query, (err, data)=> {
     if(err){
-      return res.json(err)
+      return res.status(400).json(err)
     }else{
       return res.send({
         message: `Recipe details: ${recipeId}, deleted successfully!`
@@ -245,7 +245,7 @@ app.get("/:id/getrecipe", (req, res) => {
   `
   db.query(query, (err, data)=> {
     if (err) {
-      return res.json(err)
+      return res.status(400).json(err)
     } else {
       if(JSON.stringify(data) == undefined){
         return res.status(400).send({
@@ -256,7 +256,7 @@ app.get("/:id/getrecipe", (req, res) => {
       const result = {
         recipe: data[0]
       }
-      return res.json(result);
+      return res.status(200).json(result);
     }
   })
 })
@@ -272,7 +272,7 @@ app.get("/:id/getrecipedetails", (req, res) => {
   `
   db.query(query, (err, data)=> {
     if (err) {
-      return res.json(err)
+      return res.status(400).json(err)
     } else {
       if(JSON.stringify(data) == undefined){
         return res.status(400).send({
@@ -287,7 +287,7 @@ app.get("/:id/getrecipedetails", (req, res) => {
         ingredients: data[2],
         steps: data[3]
       }
-      return res.json(result);
+      return res.status(200).json(result);
     }
   })
 })
@@ -306,7 +306,7 @@ app.get("/:userId/getrecipedetailsforuser/:recipeId", (req, res) => {
   `
   db.query(query, (err, data)=> {
     if (err) {
-      return res.json(err)
+      return res.status(400).json(err)
     } else {
       console.log(query)
       if(JSON.stringify(data) == undefined){
@@ -323,7 +323,7 @@ app.get("/:userId/getrecipedetailsforuser/:recipeId", (req, res) => {
         favourite: data[4][0],
         comments: data[5]
       }
-      return res.json(result);
+      return res.status(200).json(result);
     }
   })
 })
@@ -357,12 +357,12 @@ app.post('/:id/uploadphoto', (req, res) => {
   console.log(query);
   db.query(query, (err, data)=> {
     if(err){
-      return res.json(err)
+      return res.status(400).json(err)
     }else{
       const result = {
         image: data
       }
-      return res.json(result)
+      return res.status(200).json(result)
     }
   })
 })
@@ -388,7 +388,7 @@ app.post('/:id/savephototorecipe', (req, res) => {
   console.log(query);
   db.query(query, (err, data)=> {
     if(err){
-      return res.json(err)
+      return res.status(400).json(err)
     }else{
       return res.send({
         message: `Image is saved to recipe: ${recipeId} successfully!`
@@ -406,7 +406,7 @@ app.get('/:id/getphotobyrecipe', (req, res) => {
   `
   db.query(query, (err, data)=> {
     if (err) {
-      return res.json(err)
+      return res.status(400).json(err)
     } else {
       if(JSON.stringify(data) == undefined){
         return res.status(400).send({
@@ -417,7 +417,7 @@ app.get('/:id/getphotobyrecipe', (req, res) => {
       const result = {
         image: data
       }
-      return res.json(result);
+      return res.status(200).json(result);
     }
   })
 })
@@ -431,7 +431,7 @@ app.get('/:id/getphotobyid', (req, res) => {
   `
   db.query(query, (err, data)=> {
     if (err) {
-      return res.json(err)
+      return res.status(400).json(err)
     } else {
       if(JSON.stringify(data) == undefined){
         return res.status(400).send({
@@ -442,7 +442,7 @@ app.get('/:id/getphotobyid', (req, res) => {
       const result = {
         image: data
       }
-      return res.json(result);
+      return res.status(200).json(result);
     }
   })
 })
@@ -481,7 +481,7 @@ app.post('/:recipeId/addingredient',  (req, res) => {
   console.log(query);
   db.query(query, (err, data)=> {
     if(err){
-      return res.json(err)
+      return res.status(400).json(err)
     }else{
       console.log(data)
       return res.send({
@@ -525,7 +525,7 @@ app.post('/:recipeId/updateingredient/:ingredientId', (req, res) => {
   console.log(query);
   db.query(query, (err, data)=> {
     if(err){
-      return res.json(err)
+      return res.status(400).json(err)
     }else{
       console.log(data)
       return res.send({
@@ -547,7 +547,7 @@ app.post('/:recipeId/deleteingredient/:ingredientId', (req, res) => {
   console.log(query);
   db.query(query, (err, data)=> {
     if(err){
-      return res.json(err)
+      return res.status(400).json(err)
     }else{
       console.log(data)
       return res.send({
@@ -567,13 +567,13 @@ app.get('/:recipeId/getallingredients', (req, res) => {
   console.log(query);
   db.query(query, (err, data)=> {
     if(err){
-      return res.json(err)
+      return res.status(400).json(err)
     }else{
       const result = {
         ingredients: data
       }
       console.log("ingredients: ", result)
-      return res.json(result)
+      return res.status(200).json(result)
     }
   })
 })
@@ -607,7 +607,7 @@ app.post('/:recipeId/addstep',  (req, res) => {
   console.log(query);
   db.query(query, (err, data)=> {
     if(err){
-      return res.json(err)
+      return res.status(400).json(err)
     }else{
       console.log(data)
       return res.send({
@@ -645,7 +645,7 @@ app.post('/:recipeId/updatestep/:stepId', (req, res) => {
   console.log(query);
   db.query(query, (err, data)=> {
     if(err){
-      return res.json(err)
+      return res.status(400).json(err)
     }else{
       console.log(data)
       return res.send({
@@ -667,7 +667,7 @@ app.post('/:recipeId/deletestep/:stepId', (req, res) => {
   console.log(query);
   db.query(query, (err, data)=> {
     if(err){
-      return res.json(err)
+      return res.status(400).json(err)
     }else{
       console.log(data)
       return res.send({
@@ -688,12 +688,12 @@ app.get('/:recipeId/getallsteps', (req, res) => {
   console.log(query);
   db.query(query, (err, data)=> {
     if(err){
-      return res.json(err)
+      return res.status(400).json(err)
     }else{
       const result = {
         steps: data
       }
-      return res.json(result)
+      return res.status(200).json(result)
     }
   })
 })
@@ -714,7 +714,7 @@ app.post('/:userId/favouriterecipe/:recipeId', (req, res) => {
   console.log(query);
   db.query(query, (err, data)=> {
     if(err){
-      return res.json(err)
+      return res.status(400).json(err)
     }else{
       console.log(data)
       return res.send({
@@ -736,7 +736,7 @@ app.post('/:userId/unfavouriterecipe/:recipeId', (req, res) => {
   console.log(query);
   db.query(query, (err, data)=> {
     if(err){
-      return res.json(err)
+      return res.status(400).json(err)
     }else{
       console.log(data)
       return res.send({
@@ -761,13 +761,13 @@ app.get('/:userId/getfavouriterecipes', (req, res) => {
   console.log(query);
   db.query(query, (err, data)=> {
     if(err){
-      return res.json(err)
+      return res.status(400).json(err)
     }else{
       console.log(data)
       const result = {
         recipes: data
       }
-      return res.json(result)
+      return res.status(200).json(result)
     }
   })
 })
@@ -791,7 +791,7 @@ app.get("/:userId/getfavouriterecipes/:limit/:offset", (req, res) => {
   `
   db.query(query, (err, data)=> {
     if (err) {
-      return res.json(err)
+      return res.status(400).json(err)
     } else {
       if(JSON.stringify(data) == undefined){
         return res.status(400).send({
@@ -803,7 +803,7 @@ app.get("/:userId/getfavouriterecipes/:limit/:offset", (req, res) => {
         count: data[0][0]["count"],
         recipes: data[1]
       }
-      return res.json(result);
+      return res.status(200).json(result);
     }
   })
 })
@@ -833,7 +833,7 @@ app.post('/:recipeId/postcomment', (req, res) => {
   console.log(query);
   db.query(query, (err, data)=> {
     if(err){
-      return res.json(err)
+      return res.status(400).json(err)
     }else{
       console.log(data)
       return res.send({
@@ -856,13 +856,13 @@ app.get('/:recipeId/getcomments/:startIndex/:limit', (req, res) => {
   console.log(query)
   db.query(query, (err, data) => {
     if (err) {
-      return res.json(err)
+      return res.status(400).json(err)
     } else {
       console.log(data)
       const result = {
         comments: data
       }
-      return res.json(result)
+      return res.status(200).json(result)
     }
   })
 })

@@ -35,6 +35,8 @@
 2. Client-side APIs in the `routes` folder would call the `microservices` APIs to insert/update/view/delete information in their respective microservices' database.
 3. Client-side APIs in the `routes` folder would render the EJS pages to be seen on the browser. 
 
+In summary, `microservices`  &rarr; called by &rarr; `app/routes/*.routes.js`  &rarr; renders &rarr; `app/views/.../*.ejs`
+
 ## Completed Microservices
 1. User
     - Register/Login/Logout User
