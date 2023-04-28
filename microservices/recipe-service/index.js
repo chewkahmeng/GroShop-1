@@ -59,7 +59,7 @@ app.get("/getallrecipes", (req, res) => {
 app.get("/getallrecipes/:limit/:offset", (req, res) => {
   var query = `
     select count(1) as count from recipeservice.tbl_recipe recipe, recipeservice.tbl_recipe_image image where recipe.id = image.recipeId;
-    select recipe.*, image.srcpath as srcpath
+    select recipe.*, image.srcPath as srcpath
     from recipeservice.tbl_recipe recipe, recipeservice.tbl_recipe_image image
     where recipe.id = image.recipeId
     limit ${req.params.limit} offset ${req.params.offset};
@@ -103,7 +103,7 @@ app.get("/searchrecipes", (req, res) => {
   select count(1) as count 
   from recipeservice.tbl_recipe recipe, recipeservice.tbl_recipe_image image 
   where recipe.id = image.recipeId ${filteredQuery};
-  select recipe.*, image.srcpath as srcpath
+  select recipe.*, image.srcPath as srcpath
   from recipeservice.tbl_recipe recipe, recipeservice.tbl_recipe_image image
   where recipe.id = image.recipeId ${filteredQuery}
   limit ${queryParams.limit} offset ${queryParams.offset};
@@ -200,7 +200,7 @@ app.post("/:id/updaterecipe", (req, res) => {
   difficulty = ${recipe.difficulty}
   `
   var query = `
-    UPDATE recipeservice.TBL_RECIPE SET
+    UPDATE recipeservice.tbl_recipe SET
     ${output}
     where id = '${recipeId}';
   `
@@ -220,10 +220,10 @@ app.post("/:id/updaterecipe", (req, res) => {
 app.post("/:id/deleterecipe", (req, res) => {
   const recipeId = req.params.id
   var query = `
-    DELETE FROM recipeservice.TBL_RECIPE where id = '${recipeId}';
-    DELETE FROM recipeservice.TBL_RECIPE_IMAGE where recipeId = '${recipeId}';
-    DELETE FROM recipeservice.TBL_RECIPE_INGREDIENT where recipeId = '${recipeId}';
-    DELETE FROM recipeservice.TBL_RECIPE_STEP where recipeId = '${recipeId}';
+    DELETE FROM recipeservice.tbl_recipe where id = '${recipeId}';
+    DELETE FROM recipeservice.tbl_recipe_image where recipeId = '${recipeId}';
+    DELETE FROM recipeservice.tbl_recipe_ingredient where recipeId = '${recipeId}';
+    DELETE FROM recipeservice.tbl_recipe_step where recipeId = '${recipeId}';
   `
   console.log(query);
   db.query(query, (err, data)=> {
@@ -241,7 +241,7 @@ app.post("/:id/deleterecipe", (req, res) => {
 app.get("/:id/getrecipe", (req, res) => {
   const recipeId = req.params.id
   var query = `
-    SELECT * FROM recipeservice.TBL_RECIPE where id = '${recipeId}';
+    SELECT * FROM recipeservice.tbl_recipe where id = '${recipeId}';
   `
   db.query(query, (err, data)=> {
     if (err) {
@@ -265,10 +265,10 @@ app.get("/:id/getrecipe", (req, res) => {
 app.get("/:id/getrecipedetails", (req, res) => {
   const recipeId = req.params.id
   var query = `
-    SELECT * FROM recipeservice.TBL_RECIPE where id = '${recipeId}';
-    SELECT * FROM recipeservice.TBL_RECIPE_IMAGE where recipeId = '${recipeId}';
-    SELECT * FROM recipeservice.TBL_RECIPE_INGREDIENT where recipeId = '${recipeId}';
-    SELECT * FROM recipeservice.TBL_RECIPE_STEP where recipeId = '${recipeId}' order by createdAt asc;
+    SELECT * FROM recipeservice.tbl_recipe where id = '${recipeId}';
+    SELECT * FROM recipeservice.tbl_recipe_image where recipeId = '${recipeId}';
+    SELECT * FROM recipeservice.tbl_recipe_ingredient where recipeId = '${recipeId}';
+    SELECT * FROM recipeservice.tbl_recipe_step where recipeId = '${recipeId}' order by createdAt asc;
   `
   db.query(query, (err, data)=> {
     if (err) {
@@ -297,12 +297,12 @@ app.get("/:userId/getrecipedetailsforuser/:recipeId", (req, res) => {
   const recipeId = req.params.recipeId
   const userId = req.params.userId
   var query = `
-    SELECT * FROM recipeservice.TBL_RECIPE where id = '${recipeId}';
-    SELECT * FROM recipeservice.TBL_RECIPE_IMAGE where recipeId = '${recipeId}';
-    SELECT * FROM recipeservice.TBL_RECIPE_INGREDIENT where recipeId = '${recipeId}';
-    SELECT * FROM recipeservice.TBL_RECIPE_STEP where recipeId = '${recipeId}' order by createdAt asc;
-    SELECT * FROM recipeservice.TBL_FAVOURITES where recipeId = ${recipeId} and userId = ${userId};
-    SELECT id, content, author, recipeId, date_format(createdAt,'%d/%m/%Y') as createdAt, date_format(updatedAt,'%d/%m/%Y') as updatedAt FROM recipeservice.TBL_COMMENTS where recipeId = '${recipeId}';
+    SELECT * FROM recipeservice.tbl_recipe where id = '${recipeId}';
+    SELECT * FROM recipeservice.tbl_recipe_image where recipeId = '${recipeId}';
+    SELECT * FROM recipeservice.tbl_recipe_ingredient where recipeId = '${recipeId}';
+    SELECT * FROM recipeservice.tbl_recipe_step where recipeId = '${recipeId}' order by createdAt asc;
+    SELECT * FROM recipeservice.tbl_favourites where recipeId = ${recipeId} and userId = ${userId};
+    SELECT id, content, author, recipeId, date_format(createdAt,'%d/%m/%Y') as createdAt, date_format(updatedAt,'%d/%m/%Y') as updatedAt FROM recipeservice.tbl_comments where recipeId = '${recipeId}';
   `
   db.query(query, (err, data)=> {
     if (err) {
@@ -350,7 +350,7 @@ app.post('/:id/uploadphoto', (req, res) => {
   '${image.srcPath}'
   `
   var query = `
-  INSERT into recipeservice.TBL_RECIPE_IMAGE
+  INSERT into recipeservice.tbl_recipe_image
   (type, name, srcPath)
   VALUES(${output});
   `
@@ -379,9 +379,9 @@ app.post('/:id/savephototorecipe', (req, res) => {
   const recipeId = req.params.id
   // only 1 photo per recipe
   var query = `
-  DELETE from recipeservice.TBL_RECIPE_IMAGE
+  DELETE from recipeservice.tbl_recipe_image
   where recipeId = '${recipeId}' and id != '${imageId}';
-  UPDATE recipeservice.TBL_RECIPE_IMAGE
+  UPDATE recipeservice.tbl_recipe_image
   SET recipeId = '${recipeId}'
   WHERE id = '${imageId}';
   `
@@ -474,7 +474,7 @@ app.post('/:recipeId/addingredient',  (req, res) => {
   ${recipeIngredient.recipeId}
   `
   var query = `
-  INSERT into recipeservice.TBL_RECIPE_INGREDIENT
+  INSERT into recipeservice.tbl_recipe_ingredient
   (name,  amount, uom, description, recipeId)
   VALUES(${output});
   `
@@ -511,14 +511,14 @@ app.post('/:recipeId/updateingredient/:ingredientId', (req, res) => {
   };
 
   let output = `
-  NAME = ${recipeIngredient.name},
-  AMOUNT = ${recipeIngredient.amount},
-  UOM = ${recipeIngredient.uom},
-  DESCRIPTION = ${recipeIngredient.description},
-  RECIPEID = ${recipeIngredient.recipeId}
+  name = ${recipeIngredient.name},
+  amount = ${recipeIngredient.amount},
+  uom = ${recipeIngredient.uom},
+  description = ${recipeIngredient.description},
+  recipeId = ${recipeIngredient.recipeId}
   `
   var query = `
-  UPDATE recipeservice.TBL_RECIPE_INGREDIENT SET
+  UPDATE recipeservice.tbl_recipe_ingredient SET
   ${output}
   WHERE id = ${ingredientId};
   `
@@ -541,7 +541,7 @@ app.post('/:recipeId/deleteingredient/:ingredientId', (req, res) => {
   const ingredientId = req.params.ingredientId
   
   var query = `
-  DELETE FROM recipeservice.TBL_RECIPE_INGREDIENT 
+  DELETE FROM recipeservice.tbl_recipe_ingredient 
   WHERE id = ${ingredientId};
   `
   console.log(query);
@@ -561,7 +561,7 @@ app.post('/:recipeId/deleteingredient/:ingredientId', (req, res) => {
 app.get('/:recipeId/getallingredients', (req, res) => {
   const recipeId = req.params.recipeId
   var query = `
-  SELECT * FROM recipeservice.TBL_RECIPE_INGREDIENT 
+  SELECT * FROM recipeservice.tbl_recipe_ingredient 
   WHERE recipeId = ${recipeId};
   `
   console.log(query);
@@ -600,7 +600,7 @@ app.post('/:recipeId/addstep',  (req, res) => {
   ${recipeStep.recipeId}
   `
   var query = `
-  INSERT into recipeservice.TBL_RECIPE_STEP
+  INSERT into recipeservice.tbl_recipe_step
   (description, recipeId)
   VALUES(${output});
   `
@@ -634,11 +634,11 @@ app.post('/:recipeId/updatestep/:stepId', (req, res) => {
   };
 
   let output = `
-  DESCRIPTION = ${recipeStep.description},
-  RECIPEID = ${recipeStep.recipeId}
+  description = ${recipeStep.description},
+  recipeId = ${recipeStep.recipeId}
   `
   var query = `
-  UPDATE recipeservice.TBL_RECIPE_STEP SET
+  UPDATE recipeservice.tbl_recipe_step SET
   ${output}
   WHERE id = ${stepId};
   `
@@ -661,7 +661,7 @@ app.post('/:recipeId/deletestep/:stepId', (req, res) => {
   const stepId = req.params.stepId
   
   var query = `
-  DELETE FROM recipeservice.TBL_RECIPE_STEP 
+  DELETE FROM recipeservice.tbl_recipe_step 
   WHERE id = ${stepId};
   `
   console.log(query);
@@ -681,7 +681,7 @@ app.post('/:recipeId/deletestep/:stepId', (req, res) => {
 app.get('/:recipeId/getallsteps', (req, res) => {
   const recipeId = req.params.recipeId
   var query = `
-  SELECT * FROM recipeservice.TBL_RECIPE_STEP 
+  SELECT * FROM recipeservice.tbl_recipe_step 
   WHERE recipeId = ${recipeId}
   order by createdAt asc;
   `
@@ -707,7 +707,7 @@ app.post('/:userId/favouriterecipe/:recipeId', (req, res) => {
   const userId = req.params.userId
   
   var query = `
-  INSERT INTO recipeservice.TBL_FAVOURITES
+  INSERT INTO recipeservice.tbl_favourites
   (userId, recipeId)
   values('${userId}', '${recipeId}');
   `
@@ -730,8 +730,8 @@ app.post('/:userId/unfavouriterecipe/:recipeId', (req, res) => {
   const userId = req.params.userId
   
   var query = `
-  DELETE FROM recipeservice.TBL_FAVOURITES
-  WHERE USERID = '${userId}' AND RECIPEID = '${recipeId}';
+  DELETE FROM recipeservice.tbl_favourites
+  WHERE userId = '${userId}' AND recipeId = '${recipeId}';
   `
   console.log(query);
   db.query(query, (err, data)=> {
@@ -751,7 +751,7 @@ app.get('/:userId/getfavouriterecipes', (req, res) => {
   const userId = req.params.userId
   
   var query = `
-  select recipe.*, image.srcpath as srcpath
+  select recipe.*, image.srcPath as srcpath
   from recipeservice.tbl_recipe recipe, recipeservice.tbl_recipe_image image
   where recipe.id = image.recipeId 
   and recipe.id in 
@@ -782,7 +782,7 @@ app.get("/:userId/getfavouriterecipes/:limit/:offset", (req, res) => {
     and recipe.id in 
     (select fav.recipeId from recipeservice.tbl_favourites fav where fav.userId = '${userId}');
     
-    select recipe.*, image.srcpath as srcpath
+    select recipe.*, image.srcPath as srcpath
     from recipeservice.tbl_recipe recipe, recipeservice.tbl_recipe_image image
     where recipe.id = image.recipeId 
     and recipe.id in 
@@ -826,7 +826,7 @@ app.post('/:recipeId/postcomment', (req, res) => {
   }
 
   var query = `
-  INSERT INTO recipeservice.TBL_COMMENTS
+  INSERT INTO recipeservice.tbl_comments
   (content, author, recipeId)
   VALUES(${comment.content}, ${comment.author}, ${comment.recipeId});
   `
@@ -850,7 +850,7 @@ app.get('/:recipeId/getcomments/:startIndex/:limit', (req, res) => {
 
   var query = `
   SELECT id, content, author, recipeId, date_format(createdAt,'%d/%m/%Y') as createdAt, date_format(updatedAt,'%d/%m/%Y') as updatedAt 
-  FROM recipeservice.TBL_COMMENTS WHERE recipeId = ${recipeId} order by createdAt desc
+  FROM recipeservice.tbl_comments WHERE recipeId = ${recipeId} order by createdAt desc
   limit ${startIndex}, ${limit};
   `
   console.log(query)

@@ -33,7 +33,7 @@ db.connect(function(err) {
 // GET ALL PRODUCTS
 app.get("/getallproducts", (req, res) => {
   var query = `
-    select product.*, image.srcpath as srcpath
+    select product.*, image.srcPath as srcpath
     from productservice.tbl_product product, productservice.tbl_product_image image
     where product.id = image.productId;
   `
@@ -59,7 +59,7 @@ app.get("/getallproducts", (req, res) => {
 app.get("/getallproducts/:limit/:offset", (req, res) => {
   var query = `
     select count(1) as count from productservice.tbl_product product, productservice.tbl_product_image image where product.id = image.productId;
-    select product.*, image.srcpath as srcpath
+    select product.*, image.srcPath as srcpath
     from productservice.tbl_product product, productservice.tbl_product_image image
     where product.id = image.productId
     limit ${req.params.limit} offset ${req.params.offset};
@@ -104,8 +104,8 @@ app.post("/createproduct", (req, res) => {
     ${product.price}
   `
   var query = `
-    INSERT into productservice.TBL_PRODUCT
-    (NAME, DESCRIPTION, QUANTITY, PRICE)
+    INSERT into productservice.tbl_product
+    (name, description, quantity, price)
     VALUES(${output});
   `
   console.log(query);
@@ -143,7 +143,7 @@ app.post("/:id/updateproduct", (req, res) => {
   price = ${product.price}
   `
   var query = `
-    UPDATE productservice.TBL_PRODUCT SET
+    UPDATE productservice.tbl_product SET
     ${output}
     where id = '${productId}';
   `
@@ -163,8 +163,8 @@ app.post("/:id/updateproduct", (req, res) => {
 app.post("/:id/deleteproduct", (req, res) => {
   const productId = req.params.id
   var query = `
-    DELETE FROM productservice.TBL_PRODUCT where id = '${productId}';
-    DELETE FROM productservice.TBL_PRODUCT_IMAGE where productId = '${productId}';
+    DELETE FROM productservice.tbl_product where id = '${productId}';
+    DELETE FROM productservice.tbl_product_image where productId = '${productId}';
   `
   console.log(query);
   db.query(query, (err, data)=> {
@@ -182,7 +182,7 @@ app.post("/:id/deleteproduct", (req, res) => {
 app.get("/:id/getproduct", (req, res) => {
   const productId = req.params.id
   var query = `
-    SELECT * FROM productservice.TBL_PRODUCT where id = '${productId}';
+    SELECT * FROM productservice.tbl_product where id = '${productId}';
   `
   db.query(query, (err, data)=> {
     if (err) {
@@ -206,8 +206,8 @@ app.get("/:id/getproduct", (req, res) => {
 app.get("/:id/getproductdetails", (req, res) => {
   const productId = req.params.id
   var query = `
-    SELECT * FROM productservice.TBL_PRODUCT where id = '${productId}';
-    SELECT * FROM productservice.TBL_PRODUCT_IMAGE where productId = '${productId}';
+    SELECT * FROM productservice.tbl_product where id = '${productId}';
+    SELECT * FROM productservice.tbl_product_image where productId = '${productId}';
   `
   db.query(query, (err, data)=> {
     if (err) {
@@ -234,8 +234,8 @@ app.get("/:userId/getproductdetailsforuser/:productId", (req, res) => {
   const productId = req.params.productId
   const userId = req.params.userId
   var query = `
-    SELECT * FROM productservice.TBL_PRODUCT where id = '${productId}';
-    SELECT * FROM productservice.TBL_PRODUCT_IMAGE where productId = '${productId}';
+    SELECT * FROM productservice.tbl_product where id = '${productId}';
+    SELECT * FROM productservice.tbl_product_image where productId = '${productId}';
   `
   db.query(query, (err, data)=> {
     if (err) {
@@ -279,7 +279,7 @@ app.post('/:id/uploadphoto', (req, res) => {
   '${image.srcPath}'
   `
   var query = `
-  INSERT into productservice.TBL_PRODUCT_IMAGE
+  INSERT into productservice.tbl_product_image
   (type, name, srcPath)
   VALUES(${output});
   `
@@ -308,9 +308,9 @@ app.post('/:id/savephototoproduct', (req, res) => {
   const productId = req.params.id
   // only 1 photo per product
   var query = `
-  DELETE from productservice.TBL_PRODUCT_IMAGE
+  DELETE from productservice.tbl_product_image
   where productId = '${productId}' and id != '${imageId}';
-  UPDATE productservice.TBL_PRODUCT_IMAGE
+  UPDATE productservice.tbl_product_image
   SET productId = '${productId}'
   WHERE id = '${imageId}';
   `
