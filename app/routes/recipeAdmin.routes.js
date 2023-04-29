@@ -218,7 +218,7 @@ router.post("/:id/uploadPhoto",
     }
 
     // UPLOAD PHOTO
-    const url = `http://localhost:4003/${recipeId}/uploadphoto`
+    const url = `http://18.143.76.131:4003/${recipeId}/uploadphoto`
     const data = {
       type: req.file.mimetype,
       name: req.file.originalname,
