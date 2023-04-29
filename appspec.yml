@@ -9,10 +9,6 @@ hooks:
       kill $(lsof -t -i:8080)
       timeout: 300
       runas: ec2-user
-  BeforeInstall:
-    - echo 'Before Install ...'
-      timeout: 300
-      runas: ec2-user
   ApplicationStart:
     - echo 'Application Starting...'
       timeout: 300
