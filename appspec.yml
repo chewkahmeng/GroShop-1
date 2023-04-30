@@ -4,3 +4,8 @@ files:
   - source: /app/
     destination: /home/ec2-user/GroShop/app/
 file_exists_behavior: OVERWRITE
+hooks:
+  ApplicationStart:
+    - location: scripts/application_start.sh
+      timeout: 180
+      runas: ec2-user
