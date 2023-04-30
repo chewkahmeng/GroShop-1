@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /home/ec2-user/GroShop
+    destination: /home/ec2-user/GroShop/app
 hooks:
   ApplicationStop:
     - echo 'Stopping node 8080'
