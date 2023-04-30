@@ -14,8 +14,23 @@ cd /home/ec2-user/GroShop/app
 #install node modules
 npm ci
 
-echo "npm install done"
 #start our node app in the background
 sudo systemctl restart app.service
+echo "app.service UP"
 
 #node server.js > server.out.log 2> server.err.log < /dev/null & 
+
+cd /home/ec2-user/GroShop/microservices/user-service
+npm ci
+sudo systemctl restart user.service
+echo "user.service UP"
+
+cd /home/ec2-user/GroShop/microservices/recipe-service
+npm ci
+sudo systemctl restart recipe.service
+echo "recipe.service UP"
+
+cd /home/ec2-user/GroShop/microservices/product-service
+npm ci
+sudo systemctl restart product.service
+echo "product.service UP"

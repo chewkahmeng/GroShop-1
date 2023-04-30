@@ -3,6 +3,12 @@ os: linux
 files:
   - source: /app/
     destination: /home/ec2-user/GroShop/app/
+  - source: /microservices/product-service/
+    destination: /home/ec2-user/GroShop/microservices/product-service/
+  - source: /microservices/recipe-service/
+    destination: /home/ec2-user/GroShop/microservices/recipe-service/
+  - source: /microservices/user-service/
+    destination: /home/ec2-user/GroShop/microservices/user-service/
 file_exists_behavior: OVERWRITE
 hooks:
   ApplicationStart:
