@@ -2,18 +2,17 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /home/ec2-user/GroShop/app
+    destination: /home/ec2-user/groshopAppTest
 hooks:
   ApplicationStop:
-    - echo 'Stopping node 8080'
-      kill $(lsof -t -i:8080)
+    - location: scripts/application_stop.sh
       timeout: 300
       runas: ec2-user
   BeforeInstall:
-    - echo 'Before Install ...'
+    - location: scripts/before_install.sh
       timeout: 300
       runas: ec2-user
   ApplicationStart:
-    - echo 'Application Starting...'
+    - location: scripts/application_start.sh
       timeout: 300
       runas: ec2-user
