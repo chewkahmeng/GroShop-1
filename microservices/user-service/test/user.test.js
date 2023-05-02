@@ -28,9 +28,17 @@ const register_data =
 const login_data = 
 {
     username: 'Employee1',
-    password: 'Employee1',
-    email: 'Employee1@example.com'
+    password: 'Employee1', 
+    email: 'Employee1@example.com' 
 };
+
+// const failed_login_data = 
+// {
+//     username: 'Employee1',
+//     password: 'Employee123', 
+//     email: 'Employee1@example.com' 
+// };
+
 
 const update_data = 
 {
@@ -40,7 +48,7 @@ const update_data =
 };
 
 describe('/POST user', () => {
-    it('it should register user', (done) => {
+    it('it should register user if user does not exist', (done) => {
         request(baseurl)
         .post('/register')
         .send(JSON.stringify(register_data))
@@ -94,7 +102,7 @@ describe('/POST user', () => {
             {
                 id: 4,
                 username: 'Customer123',
-                email: 'EmplCustomer1oyee1@example.com',
+                email: 'Customer1@example.com',
                 role: 'CUSTOMER'
             }
             */
@@ -122,6 +130,7 @@ describe('/GET user', () => {
             expect(res.body["user"]["0"]["id"]).to.be.equal(1)
             expect(res.body["user"]["0"]["username"]).to.be.equal("Employee1")
             expect(res.body["user"]["0"]["email"]).to.be.equal("Employee1@example.com")
+			console.log(res.body)
             done();
             
         })
