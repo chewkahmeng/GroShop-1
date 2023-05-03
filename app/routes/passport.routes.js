@@ -17,7 +17,7 @@ module.exports = function(app, passport) {
             } else if (req.user.role === 'CUSTOMER') {
                 res.redirect("/home/recipes")
             } else if (req.user.role === 'ADMIN') {
-                res.redirect("/admin")
+                res.redirect("/admin/recipes")
             }
         }
     );
