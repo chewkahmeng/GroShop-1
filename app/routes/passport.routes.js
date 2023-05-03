@@ -17,15 +17,22 @@ module.exports = function(app, passport) {
             } else if (req.user.role === 'CUSTOMER') {
                 res.redirect("/home/recipes")
             } else if (req.user.role === 'ADMIN') {
-                res.redirect("/admin")
+                res.redirect("/admin/recipes")
             }
         }
     );
 
     app.get("/admin", middleware.isLoggedIn, middleware.isAdmin, (req, res) => {
-        res.render('admin/index', {
-            employee: typeof req.user !== 'undefined'?req.user:null
-        })
+        console.log('redirecting to home')
+        console.log(req.user)
+        if (req.user == null || req.user == undefined) {
+            console.log("viewing site as guest")
+            res.redirect("/home/recipes")
+        } else if (req.user.role === 'CUSTOMER') {
+            res.redirect("/home/recipes")
+        } else if (req.user.role === 'ADMIN') {
+            res.redirect("/admin/recipes")
+        }
     })
 
     app.get("/login", (req, res) => {
