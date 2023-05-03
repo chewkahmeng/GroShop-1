@@ -578,6 +578,27 @@ app.get('/:recipeId/getallingredients', (req, res) => {
   })
 })
 
+// GET NAME, UOM AND AMOUNT OF ALL INGREDIENTS IN RECIPE
+app.get('/:recipeId/getallingredientsbynameamountuom', (req, res) => {
+  const recipeId = req.params.recipeId
+  var query = `
+  SELECT name, amount, uom FROM recipeservice.tbl_recipe_ingredient 
+  WHERE recipeId = ${recipeId};
+  `
+  console.log(query);
+  db.query(query, (err, data)=> {
+    if(err){
+      return res.status(400).json(err)
+    }else{
+      const result = {
+        ingredients: data
+      }
+      console.log("ingredients: ", result)
+      return res.status(200).json(result)
+    }
+  })
+})
+
 ////////////////////////////////////////////////////
 // RECIPE STEP FUNCTIONS
 ////////////////////////////////////////////////////
