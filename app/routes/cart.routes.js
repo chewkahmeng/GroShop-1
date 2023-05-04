@@ -39,7 +39,7 @@ router.post("/:userid/addToCart", middleware.isLoggedIn,  async (req, res) =>{
     const recipeId = req.body.recipeId
     
 
-    const url = `http://localhost:4003/${recipeId}/getallingredients` // will be changed to url that only retrieve 3 items
+    const url = `http://localhost:4003/${recipeId}/getallingredientsbynameamountuom` // will be changed to url that only retrieve 3 items
     var ingredients = null
     await fetch(url)
     .then(response => response.json())
