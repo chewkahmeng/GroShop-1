@@ -1,30 +1,15 @@
-<!DOCTYPE html>
-<head>
-    <script>
-        // method 2: calling microservice api inside EJS page itself under <script> tag
-        const url = "http://localhost:4000/1/api";
-
-        function callCartService(url) {
-        fetch(url, {
-            method: 'GET'
-        })
-        .then(response => response.json())
-        .then(() => {
-            var x = document.createElement("div")
-
-            x.innerHTML = `  
-            <div class="card">
-                ${response.data}
-            </div>  `
-
-            document.getElementById('cart-view').append(x)
-        });    
-        }
-        window.onload = callCartService(url);
-    </script>
-</head>
-
+<%- include('../../partials/header.ejs') %>
 <body>
+<%- include('../../partials/navbar-user.ejs') %>
+<script type="text/javascript">
+    function onDelete(itemId) {
+        if (confirm("Are you sure you want to delete this ingredient?")) {
+            var deleteUrl = `/home/cart/item/${itemId}/delete`
+            document.getElementById("deleteCartItemForm").action = deleteUrl
+            document.getElementById("deleteCartItemForm").submit();
+        }
+    }
+</script>
 <br>
 <div class="card page-card" id="cart-page">
     <div class="row justify-content-md-center mb-3">
@@ -32,30 +17,46 @@
             My Cart
         </h1>
     </div>
+    <%- include('../../partials/alerts.ejs') %>
     <div class="row justify-content-md-center" id="cart-view">
         <div class="col-md-8 col-md-offset-2">
-            <% for (let i in cartItems) { %>
-                <div class="card">
-                    <div class="card-body row">
-                        <div class="col-sm-1"><%= parseInt(i)+1 %>. </div>
-                        <div class="col-sm-6">
-                            <%= cartItems[i].name %> 
-                        </div>
-                        <div class="col-sm-6 text-end">
-                            <a href="#" onclick="">
-                                <i class="fa-solid fa-pen" data-toggle="tooltip" data-placement="top" title="Update Item"></i>
-                            </a>
-                            &nbsp;
-                            <a href="#" onclick="">
-                                <i class="fa-solid fa-trash-can" data-toggle="tooltip" data-placement="top" title="Delete Item"></i>
-                            </a>
-                        </div>
-                    </div>
+            <table class="table">
+                <tr>
+                    <th>Item Name</th>
+                    <th>Quantity</th>
+                    
+                </tr>
+                <% 
+                if(cartItems.length > 0)
+                {
+                    let total = 0;
 
-                </div>
-            <% } %>
+                    cartItems.forEach(item => {
+                %>
+                <tr>
+                    <td><%= item.productName %></td>
+                    <td><%= item.quantity %></td>
+                    
+                    <td><a href="#" onclick="onDelete(<%=item.id%>)"><i class="fa-solid fa-trash-can" data-toggle="tooltip" data-placement="top" title="Delete Ingredient"></i></a></td>
+                </tr>
+                <%
+                        
+                    })
+                %>
+                
+            
+                <%
+                }
+                %>
+
+                
+                
+                <form hidden id="deleteCartItemForm" method="POST"></form>
+                
+            </table>
         </div>
     </div>
 </div>
 </body>
+<%- include('../../partials/footer.ejs') %>
 

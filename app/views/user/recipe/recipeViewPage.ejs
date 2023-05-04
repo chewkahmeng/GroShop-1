@@ -44,8 +44,14 @@
                         <button type="Submit" class="btn btn-success text-center" value="Favourite"><i class="fa-solid fa-circle-plus"></i>&nbsp; Favourite </button>
                     </form>
                 <% } %> 
+                <form action="/home/cart/<%=user.id%>/addToCart" method="POST">
+                    <input type="hidden" name="recipeId" value="<%= recipe.id %>" /> 
+                    <button type="submit" class="btn btn-success text-center" >Add to Cart</button>
+                </form>
             </div>
             <% } %>
+            
+            
         </div>
     </div>
     <!-- <hr /> -->
