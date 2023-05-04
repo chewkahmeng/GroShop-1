@@ -35,7 +35,7 @@ npm ci
 sudo systemctl restart product.service
 echo "product.service UP"
 
-#cd /home/ec2-user/GroShop/microservices/cart-service
-#npm ci
-#sudo systemctl restart cart.service
-#echo "cart.service UP"
+cd /home/ec2-user/GroShop/microservices/cart-service
+npm ci
+sudo systemctl restart cart.service
+echo "cart.service UP"
