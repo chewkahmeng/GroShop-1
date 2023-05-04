@@ -30,7 +30,7 @@ values(3, "Employee3", "Employee3@example.com", "$2b$10$AfuBqWfKoQOZ9YUhHO1KPOq9
 -- Customer1@example.com/Customer1
 insert into userservice.tbl_user
 (id, username, email, password, role)
-values(4, "Customer1", "Customer1@example.com", "$2b$10$TdIBuYD9L39MJkPvoMu6NOKvf4pTZlHk8qOz.viRrE2wyHFQRHW1S" , "CUSTOMER");
+values(4, "Customer1", "Customer1@example.com", "$2b$10$ar55aJ0xhGsRxpjU6OCjNe4gJmr1Zsc2mon508mVGxxrpi/Y..b72" , "CUSTOMER");
 
 -- Customer2@example.com/Customer2
 insert into userservice.tbl_user
