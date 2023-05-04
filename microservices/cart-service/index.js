@@ -84,7 +84,7 @@ app.get("/:id/getcart", (req, res) => {
   })
 })
 
-app.get("/:id/addtocart", (req, res) => {
+app.post("/:id/addtocart", (req, res) => {
   const database=  new Database();
   const userid =req.params.id;
   const ingredients = req.body.ingredients;
@@ -176,7 +176,7 @@ app.get("/:id/addtocart", (req, res) => {
 
 })
 
-app.get("/:id/removefromcart", (req, res) => {  
+app.post("/:id/removefromcart", (req, res) => {  
   const userid =req.params.id;
   const itemId =req.body.itemId;
   const q = `

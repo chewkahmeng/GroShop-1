@@ -51,7 +51,7 @@ router.post("/:userid/addToCart", middleware.isLoggedIn,  async (req, res) =>{
     })
 
     //create cart (to pass in userId)
-    const createCarturl = `` //createCartURL
+    const createCarturl = `http://localhost:4000/${userId}/addtocart` //createCartURL
     console.log("userId=======> ",userId);
     const data = {
         userId: userId,
@@ -69,60 +69,97 @@ router.post("/:userid/addToCart", middleware.isLoggedIn,  async (req, res) =>{
     .then((data) =>{
       console.log("data=======> \n",data);
       req.flash('success', 'Cart Created successfully.')
+      res.redirect(`/home/cart/mycart`)
     })
 
     
     }
 )
-router.post("/item/:productName/delete", middleware.isLoggedIn,  async (req, res) =>{
-const cartName = req.params.productName
 
-console.log("cartName=======> ", cartName)
 
-}
-
-)
 router.get("/mycart", middleware.isLoggedIn, async (req, res) => {
-    const id = 1 // some id
-    const url = `http://localhost:4000/${id}/api`
+    const id = req.user.id; // some id
+    const url = `http://localhost:4000/${id}/getCart`
 
-    //Cart will required userId (req.user.id) to retrieve Cart Id to be used
-    const CartDetails = {
-
-        userId: req.user.id,
-        cartID:"testing" // PK autoincrement.
-        
-        }
-        console.log(CartDetails.userId)
-        //cartItem will require cartId to retrieve the items below
-    const cartItemJSON = [
-        {
-           id:"1", // PK autoincrement.
-           productName: "salt",
-           quantity: 1
-        },
-        {
-            id:"2",
-            productName: "Chicken Breasts",
-            quantity: 2
-         },
-         {
-            id:"3",
-            productName: "A Bottle of Vegetable Oil",
-            quantity: 1
-         },
-         {
-            id:"4",
-            productName: "Shallot",
-            quantity: 1
-         }           
-    ]
-   // var cartItems = data[cartItemJSON]
-    res.render('./user/cart/mycart', {
-        cartItems: cartItemJSON
+    await fetch(url)
+    .then((response) => response.json())
+    .then((data) =>{
+      console.log("data=======> \n",data);
+      res.render('./user/cart/mycart', {
+        cartItems: data
+    })
     })
 
+    //Cart will required userId (req.user.id) to retrieve Cart Id to be used
+//     const CartDetails = {
+
+//         userId: req.user.id,
+//         cartID:"testing" // PK autoincrement.
+        
+//         }
+//         console.log(CartDetails.userId)
+//         //cartItem will require cartId to retrieve the items below
+//     const cartItemJSON = [
+//         {
+//            id:"1", // PK autoincrement.
+//            productName: "salt",
+//            quantity: 1
+//         },
+//         {
+//             id:"2",
+//             productName: "Chicken Breasts",
+//             quantity: 2
+//          },
+//          {
+//             id:"3",
+//             productName: "A Bottle of Vegetable Oil",
+//             quantity: 1
+//          },
+//          {
+//             id:"4",
+//             productName: "Shallot",
+//             quantity: 1
+//          }           
+//     ]
+//    // var cartItems = data[cartItemJSON]
+//     res.render('./user/cart/mycart', {
+//         cartItems: data
+//     })
+
 })
+
+router.post("/item/:itemId/delete", 
+  middleware.isLoggedIn,  
+  async (req, res) => {
+    const userid = req.user.id;
+    const url = `http://localhost:4000/${userid}/removefromcart`
+    const data = {
+
+        itemId: req.params.itemId
+        
+        }
+
+    let fetchData = {
+      method: 'POST',
+      headers: new Headers({
+        'Content-Type': 'application/json; charset=UTF-8'
+      }),
+      body: JSON.stringify(data)
+    }
+    await fetch(url, fetchData)
+    .then((response) => response.json())
+    .then((data) =>{
+      console.log("data=======> \n",data);
+      req.flash('success', 'Ingredient deleted from cart successfully.')
+      res.redirect(`/home/cart/mycart`)
+    })
+    .catch(err => {
+      console.log(err)
+      req.flash('error', 'Error occurred in deleting ingredient from cart.')
+      res.redirect(`/home/cart/mycart`)
+    })
+  }
+)
 module.exports = router
 
 
