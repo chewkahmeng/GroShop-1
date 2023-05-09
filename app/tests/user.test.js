@@ -2,26 +2,21 @@
 process.env.NODE_ENV = 'test';
 
 //Require the dev-dependencies
-let chai = require('chai');
-let chaiHttp = require('chai-http');
 const request = require('supertest');
-const expect = require('chai').expect;
-
-chai.use(chaiHttp);
 
 // IMPORTANT: SERVER NEEDS TO BE RUNNING IN ORDER TO TEST THE APIs
-// 1. Run `npm ci` to install mocha, chai, chai-http and supertest
+// 1. Run `npm ci` to install jest and supertest
 // 2. Run insert_user_data.sql in userservice database BEFORE TEST
-// 3. Run `npm start` on this microservice
-// 4. Run `npm run test` to test this microservice
+// 3. Run `npm start` on user microservice
+// 4. Run `npm run test` to test
 
 const baseurl = `http://localhost:4001`;
 
 const register_data = 
 {
-    username: 'CustomerUser123',
+    username: 'CustomerUser12345',
     password: '$2b$10$Y52KBvbd3eNB9JNw9nIkDusQY9wDuk6Q8RrlbG8Vrl7T4mFXVlEBG',
-    email: 'CustomerUser123@example.com'
+    email: 'CustomerUser12345@example.com'
 };
 
 
@@ -56,13 +51,13 @@ describe('/POST user', () => {
         .set('Content-Type', 'application/json')
         .end(function(err, res) {
             if (res.body.error) {
-                expect(res.statusCode).to.be.equal(400)
-                expect(res.body.error).to.be.equal('User already exists!')
+                expect(res.statusCode).toEqual(400)
+                expect(res.body.error).toEqual('User already exists!')
             }
             if (res.body.message) {
-                expect(res.statusCode).to.be.equal(200)
-                expect(res.body.message).to.be.equal('User registered!')
-                expect(res.body.insertId).to.be.not.null
+                expect(res.statusCode).toEqual(200)
+                expect(res.body.message).toEqual('User registered!')
+                expect(res.body.insertId).not.toBeNull()
             }
             console.log(res.body)
             done();
@@ -83,10 +78,10 @@ describe('/POST user', () => {
                 role: 'ADMIN'
             }
             */
-            expect(res.statusCode).to.be.equal(200)
-            expect(res.body.message).to.be.equal('User logged in!')
-            expect(res.body.user.username).to.be.equal('Employee1')
-            expect(res.body.user.email).to.be.equal('Employee1@example.com')
+            expect(res.statusCode).toEqual(200)
+            expect(res.body.message).toEqual('User logged in!')
+            expect(res.body.user.username).toEqual('Employee1')
+            expect(res.body.user.email).toEqual('Employee1@example.com')
             console.log(res.body)
             done();
         });
@@ -106,7 +101,7 @@ describe('/POST user', () => {
                 role: 'CUSTOMER'
             }
             */
-            expect(res.statusCode).to.be.equal(200)
+            expect(res.statusCode).toEqual(200)
             console.log(res.body)
             done();
         });
@@ -127,9 +122,9 @@ describe('/GET user', () => {
                 role: 'ADMIN'
             }
             */
-            expect(res.body["user"]["0"]["id"]).to.be.equal(1)
-            expect(res.body["user"]["0"]["username"]).to.be.equal("Employee1")
-            expect(res.body["user"]["0"]["email"]).to.be.equal("Employee1@example.com")
+            expect(res.body["user"]["0"]["id"]).toEqual(1)
+            expect(res.body["user"]["0"]["username"]).toEqual("Employee1")
+            expect(res.body["user"]["0"]["email"]).toEqual("Employee1@example.com")
 			console.log(res.body)
             done();
             

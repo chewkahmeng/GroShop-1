@@ -30,11 +30,11 @@ router.get("/",
     async (req, res) => {
         const { page, size } = req.query;
         const { limit, offset } = getPagination(+page - 1, size, RECIPES_PER_PAGE);
-        
+        let queryStr = `?limit=${limit}&offset=${offset}`
         var recipes = null
 
         // const url = `http://localhost:4003/getallrecipes`
-        const url = `http://localhost:4003/getallrecipes/${limit}/${offset}`
+        const url = `http://localhost:4003/getallrecipes${queryStr}`
         await fetch(url)
         .then(response => response.json())
         .then(data => {
@@ -61,6 +61,14 @@ router.get("/",
                 pageObj: null
             })
           }
+        })
+        .catch(err => {
+            req.flash("error", "Error accessing recipe service.")
+            res.render('./user/recipe/recipeHomePage', {
+                user: (req.user !=undefined && req.user != null) ? req.user : null,
+                recipes: null,
+                pageObj: null
+            })
         })
     }
 )

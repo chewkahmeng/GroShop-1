@@ -34,11 +34,12 @@ router.get("/",
   async (req, res) => {
     const { page, size } = req.query;
     const { limit, offset } = getPagination(+page - 1, size, RECIPES_PER_PAGE);
+    let queryStr = `?limit=${limit}&offset=${offset}`
 
     var recipes = null
     
     // const url = `http://localhost:4003/getallrecipes`
-    const url = `http://localhost:4003/getallrecipes/${limit}/${offset}`
+    const url = `http://localhost:4003/getallrecipes${queryStr}`
     
     await fetch(url)
     .then(response => response.json())
