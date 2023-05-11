@@ -13,22 +13,21 @@ router.get('/', function(req, res){
 })
 
 router.post('/checkout', function(req, res){
-    var stripeToken = req.body.stripeToken;
-    var charge = stripe.charges.create({
-      amount: 2500,
-      currency: "sgd",
-      card: stripeToken
-    }, function(err, charge) {
-      if (err && err.type === 'StripeCardError') {
-        req.flash('error', 'Payment Unsuccessful. Please try again.')
-        return res.redirect('/home/cart')
-      }
-      else {
-        //res.send('Payment Successful.')
-        req.flash('success', 'Payment Successful.')
-        return res.redirect('/home/recipes')
-      }
-    })
+  var stripeToken = req.body.stripeToken;
+  var charge = stripe.charges.create({
+    amount: 2500,
+    currency: "sgd", //comment out to trigger StripeInvalidRequestError
+    card: stripeToken
+  }, function(err, charge) {
+    if (err) {
+      req.flash('error', 'Payment Unsuccessful. Please try again.')
+      return res.redirect('/home/cart/mycart')
+    }
+    else {
+      req.flash('success', 'Payment Successful.')
+      return res.redirect('/home/recipes') //should redirect to order summary page
+    }
+  })
 })
 
 module.exports = router;
