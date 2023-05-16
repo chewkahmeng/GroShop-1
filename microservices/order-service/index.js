@@ -74,6 +74,29 @@ app.post("/createorder", (req, res) => {
   })
 })
 
+app.get("/:id/getorder", (req, res) => {
+  var query = `
+  SELECT * FROM orderservice.orders where userid=${req.params.id};
+  `
+  db.query(query, (err, data)=> {
+    if(err){
+      return res.json(err)
+    } else {
+      if(JSON.stringify(data) == undefined){
+        return res.status(400).send({
+          error: "User does not exist!"
+        });
+      }
+      console.log(query)
+      const result = {
+        user: data
+      }
+      return res.json(result);
+    }
+  })
+})
+
+
 
 
 app.listen(4004, () => {
