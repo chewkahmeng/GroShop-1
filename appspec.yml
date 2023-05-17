@@ -14,7 +14,9 @@ files:
   - source: /microservices/order-service/
     destination: /home/ec2-user/GroShop/microservices/order-service/
   - source: /scripts/
-    destination: /home/ec2-user/GroShop/scripts/  
+    destination: /home/ec2-user/GroShop/scripts/
+  - source: /appspec.yml
+    destination: /home/ec2-user/GroShop/appspec.yml
 file_exists_behavior: OVERWRITE
 hooks:
   ApplicationStart:
