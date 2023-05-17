@@ -44,7 +44,7 @@ INSERT INTO `tbl_recipe_image` VALUES (9,'image/jpeg','mango-lassi-featured.jpg'
 ----------------------------------
 -- insert Recipe Ingredients
 ----------------------------------
-INSERT INTO `tbl_recipe_ingredient` VALUES (1,'Chicken Breasts/Thighs','skin-on with bones removed',4,'quantity',1,'2023-04-25 07:04:46','2023-04-25 23:04:46');
+INSERT INTO `tbl_recipe_ingredient` VALUES (1,'Chicken Breasts','skin-on with bones removed',4,'quantity',1,'2023-04-25 07:04:46','2023-04-25 23:04:46');
 INSERT INTO `tbl_recipe_ingredient` VALUES (2,'Salt',NULL,1,'teaspoon',1,'2023-04-25 07:04:59','2023-04-25 23:04:59');
 INSERT INTO `tbl_recipe_ingredient` VALUES (3,'Vegetable Oil',NULL,80,'ml',1,'2023-04-25 07:05:14','2023-04-25 23:12:29');
 INSERT INTO `tbl_recipe_ingredient` VALUES (4,'Ginger','minced',1,'tablespoon',1,'2023-04-25 07:05:43','2023-04-25 23:05:43');
