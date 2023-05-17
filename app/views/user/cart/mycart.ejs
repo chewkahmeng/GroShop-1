@@ -23,8 +23,7 @@
             <table class="table">
                 <tr>
                     <th>Item Name</th>
-                    <th>Quantity</th>
-                    <th>Unit Of Measure</th>
+                    <th>Item Price</th>
                     <th>Action</th>
                 </tr>
                 <% 
@@ -36,8 +35,7 @@
                 %>
                 <tr>
                     <td><%= item.name %></td>
-                    <td><%= item.amount %></td>
-                    <td><%= item.uom %></td>
+                    <td><%= item.price %></td>
                     
                     <td><a href="#" onclick="onDelete(<%=item.id%>)"><i class="fa-solid fa-trash-can" data-toggle="tooltip" data-placement="top" title="Delete Ingredient"></i></a></td>
                 </tr>
@@ -56,8 +54,14 @@
                 <form hidden id="deleteCartItemForm" method="POST"></form>
 
             </table>
+            Total Price : <%=totalPrice%>
         </div>
-        <a href="/home/checkout" class="btn btn-primary" value="Checkout">Checkout</a>
+        <form id="checkoutForm" action="/home/checkout" method="POST">
+            <input type="hidden" name="checkoutTotal" value="<%=totalPrice*100%>">
+            <!-- <input type="hidden" name="checkoutTotal" value="100"> -->
+            <button type="submit" class="btn btn-primary">Checkout</button>
+        </form>
+        <!-- <a href="/home/checkout" class="btn btn-primary" value="Checkout">Checkout</a> -->
     </div>
 </div>
 </body>

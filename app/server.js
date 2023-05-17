@@ -105,6 +105,9 @@ app.use("/admin/profile", admin);
 const adminAddress = require("./routes/adminAddress.routes.js");
 app.use("/admin/address", adminAddress);
 
+const orders = require("./routes/order.routes.js");
+app.use("/home/orders", orders);
+
 app.get('/', (req, res) => {res.redirect('/home')})
 
 

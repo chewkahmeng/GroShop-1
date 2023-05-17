@@ -6,16 +6,28 @@ var Secret_Key = 'sk_test_51N5q9IA6c6T1aIgQONx66eSlmbbOWjIcvPPBHfGIwajy9dfvPbWLU
 
 const stripe = require('stripe')(Secret_Key)
 
+router.post('/', function(req, res) {
+  console.log("in POST /home/checkout")
+  console.log(req.body)
+  const checkoutTotal = req.body.checkoutTotal
+	res.render('./user/checkout', {
+	  key: Publishable_Key,
+    checkoutTotal: checkoutTotal
+	})
+})
+
 router.get('/', function(req, res){
 	res.render('./user/checkout', {
-	key: Publishable_Key
+	  key: Publishable_Key
 	})
 })
 
 router.post('/checkout', function(req, res){
   var stripeToken = req.body.stripeToken;
+  console.log("in POST /HOME/CHECKOUT/CHECKOUT")
+  console.log(req.body)
   var charge = stripe.charges.create({
-    amount: 2500,
+    amount: req.body.checkoutTotal,
     currency: "sgd", //comment out to trigger StripeInvalidRequestError
     card: stripeToken
   }, function(err, charge) {
@@ -25,7 +37,7 @@ router.post('/checkout', function(req, res){
     }
     else {
       req.flash('success', 'Payment Successful.')
-      return res.redirect('/home/recipes') //should redirect to order summary page
+      return res.redirect('/home/orders/orders') //should redirect to order summary page
     }
   })
 })

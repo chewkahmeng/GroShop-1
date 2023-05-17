@@ -418,6 +418,30 @@ app.get("/searchproducts", (req, res) => {
 
 })
 
+app.get("/:name/getproductpriceByName", (req, res) => {
+  const productName = req.params.name
+  var query = `
+    SELECT price FROM productservice.tbl_product where name like  '%${productName}%';
+  `
+  db.query(query, (err, data)=> {
+    if (err) {
+      return res.json(err)
+    } else {
+      if(JSON.stringify(data) == undefined){
+        return res.status(400).send({
+          error: "Error in getting product price"
+        });
+      }
+      console.log("getting product price")
+      console.log(data)
+      const result = {
+        price: data
+      }
+      return res.json(result);
+    }
+  })
+})
+
 ////////////////////////////////////////////////////
 // INITIALISE SERVER
 ////////////////////////////////////////////////////

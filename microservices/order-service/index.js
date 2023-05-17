@@ -89,7 +89,7 @@ app.get("/:id/getorder", (req, res) => {
       }
       console.log(query)
       const result = {
-        user: data
+        order: data
       }
       return res.json(result);
     }

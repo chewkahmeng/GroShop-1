@@ -80,16 +80,46 @@ router.post("/:userid/addToCart", middleware.isLoggedIn,  async (req, res) =>{
 router.get("/mycart", middleware.isLoggedIn, async (req, res) => {
     const id = req.user.id; // some id
     const url = `http://localhost:4000/${id}/getCart`
-
+    const urlPrice = `http://localhost:4005/${id}/getCart`
+    var cartJSON = null
+    var total = 0
     await fetch(url)
     .then((response) => response.json())
     .then((data) =>{
       console.log("data=======> \n",data);
-      res.render('./user/cart/mycart', {
-        cartItems: data
-    })
+      cartJSON = data
     })
 
+    for(var i = 0; i < cartJSON.length; i++){
+      // console.log("itemName=======> \n",cartJSON[i].name);
+      const name = cartJSON[i].name
+      const urlPrice = `http://localhost:4005/${name}/getproductpriceByName`
+      await fetch(urlPrice)
+      .then((response) => response.json())
+      .then((data) =>{
+          // console.log("price data=======> \n",data);
+          if (data.price[0] == null ||data.price[0]== undefined)
+          {
+            cartJSON[i].price = 0
+            total += 0
+          }
+          else
+          {
+            cartJSON[i].price = data.price[0].price
+            total += data.price[0].price
+          }
+          
+        // console.log("data after adding address=======> \n",cartJSON);
+        
+        console.log ("total=======>",total)
+      })
+  }
+
+
+    res.render('./user/cart/mycart', {
+      cartItems: cartJSON,
+      totalPrice: total
+  })
     //Cart will required userId (req.user.id) to retrieve Cart Id to be used
 //     const CartDetails = {
 
