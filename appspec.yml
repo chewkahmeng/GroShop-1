@@ -16,7 +16,7 @@ files:
   - source: /scripts/
     destination: /home/ec2-user/GroShop/scripts/
   - source: /appspec.yml
-    destination: /home/ec2-user/GroShop/appspec.yml
+    destination: /home/ec2-user/GroShop/
 file_exists_behavior: OVERWRITE
 hooks:
   ApplicationStart:
