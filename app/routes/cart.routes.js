@@ -46,9 +46,29 @@ router.post("/:userid/addToCart", middleware.isLoggedIn,  async (req, res) =>{
     .then(data => {
       ingredients = data["ingredients"]
       console.log("data=======> ", ingredients)
-      
-     
     })
+
+    for (let i = 0; i < ingredients.length; i++) {
+      var ingredientName = ingredients[i].name
+      var getProductUrl = `http://localhost:4005/${ingredientName}/getproductIdPriceByName`
+      
+      await fetch(getProductUrl)
+      .then(response => response.json())
+      .then(data => {
+        console.log(data["product"])
+        if (data["product"] !== undefined && data["product"] !== null) {
+          productId = data["product"].id
+          price = data["product"].price
+  
+          ingredients[i]["productId"] = productId
+          ingredients[i]["price"] = `${price}`
+        } else {
+          ingredients[i]["productId"] = null
+          ingredients[i]["price"] = `0`
+        }
+      })
+    }
+    console.log("ingredients: ", ingredients)
 
     //create cart (to pass in userId)
     const createCarturl = `http://localhost:4000/${userId}/addtocart` //createCartURL
@@ -64,16 +84,14 @@ router.post("/:userid/addToCart", middleware.isLoggedIn,  async (req, res) =>{
           'Content-Type': 'application/json; charset=UTF-8'
         })
       }
-      await fetch(createCarturl, fetchData)
+    await fetch(createCarturl, fetchData)
     .then((response) => response.json())
     .then((data) =>{
       console.log("data=======> \n",data);
       req.flash('success', 'Cart Created successfully.')
       res.redirect(`/home/cart/mycart`)
-    })
-
-    
-    }
+    })  
+  }
 )
 
 
@@ -90,6 +108,15 @@ router.get("/mycart", middleware.isLoggedIn, async (req, res) => {
       cartJSON = data
     })
 
+    // compute total
+    for(var i = 0; i < cartJSON.length; i++) {
+      if (cartJSON[i].price != undefined &&  cartJSON[i].price != null) {
+        var price = (Math.round(cartJSON[i].price*100)/100);
+        total += price
+      }
+    }
+
+    /*
     for(var i = 0; i < cartJSON.length; i++){
       // console.log("itemName=======> \n",cartJSON[i].name);
       const name = cartJSON[i].name
@@ -113,7 +140,8 @@ router.get("/mycart", middleware.isLoggedIn, async (req, res) => {
         
         console.log ("total=======>",total.toFixed(2))
       })
-  }
+    }
+    */
 
 
     res.render('./user/cart/mycart', {

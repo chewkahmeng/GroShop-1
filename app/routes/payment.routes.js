@@ -6,14 +6,27 @@ var Secret_Key = 'sk_test_51N5q9IA6c6T1aIgQONx66eSlmbbOWjIcvPPBHfGIwajy9dfvPbWLU
 
 const stripe = require('stripe')(Secret_Key)
 
-router.post('/', function(req, res) {
+router.post('/', async function(req, res) {
   console.log("in POST /home/checkout")
   console.log(req.body)
   const checkoutTotal = req.body.checkoutTotal
-	res.render('./user/checkout', {
-	  key: Publishable_Key,
-    checkoutTotal: checkoutTotal
-	})
+  // check if user has yet to enter shipping address in user profile.
+  const urlForAddress = `http://localhost:4001/${req.user.id}/getaddressbyuserId`
+  await fetch(urlForAddress)
+  .then((response) => response.json())
+  .then((data) =>{
+    console.log("address=======> \n",data);
+    if (data.address[0] === undefined || data.address[0] === null) {
+      req.flash('error', 'Please enter shipping address in user profile before proceeding to checkout')
+      return res.redirect('/home/cart/mycart')
+    } else {
+      res.render('./user/checkout', {
+        key: Publishable_Key,
+        checkoutTotal: checkoutTotal
+      })
+    }
+  })
+
 })
 
 router.get('/', function(req, res){
@@ -22,15 +35,16 @@ router.get('/', function(req, res){
 	})
 })
 
-router.post('/checkout', async (req, res) => {
+router.post('/submit', async (req, res) => {
   var stripeToken = req.body.stripeToken;
-  console.log("in POST /HOME/CHECKOUT/CHECKOUT")
+  console.log("in POST /home/checkout/submit")
   var charge = stripe.charges.create({
-    amount: req.body.checkoutTotal,
+    amount: Math.round(req.body.checkoutTotal),
     currency: "sgd", //comment out to trigger StripeInvalidRequestError
     card: stripeToken
   }, async (err, charge) => {
     if (err) {
+      console.log(err)
       req.flash('error', 'Payment Unsuccessful. Please try again.')
       return res.redirect('/home/cart/mycart')
     }
@@ -88,7 +102,7 @@ router.post('/checkout', async (req, res) => {
       .then((data) =>{
         console.log("data=======> \n",data);
         req.flash('success', 'Order Created successfully.')
-        res.redirect(`/home/orders/orders`)
+        res.redirect(`/home/orders/myorders`)
       })
     }
   })

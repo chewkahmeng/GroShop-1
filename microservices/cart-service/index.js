@@ -62,7 +62,7 @@ app.get("/:id/getcart", (req, res) => {
   const userid =req.params.id;
   const q = `
   SELECT 
-	  a.id, a.name, a.amount, a.uom, b.cartId
+	  a.id, a.name, a.amount, a.uom, b.cartId, a.price
 	FROM 
 		cartservice.productincart as a 
 	inner join 
@@ -108,11 +108,11 @@ app.post("/:id/addtocart", (req, res) => {
               console.log("last element of the array");
               console.log("inserting the following ", ingredients[i].name,ingredients[i].amount,ingredients[i].uom,)
               return database.query( 
-                `INSERT INTO cartservice.productincart (name, cartId, amount, uom) VALUES ('${ingredients[i].name}', '${newCartId}' , '${ingredients[i].amount}', '${ingredients[i].uom}');`
+                `INSERT INTO cartservice.productincart (name, cartId, amount, uom, productId, price) VALUES ('${ingredients[i].name}', '${newCartId}' , '${ingredients[i].amount}', '${ingredients[i].uom}', '${ingredients[i].productId}', '${ingredients[i].price}');`
                 )
             }else{
               database.query( 
-                `INSERT INTO cartservice.productincart (name, cartId, amount, uom) VALUES ('${ingredients[i].name}', '${newCartId}' , '${ingredients[i].amount}', '${ingredients[i].uom}');`
+                `INSERT INTO cartservice.productincart (name, cartId, amount, uom, productId, price) VALUES ('${ingredients[i].name}', '${newCartId}' , '${ingredients[i].amount}', '${ingredients[i].uom}', '${ingredients[i].productId}', '${ingredients[i].price}');`
                 )
                 console.log("inserting the following ", ingredients[i].name,ingredients[i].amount,ingredients[i].uom,)
             }
@@ -127,12 +127,12 @@ app.post("/:id/addtocart", (req, res) => {
               console.log("last element of the array");
               console.log("inserting the following ", ingredients[i].name,ingredients[i].amount,ingredients[i].uom,);
               return database.query( 
-                `INSERT INTO cartservice.productincart (name, cartId, amount, uom) VALUES ('${ingredients[i].name}', ${existingCartId} , '${ingredients[i].amount}', '${ingredients[i].uom}');`
+                `INSERT INTO cartservice.productincart (name, cartId, amount, uom, productId, price) VALUES ('${ingredients[i].name}', ${existingCartId} , '${ingredients[i].amount}', '${ingredients[i].uom}', '${ingredients[i].productId}', '${ingredients[i].price}');`
                 )
                 
             }else{
               database.query( 
-                `INSERT INTO cartservice.productincart (name, cartId, amount, uom) VALUES ('${ingredients[i].name}', ${existingCartId} , '${ingredients[i].amount}', '${ingredients[i].uom}');`
+                `INSERT INTO cartservice.productincart (name, cartId, amount, uom, productId, price) VALUES ('${ingredients[i].name}', ${existingCartId} , '${ingredients[i].amount}', '${ingredients[i].uom}', '${ingredients[i].productId}', '${ingredients[i].price}');`
                 )
                 console.log("inserting the following ", ingredients[i].name,ingredients[i].amount,ingredients[i].uom,)
 

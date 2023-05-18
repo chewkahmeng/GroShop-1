@@ -59,7 +59,9 @@
         <form id="checkoutForm" action="/home/checkout" method="POST">
             <input type="hidden" name="checkoutTotal" value="<%=totalPrice*100%>">
             <!-- <input type="hidden" name="checkoutTotal" value="100"> -->
+            <% if (totalPrice > 0) { %>
             <button type="submit" class="btn btn-primary">Checkout</button>
+            <% } %>
         </form>
         <!-- <a href="/home/checkout" class="btn btn-primary" value="Checkout">Checkout</a> -->
     </div>

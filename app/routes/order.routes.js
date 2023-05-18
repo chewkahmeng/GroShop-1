@@ -7,7 +7,7 @@ const { check, validationResult } = require('express-validator')
 
 
 
-router.get("/orders", middleware.isLoggedIn, async (req, res) => {
+router.get("/myorders", middleware.isLoggedIn, async (req, res) => {
 //     const id = req.user.id; // some id
 //     const dateObject = new Date();
 
@@ -24,32 +24,30 @@ router.get("/orders", middleware.isLoggedIn, async (req, res) => {
 //       orderItem: orderItemJSON
 //   })
 
-const id = req.user.id; // some id
-const url = `http://localhost:4004/${id}/getorder`
-const urlForAddress = `http://localhost:4001/${id}/getaddressbyuserId`
-var orderItemJSON = null
+  const id = req.user.id; // some id
+  const url = `http://localhost:4004/${id}/getorder`
+  const urlForAddress = `http://localhost:4001/${id}/getaddressbyuserId`
+  var orderItemJSON = null
 
-await fetch(url)
-.then((response) => response.json())
-.then((data) =>{
+  await fetch(url)
+  .then((response) => response.json())
+  .then((data) =>{
     orderItemJSON = data["order"]
-  console.log("data from API=======> \n",orderItemJSON);
-  
-})
-for(var i = 0; i < orderItemJSON.length; i++){
+    console.log("data from API=======> \n",orderItemJSON);
+  })
+  for(var i = 0; i < orderItemJSON.length; i++){
     await fetch(urlForAddress)
     .then((response) => response.json())
     .then((data) =>{
-        console.log("address=======> \n",data);
-        orderItemJSON[i].address = data.address[0].name
+      console.log("address=======> \n",data);
+      orderItemJSON[i].address = data.address[0].name
       console.log("data after adding address=======> \n",orderItemJSON);
-      
     })
-}
+  }
 
-res.render('./user/orders/orders', {
-    orderItem: orderItemJSON
-})
+  res.render('./user/orders/orders', {
+      orderItem: orderItemJSON
+  })
 })
 
 

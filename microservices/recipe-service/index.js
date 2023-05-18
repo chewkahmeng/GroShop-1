@@ -35,7 +35,9 @@ app.get("/getallrecipes", (req, res) => {
   var query = `
     select recipe.*, image.srcpath as srcpath
     from recipeservice.tbl_recipe recipe, recipeservice.tbl_recipe_image image
-    where recipe.id = image.recipeId;
+    where recipe.id = image.recipeId
+    and recipe.id in (select recipeId from recipeservice.tbl_recipe_ingredient)
+    and recipe.id in (select recipeId from recipeservice.tbl_recipe_step);
   `
   db.query(query, (err, data)=> {
     if (err) {
@@ -58,12 +60,18 @@ app.get("/getallrecipes", (req, res) => {
 // GET ALL RECIPES WITH PAGINATION (LIMIT AND OFFSET)
 app.get("/getallrecipes/:limit/:offset", (req, res) => {
   var query = `
-    select count(1) as count from recipeservice.tbl_recipe recipe, recipeservice.tbl_recipe_image image where recipe.id = image.recipeId;
+    select count(1) as count from recipeservice.tbl_recipe recipe, recipeservice.tbl_recipe_image image 
+    where recipe.id = image.recipeId
+    and recipe.id in (select recipeId from recipeservice.tbl_recipe_ingredient)
+    and recipe.id in (select recipeId from recipeservice.tbl_recipe_step);
     select recipe.*, image.srcPath as srcpath
     from recipeservice.tbl_recipe recipe, recipeservice.tbl_recipe_image image
     where recipe.id = image.recipeId
+    and recipe.id in (select recipeId from recipeservice.tbl_recipe_ingredient)
+    and recipe.id in (select recipeId from recipeservice.tbl_recipe_step)
     limit ${req.params.limit} offset ${req.params.offset};
   `
+  console.log(query)
   db.query(query, (err, data)=> {
     if (err) {
       return res.status(400).json(err)
@@ -102,10 +110,16 @@ app.get("/searchrecipes", (req, res) => {
   var query = `
   select count(1) as count 
   from recipeservice.tbl_recipe recipe, recipeservice.tbl_recipe_image image 
-  where recipe.id = image.recipeId ${filteredQuery};
+  where recipe.id = image.recipeId 
+  and recipe.id in (select recipeId from recipeservice.tbl_recipe_ingredient)
+  and recipe.id in (select recipeId from recipeservice.tbl_recipe_step)
+  ${filteredQuery};
   select recipe.*, image.srcPath as srcpath
   from recipeservice.tbl_recipe recipe, recipeservice.tbl_recipe_image image
-  where recipe.id = image.recipeId ${filteredQuery}
+  where recipe.id = image.recipeId 
+  and recipe.id in (select recipeId from recipeservice.tbl_recipe_ingredient)
+  and recipe.id in (select recipeId from recipeservice.tbl_recipe_step)
+  ${filteredQuery}
   limit ${queryParams.limit} offset ${queryParams.offset};
   `
   db.query(query, (err, data)=> {
