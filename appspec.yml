@@ -11,9 +11,19 @@ files:
     destination: /home/ec2-user/GroShop/microservices/user-service/
   - source: /microservices/cart-service/
     destination: /home/ec2-user/GroShop/microservices/cart-service/
+  - source: /microservices/order-service/
+    destination: /home/ec2-user/GroShop/microservices/order-service/
+  - source: /scripts/
+    destination: /home/ec2-user/GroShop/scripts/
+  - source: /appspec.yml
+    destination: /home/ec2-user/GroShop/
 file_exists_behavior: OVERWRITE
 hooks:
   ApplicationStart:
     - location: scripts/application_start.sh
+      timeout: 180
+      runas: ec2-user
+  ValidateService:
+    - location: scripts/test.sh
       timeout: 180
       runas: ec2-user
