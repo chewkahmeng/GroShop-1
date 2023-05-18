@@ -105,20 +105,20 @@ router.get("/mycart", middleware.isLoggedIn, async (req, res) => {
           }
           else
           {
-            cartJSON[i].price = data.price[0].price
-            total += data.price[0].price
+            cartJSON[i].price = (Math.round(data.price[0].price*100)/100);
+            total += cartJSON[i].price;
           }
           
         // console.log("data after adding address=======> \n",cartJSON);
         
-        console.log ("total=======>",total)
+        console.log ("total=======>",total.toFixed(2))
       })
   }
 
 
     res.render('./user/cart/mycart', {
       cartItems: cartJSON,
-      totalPrice: total
+      totalPrice: total.toFixed(2)
   })
     //Cart will required userId (req.user.id) to retrieve Cart Id to be used
 //     const CartDetails = {
