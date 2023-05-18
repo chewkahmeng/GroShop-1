@@ -38,15 +38,35 @@ router.post('/checkout', async (req, res) => {
       req.flash('success', 'Payment Successful.')
       const userId = req.user.id
       console.log("userId=======> ",userId);
+
+      //getting cartId
       const cartUrl = `http://localhost:4000/${userId}/getcart`
       var cartId = null
-      //getting cartId
       await fetch(cartUrl)
       .then(response => response.json())
       .then(data => {
         cartId = data[0].cartId
       })
       console.log("cartId=======> ",cartId);
+
+      //update cart status
+      const cartStatusUrl = `http://localhost:4000/updatecartstatus`
+      const cartStatusData = {
+        userId: userId
+      };
+      let fetchCartStatusData = {
+        method: 'POST',
+        body: JSON.stringify(cartStatusData),
+        headers: new Headers({
+          'Content-Type': 'application/json; charset=UTF-8'
+        })
+      }
+      await fetch(cartStatusUrl, fetchCartStatusData)
+      .then((response) => response.json())
+      .then((data) =>{
+        console.log("data=======> \n",data);
+        req.flash('success', 'Order Status updated successfully.')
+      })
 
       //creating order
       const url = `http://localhost:4004/createorder`

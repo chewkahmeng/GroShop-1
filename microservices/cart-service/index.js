@@ -192,6 +192,21 @@ app.post("/:id/removefromcart", (req, res) => {
   })
 })
 
+app.post("/updatecartstatus", (req, res) => {
+  var q1 = `UPDATE cartservice.cart SET cartStatus = 'closed' WHERE userId = '${req.body.userId}';`
+  console.log(q1);
+  db.query(q1, (err, data)=> {
+    if(err){
+      return res.json(err)
+    } else {
+      console.log(data)
+      return res.send({
+        message: `Order status updated successfully!`
+      });
+    }
+  })
+})
+
 
 
 app.listen(4000, () => {
