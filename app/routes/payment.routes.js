@@ -22,22 +22,54 @@ router.get('/', function(req, res){
 	})
 })
 
-router.post('/checkout', function(req, res){
+router.post('/checkout', async (req, res) => {
   var stripeToken = req.body.stripeToken;
   console.log("in POST /HOME/CHECKOUT/CHECKOUT")
-  console.log(req.body)
   var charge = stripe.charges.create({
     amount: req.body.checkoutTotal,
     currency: "sgd", //comment out to trigger StripeInvalidRequestError
     card: stripeToken
-  }, function(err, charge) {
+  }, async (err, charge) => {
     if (err) {
       req.flash('error', 'Payment Unsuccessful. Please try again.')
       return res.redirect('/home/cart/mycart')
     }
     else {
       req.flash('success', 'Payment Successful.')
-      return res.redirect('/home/orders/orders') //should redirect to order summary page
+      const userId = req.user.id
+      console.log("userId=======> ",userId);
+      const cartUrl = `http://localhost:4000/${userId}/getcart`
+      var cartId = null
+      //getting cartId
+      await fetch(cartUrl)
+      .then(response => response.json())
+      .then(data => {
+        cartId = data[0].cartId
+      })
+      console.log("cartId=======> ",cartId);
+
+      //creating order
+      const url = `http://localhost:4004/createorder`
+      const paymentAmount = charge.amount / 100;
+      const data = {
+          userId: userId,
+          cartId: cartId,
+          amount: paymentAmount
+        };
+        let fetchData = {
+          method: 'POST',
+          body: JSON.stringify(data),
+          headers: new Headers({
+            'Content-Type': 'application/json; charset=UTF-8'
+          })
+        }
+        await fetch(url, fetchData)
+      .then((response) => response.json())
+      .then((data) =>{
+        console.log("data=======> \n",data);
+        req.flash('success', 'Order Created successfully.')
+        res.redirect(`/home/orders/orders`)
+      })
     }
   })
 })
