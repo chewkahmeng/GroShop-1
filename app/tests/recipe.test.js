@@ -46,7 +46,7 @@ describe('/GET recipe APIs', () => {
 
     it('it should get 6 recipes in 1 page', (done) => {
         request(baseurl)
-        .get('/getallrecipes?limit=6&offset=0') // /getallrecipes/:limit/:offset
+        .get('/getallrecipes/6/0') // /getallrecipes/:limit/:offset
         .end(function(err, res) {
             if (res.body) {
                 expect(res.statusCode).toEqual(200)
