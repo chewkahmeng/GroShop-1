@@ -13,10 +13,12 @@
     - `product-service` - product microservice that runs on `port 4005`
     - `recipe-service` - recipe microservice that runs on `port 4003`
     - `user-service` - user microservice that runs on `port 4001`
+    - `order-service` - user microservice that runs on `port 4004`
 - `app` - main application that runs on `port 8080`
     - `config` contains all configuration files
     - `middleware` contains all the middleware files that are used in request validation etc
     - `routes` contains all the client api routes and functions to render the pages
+    - `tests` contains the test scripts
     - `node_modules` - imported npm packages that are used in the application
     - `public` - public static content
         - `css` contains all the css files
@@ -29,6 +31,7 @@
     - `package.json`
     - `server.js` - main application file to run (also imports all the routes from `routes` folder)
 - `db scripts` - run the db scripts to create databases and insert data.
+- `scripts` - contains the deployment and shell scripts
 
 ## Explanation on the code structure/framework
 1. Each of the `microservices` contains all the server-side APIs that would change the data its respective database.
@@ -37,7 +40,7 @@
 
 In summary, `microservices`  &rarr; called by &rarr; `app/routes/*.routes.js`  &rarr; renders &rarr; `app/views/.../*.ejs`
 
-## Completed Microservices
+## Completed Services
 1. User
     - Register/Login/Logout User
     - Change User Password
@@ -49,16 +52,25 @@ In summary, `microservices`  &rarr; called by &rarr; `app/routes/*.routes.js`  &
     - All Users can View recipe details, photo, ingredients and steps.
     - Only Logged In Users can Favourite/Comment on recipes.
 
-3. Inventory
+3. Product
+    - Admin can Add/Update/View/Delete product details, photo
+
+4. Cart
+    - User can add items to cart from View Recipe page
+    - User can view my cart page
+    - User can checkout cart.
+
+5. Payment gateway using Stripe
+    - User can make payment via credit card via Stripe
+
+6. Order 
+    - Order record for user is automatically created upon successful payment.
+    - User can view order history.
 
 ## Troubleshooting
 1. If a MySQL DB has already been created before and there is connection issues with the DB, run the following query in MYSQL workbench.
     - `ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';`
 
-## Deployment
-1. Make sure that all node_modules under each microservice and the app folder are committed before dockerising.
-2. Dockerise each microservice and the app folder into Docker images
-3. TODO
 
 ## References
 1. EJS Usage [https://blog.logrocket.com/how-to-use-ejs-template-node-js-application/]
